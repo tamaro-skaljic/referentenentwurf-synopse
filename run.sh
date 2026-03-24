@@ -11,6 +11,10 @@ mkdir -p output
 echo "=== Step 1: Extract 2024 synopsis ==="
 uv run python src/extract_synopsis.py \
     "input/2024-09_Referentenentwurf_Synopse.pdf" \
+    "output/synopsis_2024_raw.json"
+
+echo "=== Step 1b: Cleanup 2024 synopsis ==="
+uv run python src/cleanup_synopsis.py \
     "output/synopsis_2024_raw.json" \
     "output/synopsis_2024_cleaned.json"
 
@@ -18,6 +22,10 @@ echo ""
 echo "=== Step 2: Extract 2026 synopsis ==="
 uv run python src/extract_synopsis.py \
     "input/2026-03_Referentenentwurf_Synopse.pdf" \
+    "output/synopsis_2026_raw.json"
+
+echo "=== Step 2b: Cleanup 2026 synopsis ==="
+uv run python src/cleanup_synopsis.py \
     "output/synopsis_2026_raw.json" \
     "output/synopsis_2026_cleaned.json"
 

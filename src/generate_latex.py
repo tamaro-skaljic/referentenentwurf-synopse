@@ -1,10 +1,12 @@
-"""Generate a LaTeX document from the merged synopsis JSON.
+"""Generate a LaTeX document from the merged raw synopsis JSON.
 
-Produces a 3-column landscape A4 longtable comparing:
-  Geltendes Recht | Änderungen 2024 | Änderungen 2026
+Produces a simple 4-column landscape A4 longtable:
+    2024 Geltendes Recht | 2024 Änderungen | 2026 Geltendes Recht | 2026 Änderungen
+
+No semantic restructuring is performed here.
 
 Usage:
-    uv run python generate_latex.py synopsis_merged.json synopsis_combined.tex
+        uv run python generate_latex.py synopsis_merged.json synopsis_combined.tex
 """
 
 import json
@@ -76,52 +78,7 @@ def format_text_entry(entry: dict | None, fallback: str = "") -> str:
     if not text.strip():
         return ""
 
-    # Check if this is just "unverändert" (possibly with a prefix like "(2)" or "1.")
-    normalized = re.sub(r"\s+", " ", text).strip()
-    spaced = r"u\,n\,v\,e\,r\,ä\,n\,d\,e\,r\,t"
-    if re.match(r"^(\(\d+[a-z]?\)\s*)?unverändert\s*$", normalized) or \
-       re.match(r"^(\d+[a-z]?\.\s*)?unverändert\s*$", normalized):
-        return r"\textit{" + spaced + "}"
-
     return apply_bold_ranges(text, bold_ranges)
-
-
-def render_geltendes_recht(absatz: dict) -> str:
-    """Render the Geltendes Recht column, stacking both versions if they differ."""
-    gr_2024 = absatz.get("geltendesRecht2024")
-    gr_2026 = absatz.get("geltendesRecht2026")
-    differs = absatz.get("baselinesDiffer", False)
-
-    has_2024 = gr_2024 and gr_2024.get("text", "").strip()
-    has_2026 = gr_2026 and gr_2026.get("text", "").strip()
-
-    if not differs:
-        # Use whichever is available (prefer 2026)
-        entry = gr_2026 or gr_2024
-        return format_text_entry(entry)
-
-    # If only one baseline exists, show it without labels
-    if has_2024 and not has_2026:
-        return format_text_entry(gr_2024)
-    if has_2026 and not has_2024:
-        return format_text_entry(gr_2026)
-
-    # Both exist but differ - stack with labels
-    parts = []
-    parts.append(r"\textit{--- Fassung 2024 ---}")
-    parts.append(r" \newline ")
-    parts.append(format_text_entry(gr_2024))
-    parts.append(r" \newline ")
-    parts.append(r"\textit{--- Fassung 2026 ---}")
-    parts.append(r" \newline ")
-    parts.append(format_text_entry(gr_2026))
-
-    return "".join(parts)
-
-
-def is_unveraendert_cell(text: str) -> bool:
-    """Check if a rendered cell is just the spaced 'unverändert'."""
-    return text == r"\textit{u\,n\,v\,e\,r\,ä\,n\,d\,e\,r\,t}"
 
 
 def sanitize_cell(text: str) -> str:
@@ -135,13 +92,32 @@ def sanitize_cell(text: str) -> str:
     # Remove leading/trailing \newline (causes "no line here to end" errors)
     text = re.sub(r"^\s*(\\newline\s*)+", "", text)
     text = re.sub(r"(\s*\\newline\s*)+\s*$", "", text)
-    # Remove \newline right after \textbf{...} if followed by another \newline
-    text = re.sub(r"\}\s*\\newline\s*\\newline", r"} \\newline", text)
-    # Collapse consecutive \newline into single
+    # Collapse repeated line-break commands in the middle of text.
     text = re.sub(r"(\\newline\s*){2,}", r"\\newline ", text)
-    # Clean up multiple spaces
-    text = re.sub(r"  +", " ", text)
     return text.strip()
+
+
+def render_cell(row: dict | None, side: str) -> str:
+    """Render a single raw cell from a row on the requested side."""
+    if not row:
+        return ""
+    if side == "left":
+        return sanitize_cell(
+            format_text_entry(
+                {
+                    "text": row.get("left", "") or "",
+                    "bold_ranges": row.get("left_bold_ranges", []),
+                }
+            )
+        )
+    return sanitize_cell(
+        format_text_entry(
+            {
+                "text": row.get("right", "") or "",
+                "bold_ranges": row.get("right_bold_ranges", []),
+            }
+        )
+    )
 
 
 def generate_latex(data: dict) -> str:
@@ -150,24 +126,23 @@ def generate_latex(data: dict) -> str:
 
     # Preamble
     lines.append(r"\documentclass[10pt,a4paper,landscape]{article}")
-    lines.append(r"\usepackage[landscape,margin=1.5cm]{geometry}")
+    lines.append(r"\usepackage[landscape,margin=1.2cm]{geometry}")
     lines.append(r"\usepackage[ngerman]{babel}")
     lines.append(r"\usepackage{fontspec}")
     lines.append(r"\usepackage{longtable}")
     lines.append(r"\usepackage{array}")
-    lines.append(r"\usepackage{booktabs}")
     lines.append(r"\usepackage[table]{xcolor}")
     lines.append(r"\usepackage{ragged2e}")
     lines.append("")
     lines.append(r"\setlength{\LTpre}{0pt}")
     lines.append(r"\setlength{\LTpost}{0pt}")
-    lines.append(r"\setlength{\tabcolsep}{4pt}")
-    lines.append(r"\renewcommand{\arraystretch}{1.2}")
+    lines.append(r"\setlength{\tabcolsep}{3pt}")
+    lines.append(r"\renewcommand{\arraystretch}{1.1}")
     lines.append("")
     lines.append(r"\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}")
     lines.append("")
     lines.append(r"\begin{document}")
-    lines.append(r"\footnotesize")
+    lines.append(r"\scriptsize")
     lines.append("")
 
     # Title
@@ -178,103 +153,42 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\vspace{0.5cm}")
     lines.append("")
 
-    # Column widths: landscape A4 = ~27.7cm usable with 1.5cm margins
-    # 3 columns: ~8.9cm each
-    col_width = "8.6cm"
+    # 4 columns in landscape. Keep widths conservative for longtable stability.
+    col_width = "6.2cm"
 
-    for artikel in data.get("artikel", []):
-        gesetz = artikel.get("gesetz", "")
-        titel = artikel.get("titel", "")
-        a_nr_2024 = artikel.get("artikel_nr_2024")
-        a_nr_2026 = artikel.get("artikel_nr_2026")
+    lines.append(
+        r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
+    )
+    lines.append(r"\hline")
+    lines.append(
+        r"\multicolumn{2}{|c|}{\cellcolor{gray!15}\textbf{Synopse 2024}} & "
+        r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Synopse 2026}} \\"
+    )
+    lines.append(r"\hline")
+    lines.append(
+        r"\textbf{Geltendes Recht} & "
+        r"\textbf{Änderungen} & "
+        r"\textbf{Geltendes Recht} & "
+        r"\textbf{Änderungen} \\"
+    )
+    lines.append(r"\hline")
+    lines.append(r"\endhead")
+    lines.append("")
 
-        # Artikel header
-        artikel_label_parts = []
-        if a_nr_2026:
-            artikel_label_parts.append(f"Artikel {a_nr_2026} (2026)")
-        if a_nr_2024 and a_nr_2024 != a_nr_2026:
-            artikel_label_parts.append(f"Artikel {a_nr_2024} (2024)")
-        artikel_label = " / ".join(artikel_label_parts) if artikel_label_parts else gesetz
+    for row in data.get("rows", []):
+        row_2024 = row.get("synopsis2024")
+        row_2026 = row.get("synopsis2026")
 
-        lines.append(r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}")
+        c1 = render_cell(row_2024, "left")
+        c2 = render_cell(row_2024, "right")
+        c3 = render_cell(row_2026, "left")
+        c4 = render_cell(row_2026, "right")
+
+        lines.append(f"{c1} & {c2} & {c3} & {c4} \\\\")
         lines.append(r"\hline")
-        lines.append(
-            r"\multicolumn{3}{|c|}{\cellcolor{gray!20}\textbf{"
-            + escape_latex(artikel_label + ": " + titel)
-            + r"}} \\"
-        )
-        lines.append(r"\hline")
 
-        # Column headers
-        lines.append(
-            r"\textbf{Geltendes Recht} & "
-            r"\textbf{Änderungen RefE 2024} & "
-            r"\textbf{Änderungen RefE 2026} \\"
-        )
-        lines.append(r"\hline")
-        lines.append(r"\endhead")
-        lines.append("")
-
-        for para in artikel.get("paragraphen", []):
-            nummer = para.get("nummer", "")
-            p_titel = para.get("titel", "")
-
-            if nummer:
-                # § header row
-                header_text = escape_latex(nummer)
-                if p_titel:
-                    header_text += r" -- " + escape_latex(p_titel)
-                lines.append(
-                    r"\multicolumn{3}{|c|}{\cellcolor{gray!10}\textbf{"
-                    + header_text
-                    + r"}} \\"
-                )
-                lines.append(r"\hline")
-
-            for absatz in para.get("absaetze", []):
-                gr = render_geltendes_recht(absatz)
-                ae_2024 = format_text_entry(absatz.get("aenderungen2024"))
-                ae_2026 = format_text_entry(absatz.get("aenderungen2026"))
-
-                gr = sanitize_cell(gr)
-                ae_2024 = sanitize_cell(ae_2024)
-                ae_2026 = sanitize_cell(ae_2026)
-
-                # Clear "unverändert" when there is no Geltendes Recht
-                if not gr:
-                    if is_unveraendert_cell(ae_2024):
-                        ae_2024 = ""
-                    if is_unveraendert_cell(ae_2026):
-                        ae_2026 = ""
-
-                if gr or ae_2024 or ae_2026:
-                    lines.append(f"{gr} & {ae_2024} & {ae_2026} \\\\")
-                    lines.append(r"\hline")
-
-                # Nummern sub-rows
-                for num in absatz.get("nummern", []):
-                    n_gr = render_geltendes_recht(num)
-                    n_ae_2024 = format_text_entry(num.get("aenderungen2024"))
-                    n_ae_2026 = format_text_entry(num.get("aenderungen2026"))
-
-                    n_gr = sanitize_cell(n_gr)
-                    n_ae_2024 = sanitize_cell(n_ae_2024)
-                    n_ae_2026 = sanitize_cell(n_ae_2026)
-
-                    # Clear "unverändert" when there is no Geltendes Recht
-                    if not n_gr:
-                        if is_unveraendert_cell(n_ae_2024):
-                            n_ae_2024 = ""
-                        if is_unveraendert_cell(n_ae_2026):
-                            n_ae_2026 = ""
-
-                    if n_gr or n_ae_2024 or n_ae_2026:
-                        lines.append(f"{n_gr} & {n_ae_2024} & {n_ae_2026} \\\\")
-                        lines.append(r"\hline")
-
-        lines.append(r"\end{longtable}")
-        lines.append(r"\newpage")
-        lines.append("")
+    lines.append(r"\end{longtable}")
+    lines.append("")
 
     lines.append(r"\end{document}")
     return "\n".join(lines)

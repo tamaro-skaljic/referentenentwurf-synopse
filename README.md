@@ -25,6 +25,11 @@ Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen de
 
 Die fertige Synopse liegt anschließend als [synopsis_combined.pdf](output/synopsis_combined.pdf) im `output/`-Verzeichnis.
 
+| Markierungsfarbe | Geltendes Recht                           | Änderungen RefE 2024                               | Änderungen RefE 2026                                                                                               |
+| ---------------- | ----------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Grün             | -                                         | Wurde im Vergleich zum geltenden Recht hinzugefügt | Wurde im Vergleich zum RefE 2024 (oder geltendem Recht, falls RefE 2024 nicht vorhanden / unverändert) hinzugefügt |
+| Rot              | Wurde im Vergleich zum RefE 2024 gelöscht | Wurde im Vergleich zum RefE 2026 gelöscht          | -                                                                                                                  |
+
 ## Lizenz
 
 Public Domain – siehe [LICENSE](LICENSE) (Unlicense).
