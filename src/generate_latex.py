@@ -119,6 +119,11 @@ def render_geltendes_recht(absatz: dict) -> str:
     return "".join(parts)
 
 
+def is_unveraendert_cell(text: str) -> bool:
+    """Check if a rendered cell is just the spaced 'unverändert'."""
+    return text == r"\textit{u\,n\,v\,e\,r\,ä\,n\,d\,e\,r\,t}"
+
+
 def sanitize_cell(text: str) -> str:
     """Clean up cell content for LaTeX longtable."""
     # Replace literal newlines with LaTeX newlines
@@ -235,6 +240,13 @@ def generate_latex(data: dict) -> str:
                 ae_2024 = sanitize_cell(ae_2024)
                 ae_2026 = sanitize_cell(ae_2026)
 
+                # Clear "unverändert" when there is no Geltendes Recht
+                if not gr:
+                    if is_unveraendert_cell(ae_2024):
+                        ae_2024 = ""
+                    if is_unveraendert_cell(ae_2026):
+                        ae_2026 = ""
+
                 if gr or ae_2024 or ae_2026:
                     lines.append(f"{gr} & {ae_2024} & {ae_2026} \\\\")
                     lines.append(r"\hline")
@@ -248,6 +260,13 @@ def generate_latex(data: dict) -> str:
                     n_gr = sanitize_cell(n_gr)
                     n_ae_2024 = sanitize_cell(n_ae_2024)
                     n_ae_2026 = sanitize_cell(n_ae_2026)
+
+                    # Clear "unverändert" when there is no Geltendes Recht
+                    if not n_gr:
+                        if is_unveraendert_cell(n_ae_2024):
+                            n_ae_2024 = ""
+                        if is_unveraendert_cell(n_ae_2026):
+                            n_ae_2026 = ""
 
                     if n_gr or n_ae_2024 or n_ae_2026:
                         lines.append(f"{n_gr} & {n_ae_2024} & {n_ae_2026} \\\\")
