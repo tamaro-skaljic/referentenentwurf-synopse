@@ -3,9 +3,9 @@
 __pycache__/
 *.pyc
 
-synopsis_combined.aux
-synopsis_combined.log
-synopsis_combined.out
+output/synopsis_combined.aux
+output/synopsis_combined.log
+output/synopsis_combined.out
 
 # uv lock file is committed, but cache is not
 .uv/

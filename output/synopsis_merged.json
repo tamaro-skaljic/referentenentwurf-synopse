@@ -3,11 +3,11 @@
     "title": "Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026",
     "sources": {
       "synopsis2024": {
-        "file": "2024-09_Referentenentwurf_Synopse.pdf",
+        "file": "input/2024-09_Referentenentwurf_Synopse.pdf",
         "baseline": "Art. 5 v. 8.5.2024 I Nr. 152"
       },
       "synopsis2026": {
-        "file": "2026-03_Referentenentwurf_Synopse.pdf",
+        "file": "input/2026-03_Referentenentwurf_Synopse.pdf",
         "baseline": "Art. 2 v. 3.4.2025 I Nr. 107"
       }
     }

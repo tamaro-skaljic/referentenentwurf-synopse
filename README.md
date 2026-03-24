@@ -23,7 +23,7 @@ Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen de
 ./run.sh     # Erzeugt synopsis_combined.pdf
 ```
 
-Die fertige Synopse liegt anschließend als [synopsis_combined.pdf](synopsis_combined.pdf) im Projektverzeichnis.
+Die fertige Synopse liegt anschließend als [synopsis_combined.pdf](output/synopsis_combined.pdf) im `output/`-Verzeichnis.
 
 ## Lizenz
 
