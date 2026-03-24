@@ -76,10 +76,12 @@ def format_text_entry(entry: dict | None, fallback: str = "") -> str:
     if not text.strip():
         return ""
 
-    # Check if this is just "unverändert"
+    # Check if this is just "unverändert" (possibly with a prefix like "(2)" or "1.")
     normalized = re.sub(r"\s+", " ", text).strip()
-    if normalized == "unverändert" or re.match(r"^\(\d+[a-z]?\)\s*unverändert\s*$", normalized):
-        return r"\textit{" + escape_latex(normalized) + "}"
+    spaced = r"u\,n\,v\,e\,r\,ä\,n\,d\,e\,r\,t"
+    if re.match(r"^(\(\d+[a-z]?\)\s*)?unverändert\s*$", normalized) or \
+       re.match(r"^(\d+[a-z]?\.\s*)?unverändert\s*$", normalized):
+        return r"\textit{" + spaced + "}"
 
     return apply_bold_ranges(text, bold_ranges)
 
@@ -156,9 +158,6 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\setlength{\LTpost}{0pt}")
     lines.append(r"\setlength{\tabcolsep}{4pt}")
     lines.append(r"\renewcommand{\arraystretch}{1.2}")
-    lines.append(r"\setlength{\emergencystretch}{3em}")
-    lines.append(r"\hbadness=10000")
-    lines.append(r"\vbadness=10000")
     lines.append("")
     lines.append(r"\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}")
     lines.append("")
