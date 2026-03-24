@@ -120,6 +120,16 @@ def render_cell(row: dict | None, side: str) -> str:
     )
 
 
+def _wrap_in_bold(cell_text: str) -> str:
+    """Wrap cell text in bold if not empty and not already bold."""
+    stripped = cell_text.strip()
+    if not stripped:
+        return cell_text
+    if stripped.startswith(r"\textbf{"):
+        return cell_text
+    return r"\textbf{" + cell_text + "}"
+
+
 def generate_latex(data: dict) -> str:
     """Generate the full LaTeX document."""
     lines = []
@@ -178,11 +188,19 @@ def generate_latex(data: dict) -> str:
     for row in data.get("rows", []):
         row_2024 = row.get("synopsis2024")
         row_2026 = row.get("synopsis2026")
+        is_section_header = row.get("is_section_header", False)
 
         c1 = render_cell(row_2024, "left")
         c2 = render_cell(row_2026, "left")
         c3 = render_cell(row_2024, "right")
         c4 = render_cell(row_2026, "right")
+
+        if is_section_header:
+            lines.append(r"\rowcolor{gray!25}")
+            c1 = _wrap_in_bold(c1)
+            c2 = _wrap_in_bold(c2)
+            c3 = _wrap_in_bold(c3)
+            c4 = _wrap_in_bold(c4)
 
         lines.append(f"{c1} & {c2} & {c3} & {c4} \\\\")
         lines.append(r"\hline")

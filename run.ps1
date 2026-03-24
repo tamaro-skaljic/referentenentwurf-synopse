@@ -57,8 +57,8 @@ if (Test-Path $stateFile) {
     }
 }
 
-# Remove legacy per-year keys from previous cache format.
-foreach ($legacyKey in @("extract_2024", "extract_2026", "cleanup_2024", "cleanup_2026")) {
+# Remove legacy keys from previous cache format.
+foreach ($legacyKey in @("extract_2024", "extract_2026", "cleanup_2024", "cleanup_2026", "cleanup", "merge")) {
     if ($state.ContainsKey($legacyKey)) {
         [void]$state.Remove($legacyKey)
     }
@@ -77,19 +77,6 @@ else {
     Write-Host "Skipping extract 2024 (no relevant changes detected)." -ForegroundColor DarkGray
 }
 
-Write-Host "=== Step 1b: Cleanup 2024 synopsis ===" -ForegroundColor Cyan
-$cleanup2024Hash = Get-SourceHash "src/cleanup_synopsis.py"
-$cleanup2024Ran = Should-RunStep -StepName "cleanup" -CurrentHash $cleanup2024Hash -ExpectedOutputs @("output/synopsis_2024_cleaned.json") -UpstreamChanged:$extract2024Ran
-if ($cleanup2024Ran) {
-    uv run python src/cleanup_synopsis.py `
-        "output/synopsis_2024_raw.json" `
-        "output/synopsis_2024_cleaned.json"
-    $state["cleanup"] = $cleanup2024Hash
-}
-else {
-    Write-Host "Skipping cleanup 2024 (no relevant changes detected)." -ForegroundColor DarkGray
-}
-
 Write-Host ""
 Write-Host "=== Step 2: Extract 2026 synopsis ===" -ForegroundColor Cyan
 $extract2026Hash = Get-SourceHash "src/extract_synopsis.py"
@@ -104,39 +91,26 @@ else {
     Write-Host "Skipping extract 2026 (no relevant changes detected)." -ForegroundColor DarkGray
 }
 
-Write-Host "=== Step 2b: Cleanup 2026 synopsis ===" -ForegroundColor Cyan
-$cleanup2026Hash = Get-SourceHash "src/cleanup_synopsis.py"
-$cleanup2026Ran = Should-RunStep -StepName "cleanup" -CurrentHash $cleanup2026Hash -ExpectedOutputs @("output/synopsis_2026_cleaned.json") -UpstreamChanged:$extract2026Ran
-if ($cleanup2026Ran) {
-    uv run python src/cleanup_synopsis.py `
-        "output/synopsis_2026_raw.json" `
-        "output/synopsis_2026_cleaned.json"
-    $state["cleanup"] = $cleanup2026Hash
-}
-else {
-    Write-Host "Skipping cleanup 2026 (no relevant changes detected)." -ForegroundColor DarkGray
-}
-
 Write-Host ""
-Write-Host "=== Step 3: Merge synopses ===" -ForegroundColor Cyan
-$mergeHash = Get-SourceHash "src/merge_synopses.py"
-$cleanupRan = $cleanup2024Ran -or $cleanup2026Ran
-$mergeRan = Should-RunStep -StepName "merge" -CurrentHash $mergeHash -ExpectedOutputs @("output/synopsis_merged.json") -UpstreamChanged:$cleanupRan
-if ($mergeRan) {
-    uv run python src/merge_synopses.py `
-        output/synopsis_2024_cleaned.json `
-        output/synopsis_2026_cleaned.json `
+Write-Host "=== Step 3: Align and merge synopses ===" -ForegroundColor Cyan
+$alignMergeHash = Get-SourceHash "src/align_and_merge.py"
+$extractRan = $extract2024Ran -or $extract2026Ran
+$alignMergeRan = Should-RunStep -StepName "align_merge" -CurrentHash $alignMergeHash -ExpectedOutputs @("output/synopsis_merged.json") -UpstreamChanged:$extractRan
+if ($alignMergeRan) {
+    uv run python src/align_and_merge.py `
+        output/synopsis_2024_raw.json `
+        output/synopsis_2026_raw.json `
         output/synopsis_merged.json
-    $state["merge"] = $mergeHash
+    $state["align_merge"] = $alignMergeHash
 }
 else {
-    Write-Host "Skipping merge (no relevant changes detected)." -ForegroundColor DarkGray
+    Write-Host "Skipping align/merge (no relevant changes detected)." -ForegroundColor DarkGray
 }
 
 Write-Host ""
 Write-Host "=== Step 4: Generate LaTeX ===" -ForegroundColor Cyan
 $generateLatexHash = Get-SourceHash "src/generate_latex.py"
-$generateRan = Should-RunStep -StepName "generate_latex" -CurrentHash $generateLatexHash -ExpectedOutputs @("output/synopsis_combined.tex") -UpstreamChanged:$mergeRan
+$generateRan = Should-RunStep -StepName "generate_latex" -CurrentHash $generateLatexHash -ExpectedOutputs @("output/synopsis_combined.tex") -UpstreamChanged:$alignMergeRan
 if ($generateRan) {
     uv run python src/generate_latex.py `
         output/synopsis_merged.json `

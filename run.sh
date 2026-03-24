@@ -67,8 +67,8 @@ should_run_step() {
 
 load_state
 
-# Remove legacy per-year keys from previous cache format.
-unset 'STATE[extract_2024]' 'STATE[extract_2026]' 'STATE[cleanup_2024]' 'STATE[cleanup_2026]'
+# Remove legacy keys from previous cache format.
+unset 'STATE[extract_2024]' 'STATE[extract_2026]' 'STATE[cleanup_2024]' 'STATE[cleanup_2026]' 'STATE[cleanup]' 'STATE[merge]'
 
 echo "=== Step 1: Extract 2024 synopsis ==="
 extract_2024_hash=$(source_hash "src/extract_synopsis.py")
@@ -81,19 +81,6 @@ if should_run_step "extract" "$extract_2024_hash" 0 "output/synopsis_2024_raw.js
     extract_2024_ran=1
 else
     echo "Skipping extract 2024 (no relevant changes detected)."
-fi
-
-echo "=== Step 1b: Cleanup 2024 synopsis ==="
-cleanup_2024_hash=$(source_hash "src/cleanup_synopsis.py")
-cleanup_2024_ran=0
-if should_run_step "cleanup" "$cleanup_2024_hash" "$extract_2024_ran" "output/synopsis_2024_cleaned.json"; then
-    uv run python src/cleanup_synopsis.py \
-        "output/synopsis_2024_raw.json" \
-        "output/synopsis_2024_cleaned.json"
-    STATE["cleanup"]="$cleanup_2024_hash"
-    cleanup_2024_ran=1
-else
-    echo "Skipping cleanup 2024 (no relevant changes detected)."
 fi
 
 echo ""
@@ -110,40 +97,27 @@ else
     echo "Skipping extract 2026 (no relevant changes detected)."
 fi
 
-echo "=== Step 2b: Cleanup 2026 synopsis ==="
-cleanup_2026_hash=$(source_hash "src/cleanup_synopsis.py")
-cleanup_2026_ran=0
-if should_run_step "cleanup" "$cleanup_2026_hash" "$extract_2026_ran" "output/synopsis_2026_cleaned.json"; then
-    uv run python src/cleanup_synopsis.py \
-        "output/synopsis_2026_raw.json" \
-        "output/synopsis_2026_cleaned.json"
-    STATE["cleanup"]="$cleanup_2026_hash"
-    cleanup_2026_ran=1
-else
-    echo "Skipping cleanup 2026 (no relevant changes detected)."
-fi
-
 echo ""
-echo "=== Step 3: Merge synopses ==="
-merge_hash=$(source_hash "src/merge_synopses.py")
-cleanup_ran=$((cleanup_2024_ran || cleanup_2026_ran))
-merge_ran=0
-if should_run_step "merge" "$merge_hash" "$cleanup_ran" "output/synopsis_merged.json"; then
-    uv run python src/merge_synopses.py \
-        output/synopsis_2024_cleaned.json \
-        output/synopsis_2026_cleaned.json \
+echo "=== Step 3: Align and merge synopses ==="
+align_merge_hash=$(source_hash "src/align_and_merge.py")
+extract_ran=$((extract_2024_ran || extract_2026_ran))
+align_merge_ran=0
+if should_run_step "align_merge" "$align_merge_hash" "$extract_ran" "output/synopsis_merged.json"; then
+    uv run python src/align_and_merge.py \
+        output/synopsis_2024_raw.json \
+        output/synopsis_2026_raw.json \
         output/synopsis_merged.json
-    STATE["merge"]="$merge_hash"
-    merge_ran=1
+    STATE["align_merge"]="$align_merge_hash"
+    align_merge_ran=1
 else
-    echo "Skipping merge (no relevant changes detected)."
+    echo "Skipping align/merge (no relevant changes detected)."
 fi
 
 echo ""
 echo "=== Step 4: Generate LaTeX ==="
 generate_hash=$(source_hash "src/generate_latex.py")
 generate_ran=0
-if should_run_step "generate_latex" "$generate_hash" "$merge_ran" "output/synopsis_combined.tex"; then
+if should_run_step "generate_latex" "$generate_hash" "$align_merge_ran" "output/synopsis_combined.tex"; then
     uv run python src/generate_latex.py \
         output/synopsis_merged.json \
         output/synopsis_combined.tex
