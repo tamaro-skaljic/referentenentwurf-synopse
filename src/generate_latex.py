@@ -87,8 +87,8 @@ def sanitize_cell(text: str) -> str:
     text = text.replace("\n", r" \newline ")
     # Remove \newline inside \textbf{} that contains only whitespace/newline
     text = re.sub(r"\\textbf\{[\s\\newline]*\}", " ", text)
-    # Remove trailing \newline before closing } of \textbf
-    text = re.sub(r"\s*\\newline\s*\}", "}", text)
+    # Move trailing \newline from inside \textbf{} to after closing }
+    text = re.sub(r"\s*\\newline\s*\}", r"} \\newline ", text)
     # Remove leading/trailing \newline (causes "no line here to end" errors)
     text = re.sub(r"^\s*(\\newline\s*)+", "", text)
     text = re.sub(r"(\s*\\newline\s*)+\s*$", "", text)

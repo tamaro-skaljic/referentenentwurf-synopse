@@ -5,24 +5,261 @@ from src.align_and_merge import (
     align_and_merge,
     align_law_sections,
     apply_known_ocr_fixes,
+    column_should_merge,
     extract_law_identifier,
     group_rows_into_law_sections,
     is_page_continuation_header,
+    merge_column_text_and_bold_ranges,
+    merge_page_break_continuation_rows,
     parse_section_key,
 )
 
 
-def make_row(left="", right="", left_bold_ranges=None, right_bold_ranges=None):
+def make_row(left="", right="", left_bold_ranges=None, right_bold_ranges=None, page=1):
     """Create a minimal row dict for testing."""
     return {
         "left": left,
         "right": right,
         "left_bold_ranges": left_bold_ranges or [],
         "right_bold_ranges": right_bold_ranges or [],
-        "page": 1,
+        "page": page,
         "table": 1,
         "row": 1,
     }
+
+
+class TestColumnShouldMerge:
+    def test_none_should_merge(self):
+        assert column_should_merge(None) is True
+
+    def test_empty_string_should_merge(self):
+        assert column_should_merge("") is True
+
+    def test_whitespace_only_should_merge(self):
+        assert column_should_merge("  ") is True
+
+    def test_lowercase_letter_start_should_merge(self):
+        assert column_should_merge("ihrer individuellen") is True
+
+    def test_uppercase_letter_start_should_merge(self):
+        assert column_should_merge("Die nach Satz") is True
+
+    def test_umlaut_start_should_merge(self):
+        assert column_should_merge("übermittelt werden") is True
+
+    def test_uppercase_umlaut_start_should_merge(self):
+        assert column_should_merge("Änderungen im Text") is True
+
+    def test_eszett_start_should_merge(self):
+        assert column_should_merge("ßomething else") is True
+
+    def test_digit_start_should_not_merge(self):
+        assert column_should_merge("2. der Betreuung") is False
+
+    def test_section_sign_start_should_not_merge(self):
+        assert column_should_merge("§ 42") is False
+
+    def test_opening_paren_start_should_not_merge(self):
+        assert column_should_merge("(3) Hilfe") is False
+
+    def test_dash_start_should_not_merge(self):
+        assert column_should_merge("- Einkommen") is False
+
+    def test_single_letter_followed_by_paren_should_not_merge(self):
+        assert column_should_merge("a) Geschlecht") is False
+
+    def test_single_character_should_not_merge(self):
+        assert column_should_merge("x") is False
+
+
+class TestMergePageBreakContinuationRows:
+    def test_empty_input_returns_empty(self):
+        assert merge_page_break_continuation_rows([]) == []
+
+    def test_single_row_returns_unchanged(self):
+        rows = [make_row(left="content", page=1)]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+        assert result[0]["left"] == "content"
+
+    def test_same_page_rows_not_merged(self):
+        rows = [
+            make_row(left="first", page=1),
+            make_row(left="second", page=1),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+
+    def test_both_columns_letter_start_merges_fully(self):
+        rows = [
+            make_row(left="beginning of text", right="andere Sache", page=1),
+            make_row(left="continued here", right="weiter geht es", page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+        assert result[0]["left"] == "beginning of text continued here"
+        assert result[0]["right"] == "andere Sache weiter geht es"
+
+    def test_both_columns_non_letter_start_no_merge(self):
+        rows = [
+            make_row(left="3. item three", right="§ 5 ", page=1),
+            make_row(left="4. item four", right="(2) paragraph", page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+
+    def test_left_merges_right_does_not_partial_merge(self):
+        rows = [
+            make_row(left="text ending", right="(2) old paragraph", page=1),
+            make_row(left="continued text", right="(3) new paragraph", page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+        assert result[0]["left"] == "text ending continued text"
+        assert result[0]["right"] == "(2) old paragraph"
+        assert result[1]["left"] is None
+        assert result[1]["right"] == "(3) new paragraph"
+
+    def test_right_merges_left_does_not_partial_merge(self):
+        rows = [
+            make_row(left="(1) paragraph", right="text ending", page=1),
+            make_row(left="(2) new paragraph", right="continued text", page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+        assert result[0]["right"] == "text ending continued text"
+        assert result[0]["left"] == "(1) paragraph"
+        assert result[1]["left"] == "(2) new paragraph"
+        assert result[1]["right"] is None
+
+    def test_null_column_with_letter_start_other_merges(self):
+        rows = [
+            make_row(left="text ending", right="2. unverändert", page=1),
+            make_row(left="ihrer individuellen Fähigkeiten", right=None, page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+        assert result[0]["left"] == "text ending ihrer individuellen Fähigkeiten"
+        assert result[0]["right"] == "2. unverändert"
+
+    def test_both_columns_null_skipped(self):
+        rows = [
+            make_row(left="content", page=1),
+            make_row(left=None, right=None, page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+
+    def test_section_header_at_boundary_not_merged(self):
+        rows = [
+            make_row(left="content", page=1),
+            make_row(left="§ 42 ", right="§ 42 ", page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+
+    def test_bold_ranges_offset_on_merge(self):
+        rows = [
+            make_row(
+                left="hello",
+                left_bold_ranges=[[0, 5]],
+                right="other",
+                right_bold_ranges=[[0, 5]],
+                page=1,
+            ),
+            make_row(
+                left="world",
+                left_bold_ranges=[[0, 5]],
+                right="text",
+                right_bold_ranges=[[0, 4]],
+                page=2,
+            ),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+        assert result[0]["left"] == "hello world"
+        assert result[0]["left_bold_ranges"] == [[0, 5], [6, 11]]
+        assert result[0]["right"] == "other text"
+        assert result[0]["right_bold_ranges"] == [[0, 5], [6, 10]]
+
+    def test_multiple_page_breaks_all_merge(self):
+        rows = [
+            make_row(left="page one", right="right one", page=1),
+            make_row(left="continued two", right="right two", page=2),
+            make_row(left="continued three", right="right three", page=3),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+        assert result[0]["left"] == "page one continued two continued three"
+        assert result[0]["right"] == "right one right two right three"
+
+    def test_multiple_page_breaks_partial_merge(self):
+        rows = [
+            make_row(left="page one text", right="(1) first", page=1),
+            make_row(left="continued on two", right="(2) second", page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+        assert result[0]["left"] == "page one text continued on two"
+        assert result[0]["right"] == "(1) first"
+        assert result[1]["left"] is None
+        assert result[1]["right"] == "(2) second"
+
+    def test_gold_standard_2026_page_break(self):
+        rows = [
+            make_row(
+                left="2. jungen Menschen ermöglichen oder \nerleichtern, entsprechend ihrem Alter und",
+                right="2. unverändert",
+                page=1,
+            ),
+            make_row(
+                left="ihrer individuellen Fähigkeiten in allen sie \nbetreffenden Lebensbereichen \nselbstbestimmt zu interagieren und damit \ngleichberechtigt am Leben in der \nGesellschaft teilhaben zu können,",
+                right=None,
+                page=2,
+            ),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 1
+        expected_left = (
+            "2. jungen Menschen ermöglichen oder \nerleichtern, entsprechend ihrem Alter und "
+            "ihrer individuellen Fähigkeiten in allen sie \nbetreffenden Lebensbereichen \n"
+            "selbstbestimmt zu interagieren und damit \ngleichberechtigt am Leben in der \n"
+            "Gesellschaft teilhaben zu können,"
+        )
+        assert result[0]["left"] == expected_left
+        assert result[0]["right"] == "2. unverändert"
+
+    def test_does_not_mutate_input_rows(self):
+        rows = [
+            make_row(left="beginning", page=1),
+            make_row(left="continued", page=2),
+        ]
+        original_left = rows[0]["left"]
+        merge_page_break_continuation_rows(rows)
+        assert rows[0]["left"] == original_left
+
+
+class TestMergeColumnTextAndBoldRanges:
+    def test_concatenates_text_with_space(self):
+        text, _ = merge_column_text_and_bold_ranges("hello", [], "world", [])
+        assert text == "hello world"
+
+    def test_offsets_continuation_bold_ranges(self):
+        _, bold = merge_column_text_and_bold_ranges("hello", [], "world", [[0, 3]])
+        assert bold == [[6, 9]]
+
+    def test_preserves_previous_bold_ranges(self):
+        _, bold = merge_column_text_and_bold_ranges("hello", [[0, 2]], "world", [[1, 4]])
+        assert bold == [[0, 2], [7, 10]]
+
+    def test_empty_bold_ranges(self):
+        _, bold = merge_column_text_and_bold_ranges("hello", [], "world", [])
+        assert bold == []
+
+    def test_empty_previous_text(self):
+        text, bold = merge_column_text_and_bold_ranges("", [], "continuation", [[0, 4]])
+        assert text == " continuation"
+        assert bold == [[1, 5]]
 
 
 class TestApplyKnownOcrFixes:
@@ -373,3 +610,70 @@ class TestAlignAndMerge:
         section_37b = [r for r in section_headers
                        if r.get("synopsis2024") and "37" in (r["synopsis2024"].get("left") or "")]
         assert len(section_37b) == 1
+
+    def test_page_break_continuation_merged_type_a(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 1 ", right="§ 1 "),
+                make_row(
+                    left="2. jungen Menschen ermöglichen oder \nerleichtern, entsprechend ihrem Alter und",
+                    right="2. unverändert",
+                    page=1,
+                ),
+                make_row(
+                    left="Geltendes Recht",
+                    right="Änderungen durch den\nReferentenentwurf",
+                    page=2,
+                ),
+                make_row(
+                    left="ihrer individuellen Fähigkeiten",
+                    right=None,
+                    page=2,
+                ),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 1 ", right="§ 1 "),
+                make_row(left="content"),
+            ],
+        }
+        result = align_and_merge(data_2024, data_2026)
+        merged_rows = [
+            r for r in result["rows"]
+            if r.get("synopsis2024")
+            and "ihrer individuellen" in (r["synopsis2024"].get("left") or "")
+        ]
+        assert len(merged_rows) == 1
+        assert "entsprechend ihrem Alter und" in merged_rows[0]["synopsis2024"]["left"]
+
+    def test_page_break_continuation_merged_type_b(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)", page=5),
+                make_row(left="§ 1 ", right="§ 1 ", page=5),
+                make_row(left="text ending oder", right="(1) paragraph", page=5),
+                make_row(left="weitergehender Text", right="(2) next", page=6),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 1 ", right="§ 1 "),
+                make_row(left="content"),
+            ],
+        }
+        result = align_and_merge(data_2024, data_2026)
+        merged_rows = [
+            r for r in result["rows"]
+            if r.get("synopsis2024")
+            and "weitergehender" in (r["synopsis2024"].get("left") or "")
+        ]
+        assert len(merged_rows) == 1
+        assert "text ending oder" in merged_rows[0]["synopsis2024"]["left"]

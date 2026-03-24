@@ -87,6 +87,123 @@ def is_law_name_row(row: dict[str, Any]) -> bool:
     return bool(LAW_NAME_STANDALONE_PATTERN.match(left))
 
 
+def column_should_merge(text: str | None) -> bool:
+    """Determine if a continuation column should merge into the previous row.
+
+    Returns True if text is None/empty/whitespace (null column = no-op merge)
+    or if the first two characters are both letters.
+    Returns False if text starts with a digit, special character, or is a
+    single character (cannot verify two-letter rule).
+    """
+    if text is None or text.strip() == "":
+        return True
+    stripped = text.strip()
+    if len(stripped) < 2:
+        return False
+    return stripped[0].isalpha() and stripped[1].isalpha()
+
+
+def merge_column_text_and_bold_ranges(
+    previous_text: str,
+    previous_bold_ranges: list[list[int]],
+    continuation_text: str,
+    continuation_bold_ranges: list[list[int]],
+) -> tuple[str, list[list[int]]]:
+    """Concatenate column text with a space separator, offsetting bold ranges."""
+    separator = " "
+    offset = len(previous_text) + len(separator)
+    merged_text = previous_text + separator + continuation_text
+    offset_continuation_bold_ranges = [
+        [start + offset, end + offset]
+        for start, end in continuation_bold_ranges
+    ]
+    return merged_text, previous_bold_ranges + offset_continuation_bold_ranges
+
+
+def merge_page_break_continuation_rows(
+    rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Merge rows that were split by PDF page breaks back into single rows.
+
+    Iterates through rows and detects page boundary transitions.
+    When a continuation candidate is found at a page boundary,
+    applies per-column merge heuristic: columns whose first two characters
+    are both letters are concatenated into the previous row; columns starting
+    with a digit or special character remain as new rows.
+    """
+    if not rows:
+        return []
+
+    result: list[dict[str, Any]] = [dict(rows[0])]
+
+    for index in range(1, len(rows)):
+        current_row = rows[index]
+
+        if current_row.get("page") == result[-1].get("page"):
+            result.append(dict(current_row))
+            continue
+
+        left_text = current_row.get("left")
+        right_text = current_row.get("right")
+        left_is_empty = left_text is None or left_text.strip() == ""
+        right_is_empty = right_text is None or right_text.strip() == ""
+
+        if left_is_empty and right_is_empty:
+            continue
+
+        left_merges = column_should_merge(left_text)
+        right_merges = column_should_merge(right_text)
+        any_non_empty_merges = (
+            (left_merges and not left_is_empty)
+            or (right_merges and not right_is_empty)
+        )
+
+        if not any_non_empty_merges:
+            result.append(dict(current_row))
+            continue
+
+        previous_row = result[-1]
+
+        if left_merges and not left_is_empty:
+            merged_text, merged_bold = merge_column_text_and_bold_ranges(
+                previous_row.get("left") or "",
+                previous_row.get("left_bold_ranges", []),
+                left_text,
+                current_row.get("left_bold_ranges", []),
+            )
+            previous_row["left"] = merged_text
+            previous_row["left_bold_ranges"] = merged_bold
+
+        if right_merges and not right_is_empty:
+            merged_text, merged_bold = merge_column_text_and_bold_ranges(
+                previous_row.get("right") or "",
+                previous_row.get("right_bold_ranges", []),
+                right_text,
+                current_row.get("right_bold_ranges", []),
+            )
+            previous_row["right"] = merged_text
+            previous_row["right_bold_ranges"] = merged_bold
+
+        remainder_left = None if (left_merges or left_is_empty) else left_text
+        remainder_right = None if (right_merges or right_is_empty) else right_text
+
+        if remainder_left is not None or remainder_right is not None:
+            remainder_row = dict(current_row)
+            remainder_row["left"] = remainder_left
+            remainder_row["right"] = remainder_right
+            remainder_row["left_bold_ranges"] = (
+                [] if remainder_left is None
+                else current_row.get("left_bold_ranges", [])
+            )
+            remainder_row["right_bold_ranges"] = (
+                [] if remainder_right is None
+                else current_row.get("right_bold_ranges", [])
+            )
+            result.append(remainder_row)
+
+    return result
+
+
 SectionKeyOrPseudo = SectionKey | str
 
 
@@ -225,6 +342,9 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
         for row in raw_rows_2026
         if not is_page_continuation_header(row)
     ]
+
+    rows_2024 = merge_page_break_continuation_rows(rows_2024)
+    rows_2026 = merge_page_break_continuation_rows(rows_2026)
 
     laws_2024 = group_rows_into_law_sections(rows_2024)
     laws_2026 = group_rows_into_law_sections(rows_2026)
