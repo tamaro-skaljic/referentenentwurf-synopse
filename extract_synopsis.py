@@ -254,6 +254,46 @@ def normalize_unveraendert(text: str) -> str:
     return UNVERAENDERT_PATTERN.sub("unverändert", text)
 
 
+def clean_space_newlines(text: str, bold_ranges: list[list[int]]) -> tuple[str, list[list[int]]]:
+    """Replace ' \\n' with ' ' in text, adjusting bold_ranges.
+
+    Exception: keep the newline when the second character after ' \\n' is ')',
+    e.g. ' \\na)' stays as-is so list items remain on separate lines.
+    """
+    removed_positions = []
+    i = 0
+    while i < len(text):
+        if text[i] == " " and i + 1 < len(text) and text[i + 1] == "\n":
+            # Check edge case: if char at i+3 is ')' keep the newline
+            if i + 3 < len(text) and text[i + 3] == ")":
+                i += 2
+            else:
+                removed_positions.append(i + 1)
+                i += 2
+        else:
+            i += 1
+
+    if not removed_positions:
+        return text, [list(r) for r in bold_ranges]
+
+    # Build the new text by skipping removed positions
+    new_text = "".join(c for idx, c in enumerate(text) if idx not in set(removed_positions))
+
+    # Adjust bold_ranges: shift each boundary by the number of removed chars before it
+    new_ranges = []
+    for start, end in bold_ranges:
+        start_shift = sum(1 for pos in removed_positions if pos < start)
+        end_shift = sum(1 for pos in removed_positions if pos < end)
+        new_ranges.append([start - start_shift, end - end_shift])
+
+    return new_text, new_ranges
+
+
+def clean_text_with_bold(twb: TextWithBold) -> None:
+    """Clean ' \\n' from a TextWithBold in-place."""
+    twb.text, twb.bold_ranges = clean_space_newlines(twb.text, twb.bold_ranges)
+
+
 def is_header_row(left: str | None, right: str | None) -> bool:
     """Check if this is a repeated column header row."""
     if left and "Geltendes Recht" in left:
@@ -298,6 +338,23 @@ class Artikel:
     gesetz: str = ""
     gesetz_meta: str = ""
     paragraphen: list[Paragraph] = field(default_factory=list)
+
+
+def clean_artikel(artikel: Artikel) -> None:
+    """Clean all text fields in an Artikel, replacing ' \\n' with ' '."""
+    if artikel.gesetz_meta:
+        artikel.gesetz_meta = re.sub(r" \n(?!.\))", " ", artikel.gesetz_meta)
+    for para in artikel.paragraphen:
+        for absatz in para.absaetze:
+            if absatz.geltendes_recht:
+                clean_text_with_bold(absatz.geltendes_recht)
+            if absatz.aenderungen:
+                clean_text_with_bold(absatz.aenderungen)
+            for nummer in absatz.nummern:
+                if nummer.geltendes_recht:
+                    clean_text_with_bold(nummer.geltendes_recht)
+                if nummer.aenderungen:
+                    clean_text_with_bold(nummer.aenderungen)
 
 
 def classify_row_text(text: str | None) -> str:
@@ -558,6 +615,8 @@ def main():
     print(f"Extracted {len(rows)} raw rows")
 
     artikels = parse_rows_to_structure(rows)
+    for a in artikels:
+        clean_artikel(a)
     print(f"Parsed {len(artikels)} Artikel")
     for a in artikels:
         print(f"  Artikel {a.nummer}: {a.titel} ({a.gesetz}) - {len(a.paragraphen)} §§")
