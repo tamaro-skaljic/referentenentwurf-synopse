@@ -6,6 +6,7 @@ from src.align_and_merge import (
     align_law_sections,
     apply_known_ocr_fixes,
     column_should_merge,
+    detect_leading_marker_type,
     extract_law_identifier,
     group_rows_into_law_sections,
     is_page_continuation_header,
@@ -26,6 +27,32 @@ def make_row(left="", right="", left_bold_ranges=None, right_bold_ranges=None, p
         "table": 1,
         "row": 1,
     }
+
+
+class TestDetectLeadingMarkerType:
+    def test_number_dot_marker(self):
+        assert detect_leading_marker_type("1. Angebote") == "number_dot"
+
+    def test_number_dot_marker_with_ocr_spacing(self):
+        assert detect_leading_marker_type("  1 . Angebote") == "number_dot"
+
+    def test_letter_bracket_lowercase(self):
+        assert detect_leading_marker_type("a) Hilfe") == "letter_bracket"
+
+    def test_letter_bracket_uppercase(self):
+        assert detect_leading_marker_type("B) Hilfe") == "letter_bracket"
+
+    def test_parenthesized_number_marker(self):
+        assert detect_leading_marker_type("(3) Hilfe") == "parenthesized_number"
+
+    def test_parenthesized_number_marker_with_spacing(self):
+        assert detect_leading_marker_type("( 12 ) Hilfe") == "parenthesized_number"
+
+    def test_structural_marker(self):
+        assert detect_leading_marker_type("Unterabschnitt 2") == "structural"
+
+    def test_non_marker_returns_none(self):
+        assert detect_leading_marker_type("Die Jugendhilfe") is None
 
 
 class TestColumnShouldMerge:
@@ -70,6 +97,15 @@ class TestColumnShouldMerge:
 
     def test_single_character_should_not_merge(self):
         assert column_should_merge("x") is False
+
+    def test_absatz_marker_should_not_merge(self):
+        assert column_should_merge("Absatz 4") is False
+
+    def test_unterabschnitt_marker_should_not_merge(self):
+        assert column_should_merge("Unterabschnitt 2") is False
+
+    def test_abschnitt_marker_should_not_merge(self):
+        assert column_should_merge("Abschnitt 3") is False
 
 
 class TestMergePageBreakContinuationRows:
@@ -157,6 +193,16 @@ class TestMergePageBreakContinuationRows:
         ]
         result = merge_page_break_continuation_rows(rows)
         assert len(result) == 2
+
+    def test_structural_marker_at_boundary_not_merged(self):
+        rows = [
+            make_row(left="laufender text", right="2. unverändert", page=1),
+            make_row(left="Absatz 4", right=None, page=2),
+        ]
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+        assert result[0]["left"] == "laufender text"
+        assert result[1]["left"] == "Absatz 4"
 
     def test_bold_ranges_offset_on_merge(self):
         rows = [
@@ -535,6 +581,67 @@ class TestAlignLawSections:
         assert len(aligned) == 4
         assert aligned[0]["is_section_header"] is False
         assert aligned[0]["synopsis2024"]["left"] == "( - SGB VIII)"
+
+    def test_marker_lookahead_aligns_same_type_before_nearest_fallback(self):
+        sections_2024 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2"),
+                make_row(left="1. alte nummer eins"),
+                make_row(left="2. alte nummer zwei"),
+            ],
+        }
+        sections_2026 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2"),
+                make_row(left="a) eingeschobener punkt"),
+                make_row(left="1. neue nummer eins"),
+                make_row(left="2. neue nummer zwei"),
+            ],
+        }
+
+        aligned = align_law_sections(sections_2024, sections_2026)
+        assert len(aligned) == 4
+        assert aligned[0]["synopsis2024"]["left"] == "§ 2"
+        assert aligned[0]["synopsis2026"]["left"] == "§ 2"
+
+        assert aligned[1]["synopsis2024"] is None
+        assert aligned[1]["synopsis2026"]["left"] == "a) eingeschobener punkt"
+
+        assert aligned[2]["synopsis2024"]["left"] == "1. alte nummer eins"
+        assert aligned[2]["synopsis2026"]["left"] == "1. neue nummer eins"
+
+        assert aligned[3]["synopsis2024"]["left"] == "2. alte nummer zwei"
+        assert aligned[3]["synopsis2026"]["left"] == "2. neue nummer zwei"
+
+    def test_marker_tie_break_keeps_source_order(self):
+        sections_2024 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2"),
+                make_row(left="a) links a"),
+                make_row(left="1. links eins"),
+            ],
+        }
+        sections_2026 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2"),
+                make_row(left="1. rechts eins"),
+                make_row(left="a) rechts a"),
+            ],
+        }
+
+        aligned = align_law_sections(sections_2024, sections_2026)
+        assert len(aligned) == 4
+        assert aligned[0]["synopsis2024"]["left"] == "§ 2"
+        assert aligned[0]["synopsis2026"]["left"] == "§ 2"
+
+        assert aligned[1]["synopsis2024"] is None
+        assert aligned[1]["synopsis2026"]["left"] == "1. rechts eins"
+
+        assert aligned[2]["synopsis2024"]["left"] == "a) links a"
+        assert aligned[2]["synopsis2026"]["left"] == "a) rechts a"
+
+        assert aligned[3]["synopsis2024"]["left"] == "1. links eins"
+        assert aligned[3]["synopsis2026"] is None
 
 
 class TestAlignAndMerge:

@@ -40,6 +40,16 @@ PAGE_HEADER_RIGHT_PATTERN = re.compile(
 )
 
 
+STRUCTURAL_MARKER_PATTERN = re.compile(
+    r"^(Absatz|Absätze|Unterabschnitt|Abschnitt|Untertitel|Titel|Kapitel|Teil|Satz|Buchstabe|Anlage)\b",
+    re.IGNORECASE,
+)
+
+NUMBER_DOT_MARKER_PATTERN = re.compile(r"^\d+\s*\.")
+LETTER_BRACKET_MARKER_PATTERN = re.compile(r"^[A-Za-zÄÖÜäöüß]\s*\)")
+PARENTHESIZED_NUMBER_MARKER_PATTERN = re.compile(r"^\(\s*\d+\s*\)")
+
+
 def is_page_continuation_header(row: dict[str, Any]) -> bool:
     """Detect page-break table header rows that should be filtered out."""
     left = (row.get("left") or "").strip()
@@ -87,6 +97,146 @@ def is_law_name_row(row: dict[str, Any]) -> bool:
     return bool(LAW_NAME_STANDALONE_PATTERN.match(left))
 
 
+def detect_leading_marker_type(text: str | None) -> str | None:
+    """Classify a leading list/structure marker at start-of-cell.
+
+    Returns one of:
+    - "number_dot"
+    - "letter_bracket"
+    - "parenthesized_number"
+    - "structural"
+    or None if no supported marker is found.
+    """
+    if text is None:
+        return None
+
+    stripped = text.lstrip()
+    if stripped == "":
+        return None
+
+    if STRUCTURAL_MARKER_PATTERN.match(stripped):
+        return "structural"
+    if NUMBER_DOT_MARKER_PATTERN.match(stripped):
+        return "number_dot"
+    if LETTER_BRACKET_MARKER_PATTERN.match(stripped):
+        return "letter_bracket"
+    if PARENTHESIZED_NUMBER_MARKER_PATTERN.match(stripped):
+        return "parenthesized_number"
+
+    return None
+
+
+def detect_row_marker_type(row: dict[str, Any] | None) -> str | None:
+    """Detect a marker type from a row by checking left then right cell starts."""
+    if row is None:
+        return None
+
+    left_marker_type = detect_leading_marker_type(row.get("left"))
+    if left_marker_type is not None:
+        return left_marker_type
+
+    return detect_leading_marker_type(row.get("right"))
+
+
+def _find_next_row_index_with_marker_type(
+    rows: list[dict[str, Any]],
+    start_index: int,
+    marker_type: str,
+) -> int | None:
+    for index in range(start_index, len(rows)):
+        if detect_row_marker_type(rows[index]) == marker_type:
+            return index
+    return None
+
+
+def align_rows_by_marker_type(
+    rows_2024: list[dict[str, Any]],
+    rows_2026: list[dict[str, Any]],
+) -> list[tuple[dict[str, Any] | None, dict[str, Any] | None]]:
+    """Align two row lists with marker-aware lookahead.
+
+    Rules:
+    - If current marker types match, align directly.
+    - Otherwise prefer aligning current row with nearest future row of the same
+      marker type on the opposite side.
+    - If both sides have equally near candidates, keep source order and treat
+      the current 2026 row as unmatched first.
+    - If no same-type candidate exists, fall back to positional pairing.
+    """
+    aligned_pairs: list[tuple[dict[str, Any] | None, dict[str, Any] | None]] = []
+    index_2024 = 0
+    index_2026 = 0
+
+    while index_2024 < len(rows_2024) and index_2026 < len(rows_2026):
+        row_2024 = rows_2024[index_2024]
+        row_2026 = rows_2026[index_2026]
+        marker_type_2024 = detect_row_marker_type(row_2024)
+        marker_type_2026 = detect_row_marker_type(row_2026)
+
+        if marker_type_2024 == marker_type_2026:
+            aligned_pairs.append((row_2024, row_2026))
+            index_2024 += 1
+            index_2026 += 1
+            continue
+
+        nearest_index_2026: int | None = None
+        nearest_index_2024: int | None = None
+
+        if marker_type_2024 is not None:
+            nearest_index_2026 = _find_next_row_index_with_marker_type(
+                rows_2026,
+                index_2026 + 1,
+                marker_type_2024,
+            )
+        if marker_type_2026 is not None:
+            nearest_index_2024 = _find_next_row_index_with_marker_type(
+                rows_2024,
+                index_2024 + 1,
+                marker_type_2026,
+            )
+
+        if nearest_index_2026 is None and nearest_index_2024 is None:
+            aligned_pairs.append((row_2024, row_2026))
+            index_2024 += 1
+            index_2026 += 1
+            continue
+
+        if nearest_index_2026 is None:
+            while index_2024 < nearest_index_2024:
+                aligned_pairs.append((rows_2024[index_2024], None))
+                index_2024 += 1
+            continue
+
+        if nearest_index_2024 is None:
+            while index_2026 < nearest_index_2026:
+                aligned_pairs.append((None, rows_2026[index_2026]))
+                index_2026 += 1
+            continue
+
+        distance_2026 = nearest_index_2026 - index_2026
+        distance_2024 = nearest_index_2024 - index_2024
+
+        if distance_2026 <= distance_2024:
+            while index_2026 < nearest_index_2026:
+                aligned_pairs.append((None, rows_2026[index_2026]))
+                index_2026 += 1
+            continue
+
+        while index_2024 < nearest_index_2024:
+            aligned_pairs.append((rows_2024[index_2024], None))
+            index_2024 += 1
+
+    while index_2024 < len(rows_2024):
+        aligned_pairs.append((rows_2024[index_2024], None))
+        index_2024 += 1
+
+    while index_2026 < len(rows_2026):
+        aligned_pairs.append((None, rows_2026[index_2026]))
+        index_2026 += 1
+
+    return aligned_pairs
+
+
 def column_should_merge(text: str | None) -> bool:
     """Determine if a continuation column should merge into the previous row.
 
@@ -99,6 +249,8 @@ def column_should_merge(text: str | None) -> bool:
         return True
     stripped = text.strip()
     if len(stripped) < 2:
+        return False
+    if detect_leading_marker_type(stripped) is not None:
         return False
     return stripped[0].isalpha() and stripped[1].isalpha()
 
@@ -297,11 +449,9 @@ def align_law_sections(
         rows_2024 = sections_2024.get(key, [])
         rows_2026 = sections_2026.get(key, [])
         is_section = isinstance(key, SectionKey)
-        max_rows = max(len(rows_2024), len(rows_2026))
+        aligned_pairs = align_rows_by_marker_type(rows_2024, rows_2026)
 
-        for index in range(max_rows):
-            row_2024 = rows_2024[index] if index < len(rows_2024) else None
-            row_2026 = rows_2026[index] if index < len(rows_2026) else None
+        for index, (row_2024, row_2026) in enumerate(aligned_pairs):
             aligned_rows.append({
                 "synopsis2024": row_2024,
                 "synopsis2026": row_2026,
