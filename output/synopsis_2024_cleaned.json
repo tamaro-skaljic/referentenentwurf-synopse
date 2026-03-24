@@ -692,13 +692,8 @@
                 "bold_ranges": []
               },
               "aenderungen": {
-                "text": "(3) unverändert Unterabschnitt 3: Leistungen der Eingliederungshilfe für Kinder und Jugendliche mit Behinderungen ",
-                "bold_ranges": [
-                  [
-                    16,
-                    114
-                  ]
-                ]
+                "text": "(3) unverändert ",
+                "bold_ranges": []
               },
               "nummern": [
                 {
@@ -735,6 +730,20 @@
                   }
                 }
               ]
+            },
+            {
+              "nummer": "",
+              "geltendes_recht": null,
+              "aenderungen": {
+                "text": "Unterabschnitt 3: Leistungen der Eingliederungshilfe für Kinder und Jugendliche mit Behinderungen ",
+                "bold_ranges": [
+                  [
+                    0,
+                    98
+                  ]
+                ]
+              },
+              "nummern": []
             }
           ]
         },

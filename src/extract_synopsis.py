@@ -4,7 +4,7 @@ Reads a two-column synopsis PDF (Geltendes Recht | Änderungen durch den Referen
 and outputs a structured JSON file with section hierarchy and bold text annotations.
 
 Usage:
-    uv run python extract_synopsis.py <input.pdf> <output.json>
+    uv run python extract_synopsis.py <input.pdf> <raw_output.json> <cleaned_output.json>
 """
 
 import json
@@ -623,33 +623,43 @@ def artikel_to_dict(artikel: Artikel) -> dict:
 
 
 def main():
-    if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <input.pdf> <output.json>", file=sys.stderr)
+    if len(sys.argv) != 4:
+        print(f"Usage: {sys.argv[0]} <input.pdf> <raw_output.json> <cleaned_output.json>", file=sys.stderr)
         sys.exit(1)
 
     pdf_path = sys.argv[1]
-    output_path = sys.argv[2]
+    raw_output_path = sys.argv[2]
+    cleaned_output_path = sys.argv[3]
 
     print(f"Extracting from: {pdf_path}")
     rows = extract_pages(pdf_path)
     print(f"Extracted {len(rows)} raw rows")
 
     artikels = parse_rows_to_structure(rows)
-    for a in artikels:
-        clean_artikel(a)
     print(f"Parsed {len(artikels)} Artikel")
     for a in artikels:
         print(f"  Artikel {a.nummer}: {a.titel} ({a.gesetz}) - {len(a.paragraphen)} §§")
 
-    output = {
+    # Write raw (before cleanup)
+    raw_output = {
         "source_file": pdf_path,
         "artikel": [artikel_to_dict(a) for a in artikels],
     }
+    with open(raw_output_path, "w", encoding="utf-8") as f:
+        json.dump(raw_output, f, ensure_ascii=False, indent=2)
+    print(f"Written raw: {raw_output_path}")
 
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False, indent=2)
+    # Apply cleanup and write cleaned
+    for a in artikels:
+        clean_artikel(a)
 
-    print(f"Written to: {output_path}")
+    cleaned_output = {
+        "source_file": pdf_path,
+        "artikel": [artikel_to_dict(a) for a in artikels],
+    }
+    with open(cleaned_output_path, "w", encoding="utf-8") as f:
+        json.dump(cleaned_output, f, ensure_ascii=False, indent=2)
+    print(f"Written cleaned: {cleaned_output_path}")
 
 
 if __name__ == "__main__":
