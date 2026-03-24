@@ -6,6 +6,7 @@ __pycache__/
 output/synopsis_combined.aux
 output/synopsis_combined.log
 output/synopsis_combined.out
+output/.pipeline_hashes
 
 # uv lock file is committed, but cache is not
 .uv/
