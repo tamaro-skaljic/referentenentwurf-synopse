@@ -30,7 +30,7 @@ def merge_synopses(data_2024: dict, data_2026: dict) -> dict:
 
     return {
         "metadata": {
-            "title": "Synopse (Raw 4-Column Passthrough)",
+            "title": "Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026",
             "sources": {
                 "synopsis2024": {"file": data_2024.get("source_file", "")},
                 "synopsis2026": {"file": data_2026.get("source_file", "")},

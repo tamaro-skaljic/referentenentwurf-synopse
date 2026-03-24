@@ -1,7 +1,7 @@
 """Generate a LaTeX document from the merged raw synopsis JSON.
 
 Produces a simple 4-column landscape A4 longtable:
-    2024 Geltendes Recht | 2024 Änderungen | 2026 Geltendes Recht | 2026 Änderungen
+    2024 Geltendes Recht | 2026 Geltendes Recht | 2024 Änderungen | 2026 Änderungen
 
 No semantic restructuring is performed here.
 
@@ -161,15 +161,15 @@ def generate_latex(data: dict) -> str:
     )
     lines.append(r"\hline")
     lines.append(
-        r"\multicolumn{2}{|c|}{\cellcolor{gray!15}\textbf{Synopse 2024}} & "
-        r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Synopse 2026}} \\"
+        r"\multicolumn{2}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht}} & "
+        r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Änderungen durch den Referentenentwurf}} \\"
     )
     lines.append(r"\hline")
     lines.append(
-        r"\textbf{Geltendes Recht} & "
-        r"\textbf{Änderungen} & "
-        r"\textbf{Geltendes Recht} & "
-        r"\textbf{Änderungen} \\"
+        r"\textbf{Synopsis 2024} & "
+        r"\textbf{Synopsis 2026} & "
+        r"\textbf{Synopsis 2024} & "
+        r"\textbf{Synopsis 2026} \\"
     )
     lines.append(r"\hline")
     lines.append(r"\endhead")
@@ -180,8 +180,8 @@ def generate_latex(data: dict) -> str:
         row_2026 = row.get("synopsis2026")
 
         c1 = render_cell(row_2024, "left")
-        c2 = render_cell(row_2024, "right")
-        c3 = render_cell(row_2026, "left")
+        c2 = render_cell(row_2026, "left")
+        c3 = render_cell(row_2024, "right")
         c4 = render_cell(row_2026, "right")
 
         lines.append(f"{c1} & {c2} & {c3} & {c4} \\\\")
