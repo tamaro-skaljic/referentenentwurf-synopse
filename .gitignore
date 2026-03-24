@@ -1,0 +1,21 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Generated outputs (re-generate with run.sh)
+synopsis_2024.json
+synopsis_2026.json
+synopsis_merged.json
+synopsis_combined.tex
+synopsis_combined.pdf
+synopsis_combined.aux
+synopsis_combined.log
+synopsis_combined.out
+
+# uv lock file is committed, but cache is not
+.uv/
+
+# IDE
+.vscode/
+.idea/
