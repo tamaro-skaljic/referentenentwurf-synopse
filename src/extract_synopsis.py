@@ -301,6 +301,13 @@ def is_header_row(left: str | None, right: str | None) -> bool:
     return False
 
 
+def is_section_header(text: str | None) -> bool:
+    """Check if text is a structural section header like 'Unterabschnitt 3: ...'."""
+    if not text:
+        return False
+    return bool(re.match(r"^(Unter)?[Aa]bschnitt\s+\d+", text.strip()))
+
+
 def is_page_number(text: str | None) -> bool:
     if not text:
         return False
@@ -528,6 +535,19 @@ def parse_rows_to_structure(rows: list[RawRow]) -> list[Artikel]:
             pass
 
         # Handle continuation / text that belongs to the previous element
+        # But first: section headers (Unterabschnitt/Abschnitt) in single-column
+        # rows must NOT be appended as continuation; create a new absatz instead.
+        if (left is None and is_section_header(right)) or (right is None and is_section_header(left)):
+            if current_paragraph:
+                absatz = Absatz(
+                    nummer="",
+                    geltendes_recht=TextWithBold(text=left or "", bold_ranges=row.left_bold_ranges) if left else None,
+                    aenderungen=TextWithBold(text=right or "", bold_ranges=row.right_bold_ranges) if right else None,
+                )
+                current_paragraph.absaetze.append(absatz)
+                current_absatz = absatz
+            continue
+
         if left is None and right is not None and current_absatz:
             # Right-column-only continuation: append to current absatz's aenderungen
             if current_absatz.aenderungen:

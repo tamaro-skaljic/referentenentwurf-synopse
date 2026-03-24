@@ -1743,22 +1743,12 @@
                 "bold_ranges": []
               },
               "aenderungen2024": {
-                "text": "(3) unverändert Unterabschnitt 3: Leistungen der Eingliederungshilfe für Kinder und Jugendliche mit Behinderungen ",
-                "bold_ranges": [
-                  [
-                    16,
-                    114
-                  ]
-                ]
+                "text": "(3) unverändert ",
+                "bold_ranges": []
               },
               "aenderungen2026": {
-                "text": "(1) unverändert Unterabschnitt 3: Leistungen der Eingliederungshilfe für Kinder und Jugendliche mit Behinderungen ",
-                "bold_ranges": [
-                  [
-                    16,
-                    114
-                  ]
-                ]
+                "text": "(1) unverändert ",
+                "bold_ranges": []
               },
               "baselinesDiffer": false,
               "nummern": [
@@ -1823,6 +1813,31 @@
                   "baselinesDiffer": false
                 }
               ]
+            },
+            {
+              "nummer": "",
+              "geltendesRecht2024": null,
+              "geltendesRecht2026": null,
+              "aenderungen2024": {
+                "text": "Unterabschnitt 3: Leistungen der Eingliederungshilfe für Kinder und Jugendliche mit Behinderungen ",
+                "bold_ranges": [
+                  [
+                    0,
+                    98
+                  ]
+                ]
+              },
+              "aenderungen2026": {
+                "text": "Unterabschnitt 3: Leistungen der Eingliederungshilfe für Kinder und Jugendliche mit Behinderungen ",
+                "bold_ranges": [
+                  [
+                    0,
+                    98
+                  ]
+                ]
+              },
+              "baselinesDiffer": false,
+              "nummern": []
             }
           ]
         },
