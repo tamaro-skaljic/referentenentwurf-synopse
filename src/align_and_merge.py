@@ -8,6 +8,7 @@ Usage:
     uv run python src/align_and_merge.py <2024_raw.json> <2026_raw.json> <output.json>
 """
 
+import difflib
 import json
 import re
 import sys
@@ -347,6 +348,246 @@ def column_should_merge(text: str | None) -> bool:
     if detect_leading_marker_type(stripped) is not None:
         return False
     return stripped[0].isalpha() and stripped[1].isalpha()
+
+
+def build_normalized_text_with_position_map(
+    original_text: str,
+) -> tuple[str, list[int]]:
+    """Normalize whitespace and build mapping from normalized positions to original positions.
+
+    Collapses runs of whitespace (spaces, newlines, tabs) to a single space
+    and strips leading/trailing whitespace.  Returns the normalized string and
+    a list where ``position_map[i]`` is the index in *original_text* that
+    ``normalized[i]`` originated from.
+    """
+    normalized_characters: list[str] = []
+    position_map: list[int] = []
+    in_whitespace = True
+
+    for original_index, character in enumerate(original_text):
+        if character in (" ", "\n", "\t", "\r"):
+            if not in_whitespace and normalized_characters:
+                normalized_characters.append(" ")
+                position_map.append(original_index)
+            in_whitespace = True
+        else:
+            normalized_characters.append(character)
+            position_map.append(original_index)
+            in_whitespace = False
+
+    if normalized_characters and normalized_characters[-1] == " ":
+        normalized_characters.pop()
+        position_map.pop()
+
+    return ("".join(normalized_characters), position_map)
+
+
+def _compute_word_spans(normalized_text: str) -> list[tuple[int, int]]:
+    """Return (start, end) character spans for each word in normalized text."""
+    spans: list[tuple[int, int]] = []
+    position = 0
+    for word in normalized_text.split(" "):
+        spans.append((position, position + len(word)))
+        position += len(word) + 1
+    return spans
+
+
+def _map_normalized_range_to_original(
+    normalized_start: int,
+    normalized_end: int,
+    position_map: list[int],
+) -> list[int]:
+    """Map a range in normalized text back to the original text."""
+    return [position_map[normalized_start], position_map[normalized_end - 1] + 1]
+
+
+def compute_character_diff_ranges(
+    text_a: str,
+    text_b: str,
+) -> tuple[list[list[int]], list[list[int]]]:
+    """Two-level diff: word-level first, then character-level within replaced words.
+
+    Returns ``(ranges_only_in_a, ranges_only_in_b)`` where each range is
+    ``[start, end]`` referencing positions in the *original* (un-normalized)
+    texts.
+
+    For single-word replacements, character-level diffing highlights which
+    characters changed within the word.  For multi-word replacements, entire
+    word groups are highlighted to avoid noisy fragmentation.
+    """
+    normalized_a, position_map_a = build_normalized_text_with_position_map(text_a)
+    normalized_b, position_map_b = build_normalized_text_with_position_map(text_b)
+
+    if normalized_a == normalized_b:
+        return ([], [])
+
+    words_a = normalized_a.split(" ") if normalized_a else []
+    words_b = normalized_b.split(" ") if normalized_b else []
+    word_spans_a = _compute_word_spans(normalized_a) if words_a else []
+    word_spans_b = _compute_word_spans(normalized_b) if words_b else []
+
+    ranges_only_in_a: list[list[int]] = []
+    ranges_only_in_b: list[list[int]] = []
+
+    word_matcher = difflib.SequenceMatcher(None, words_a, words_b, autojunk=False)
+    for tag, i1, i2, j1, j2 in word_matcher.get_opcodes():
+        if tag == "equal":
+            continue
+
+        if tag == "delete":
+            normalized_start = word_spans_a[i1][0]
+            normalized_end = word_spans_a[i2 - 1][1]
+            ranges_only_in_a.append(
+                _map_normalized_range_to_original(normalized_start, normalized_end, position_map_a)
+            )
+
+        elif tag == "insert":
+            normalized_start = word_spans_b[j1][0]
+            normalized_end = word_spans_b[j2 - 1][1]
+            ranges_only_in_b.append(
+                _map_normalized_range_to_original(normalized_start, normalized_end, position_map_b)
+            )
+
+        elif tag == "replace":
+            words_count_a = i2 - i1
+            words_count_b = j2 - j1
+
+            if words_count_a == 1 and words_count_b == 1:
+                _character_diff_within_word(
+                    words_a[i1], word_spans_a[i1][0], position_map_a, ranges_only_in_a,
+                    words_b[j1], word_spans_b[j1][0], position_map_b, ranges_only_in_b,
+                )
+            else:
+                normalized_start_a = word_spans_a[i1][0]
+                normalized_end_a = word_spans_a[i2 - 1][1]
+                ranges_only_in_a.append(
+                    _map_normalized_range_to_original(normalized_start_a, normalized_end_a, position_map_a)
+                )
+                normalized_start_b = word_spans_b[j1][0]
+                normalized_end_b = word_spans_b[j2 - 1][1]
+                ranges_only_in_b.append(
+                    _map_normalized_range_to_original(normalized_start_b, normalized_end_b, position_map_b)
+                )
+
+    return (ranges_only_in_a, ranges_only_in_b)
+
+
+def _character_diff_within_word(
+    word_a: str,
+    word_a_normalized_offset: int,
+    position_map_a: list[int],
+    ranges_a: list[list[int]],
+    word_b: str,
+    word_b_normalized_offset: int,
+    position_map_b: list[int],
+    ranges_b: list[list[int]],
+) -> None:
+    """Run character-level diff within a single replaced word pair."""
+    character_matcher = difflib.SequenceMatcher(None, word_a, word_b, autojunk=False)
+    for character_tag, ci1, ci2, cj1, cj2 in character_matcher.get_opcodes():
+        if character_tag == "equal":
+            continue
+        if character_tag in ("delete", "replace") and ci1 < ci2:
+            normalized_start = word_a_normalized_offset + ci1
+            normalized_end = word_a_normalized_offset + ci2
+            ranges_a.append(
+                _map_normalized_range_to_original(normalized_start, normalized_end, position_map_a)
+            )
+        if character_tag in ("insert", "replace") and cj1 < cj2:
+            normalized_start = word_b_normalized_offset + cj1
+            normalized_end = word_b_normalized_offset + cj2
+            ranges_b.append(
+                _map_normalized_range_to_original(normalized_start, normalized_end, position_map_b)
+            )
+
+
+def compute_diff_ranges_for_row(
+    row_2024: dict[str, Any] | None,
+    row_2026: dict[str, Any] | None,
+) -> tuple[list[list[int | str]] | None, list[list[int | str]] | None]:
+    """Compute diff ranges for a single aligned row.
+
+    Returns ``(diff_ranges_2024, diff_ranges_2026)`` where each range is
+    ``[start, end, color]``.  Returns ``None`` for a side whose row is absent.
+
+    Rules (asymmetric):
+    - col2 'unverändert': no coloring on col2; col3 diffs against synopsis2026.left
+    - col3 'unverändert': no coloring on col3; col2 becomes all red
+    - col3 empty (null/blank): col2 becomes all red
+    - col2 empty (null/blank): col3 diffs against synopsis2026.left
+    - Otherwise: character diff between col2 and col3
+    """
+    if row_2024 is None and row_2026 is None:
+        return (None, None)
+    if row_2024 is None:
+        if is_cell_empty(row_2026, "right"):
+            return (None, [])
+        diff_ranges_2026 = _diff_col3_against_fallback(row_2026)
+        return (None, diff_ranges_2026)
+    if row_2026 is None:
+        if is_cell_empty(row_2024, "right"):
+            return ([], None)
+        diff_ranges_2024 = _mark_all_red(row_2024)
+        return (diff_ranges_2024, None)
+
+    col2_text = (row_2024.get("right") or "")
+    col3_text = (row_2026.get("right") or "")
+    col2_is_unveraendert = is_unveraendert_text(col2_text)
+    col3_is_unveraendert = is_unveraendert_text(col3_text)
+    col2_empty = is_cell_empty(row_2024, "right")
+    col3_empty = is_cell_empty(row_2026, "right")
+
+    if col2_is_unveraendert and col3_is_unveraendert:
+        return ([], [])
+
+    if col2_is_unveraendert:
+        return ([], _diff_col3_against_fallback(row_2026))
+
+    if col3_is_unveraendert or col3_empty:
+        return (_mark_all_red(row_2024), [])
+
+    if col2_empty:
+        return ([], _diff_col3_against_fallback(row_2026))
+
+    ranges_in_2024, ranges_in_2026 = compute_character_diff_ranges(col2_text, col3_text)
+    return (
+        [[start, end, "red"] for start, end in ranges_in_2024],
+        [[start, end, "green"] for start, end in ranges_in_2026],
+    )
+
+
+def _mark_all_red(row: dict[str, Any]) -> list[list[int | str]]:
+    """Return a single red range covering the entire right-column text."""
+    text = (row.get("right") or "")
+    if not text.strip():
+        return []
+    return [[0, len(text), "red"]]
+
+
+def _diff_col3_against_fallback(
+    row_2026: dict[str, Any],
+) -> list[list[int | str]]:
+    """Diff column 3 against synopsis2026.left as the comparison baseline."""
+    col3_text = (row_2026.get("right") or "")
+    if not col3_text.strip():
+        return []
+    fallback_text = (row_2026.get("left") or "")
+    _, ranges_in_col3 = compute_character_diff_ranges(fallback_text, col3_text)
+    return [[start, end, "green"] for start, end in ranges_in_col3]
+
+
+def is_cell_empty(row: dict[str, Any] | None, side: str) -> bool:
+    """Return True when the cell on the given side is effectively empty.
+
+    A cell is empty when the row is None, the text is missing/blank, or the
+    text represents 'unverändert' (including OCR-spaced forms).
+    """
+    if row is None:
+        return True
+    text = row.get(side)
+    if text is None or not text.strip():
+        return True
+    return is_unveraendert_text(text)
 
 
 def is_unveraendert_text(text: str | None) -> bool:
@@ -1053,6 +1294,16 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
             row.get("synopsis2024"),
             row.get("synopsis2026"),
         )
+
+    for row in all_aligned_rows:
+        diff_ranges_2024, diff_ranges_2026 = compute_diff_ranges_for_row(
+            row.get("synopsis2024"),
+            row.get("synopsis2026"),
+        )
+        if row.get("synopsis2024") is not None:
+            row["synopsis2024"]["right_diff_ranges"] = diff_ranges_2024 or []
+        if row.get("synopsis2026") is not None:
+            row["synopsis2026"]["right_diff_ranges"] = diff_ranges_2026 or []
 
     for index, row in enumerate(all_aligned_rows):
         row["row_index"] = index

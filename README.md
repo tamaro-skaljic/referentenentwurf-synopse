@@ -1,5 +1,7 @@
 # Referentenentwurf-Synopse
 
+Hier geht es direkt zur Synopse: <https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/synopsis_combined.pdf>
+
 Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen der Referentenentwürfe von 2024 und 2026 gegenüberstellt.
 
 | Geltendes Recht | Änderungen RefE 2024 | Änderungen RefE 2026 |

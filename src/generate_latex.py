@@ -32,65 +32,105 @@ def escape_latex(text: str) -> str:
     return text
 
 
-def apply_bold_ranges(text: str, bold_ranges: list[list[int]]) -> str:
-    """Apply bold formatting to text based on character ranges."""
-    if not bold_ranges:
+def apply_formatting_ranges(
+    text: str,
+    bold_ranges: list[list[int]],
+    diff_ranges: list[list[int | str]],
+) -> str:
+    """Apply bold and color formatting to text based on character ranges.
+
+    Uses an event-based sweep so that bold and color ranges can overlap
+    freely.  For a segment that is both bold and colored the output is
+    ``\\textbf{\\textcolor{<color>}{...}}``.
+    """
+    if not bold_ranges and not diff_ranges:
         return escape_latex(text)
 
-    # Sort ranges
-    ranges = sorted(bold_ranges, key=lambda r: r[0])
+    # Build a sorted set of boundary positions where formatting changes.
+    boundaries: set[int] = {0, len(text)}
+    for start, end in bold_ranges:
+        boundaries.add(max(0, min(start, len(text))))
+        boundaries.add(max(0, min(end, len(text))))
+    for entry in diff_ranges:
+        start, end = int(entry[0]), int(entry[1])
+        boundaries.add(max(0, min(start, len(text))))
+        boundaries.add(max(0, min(end, len(text))))
 
-    result = ""
-    pos = 0
-    for start, end in ranges:
-        # Clamp to text bounds
+    sorted_boundaries = sorted(boundaries)
+
+    # Pre-compute which positions are bold / colored using simple lookup.
+    bold_set: set[int] = set()
+    for start, end in bold_ranges:
         start = max(0, min(start, len(text)))
         end = max(0, min(end, len(text)))
-        if start >= end:
+        for position in range(start, end):
+            bold_set.add(position)
+
+    color_map: dict[int, str] = {}
+    for entry in diff_ranges:
+        start, end, color = int(entry[0]), int(entry[1]), str(entry[2])
+        start = max(0, min(start, len(text)))
+        end = max(0, min(end, len(text)))
+        for position in range(start, end):
+            color_map[position] = color
+
+    result_parts: list[str] = []
+    for segment_index in range(len(sorted_boundaries) - 1):
+        segment_start = sorted_boundaries[segment_index]
+        segment_end = sorted_boundaries[segment_index + 1]
+        if segment_start >= segment_end:
             continue
 
-        # Add non-bold text before this range
-        if pos < start:
-            result += escape_latex(text[pos:start])
+        segment_text = escape_latex(text[segment_start:segment_end])
+        if not segment_text:
+            continue
 
-        # Add bold text
-        bold_text = escape_latex(text[start:end])
-        result += r"\textbf{" + bold_text + "}"
-        pos = end
+        is_bold = segment_start in bold_set
+        color = color_map.get(segment_start)
 
-    # Add remaining non-bold text
-    if pos < len(text):
-        result += escape_latex(text[pos:])
+        if color is not None:
+            latex_color = "diffred" if color == "red" else "diffgreen"
+            segment_text = r"\textcolor{" + latex_color + "}{" + segment_text + "}"
+        if is_bold:
+            segment_text = r"\textbf{" + segment_text + "}"
 
-    return result
+        result_parts.append(segment_text)
+
+    return "".join(result_parts)
+
 
 
 def format_text_entry(entry: dict | None) -> str:
-    """Format a {text, bold_ranges} entry for LaTeX."""
+    """Format a {text, bold_ranges, diff_ranges} entry for LaTeX."""
     if entry is None:
         return ""
 
     text = entry.get("text", "")
     bold_ranges = entry.get("bold_ranges", [])
+    diff_ranges = entry.get("diff_ranges", [])
 
     if not text.strip():
         return ""
 
-    return apply_bold_ranges(text, bold_ranges)
+    return apply_formatting_ranges(text, bold_ranges, diff_ranges)
 
 
 def sanitize_cell(text: str) -> str:
     """Clean up cell content for LaTeX longtable."""
     # Replace literal newlines with LaTeX newlines
     text = text.replace("\n", r" \newline ")
-    # Remove \newline inside \textbf{} that contains only whitespace/newline
-    text = re.sub(r"\\textbf\{[\s\\newline]*\}", " ", text)
-    # Move trailing \newline from inside \textbf{} to after closing }
+    # Remove empty \textbf{} and \textcolor{}{} spans (whitespace/newline only)
+    text = re.sub(r"\\textbf\{(?:\s|\\newline)*\}", " ", text)
+    text = re.sub(r"\\textcolor\{[^}]*\}\{(?:\s|\\newline)*\}", " ", text)
+    # Collapse repeated \newline BEFORE moving them out of braces,
+    # otherwise multiple \newline before } get reduced to one that stays inside.
+    text = re.sub(r"(\\newline\s*){2,}", r"\\newline ", text)
+    # Move trailing \newline from inside closing } to after it
     text = re.sub(r"\s*\\newline\s*\}", r"} \\newline ", text)
     # Remove leading/trailing \newline (causes "no line here to end" errors)
     text = re.sub(r"^\s*(\\newline\s*)+", "", text)
     text = re.sub(r"(\s*\\newline\s*)+\s*$", "", text)
-    # Collapse repeated line-break commands in the middle of text.
+    # Final collapse in case the move created new adjacent \newline commands
     text = re.sub(r"(\\newline\s*){2,}", r"\\newline ", text)
     return text.strip()
 
@@ -113,6 +153,7 @@ def render_cell(row: dict | None, side: str) -> str:
             {
                 "text": row.get("right", "") or "",
                 "bold_ranges": row.get("right_bold_ranges", []),
+                "diff_ranges": row.get("right_diff_ranges", []),
             }
         )
     )
@@ -147,6 +188,8 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\usepackage[table]{xcolor}")
     lines.append(r"\usepackage{ragged2e}")
     lines.append("")
+    lines.append(r"\definecolor{diffred}{RGB}{180, 0, 0}")
+    lines.append(r"\definecolor{diffgreen}{RGB}{0, 130, 0}")
     lines.append(r"\setlength{\LTpre}{0pt}")
     lines.append(r"\setlength{\LTpost}{0pt}")
     lines.append(r"\setlength{\tabcolsep}{3pt}")

@@ -6,7 +6,11 @@ from src.align_and_merge import (
     align_law_sections,
     apply_known_ocr_fixes,
     build_merged_left_entry,
+    build_normalized_text_with_position_map,
     column_should_merge,
+    compute_character_diff_ranges,
+    compute_diff_ranges_for_row,
+    is_cell_empty,
     detect_leading_marker_type,
     extract_leading_list_number,
     extract_law_identifier,
@@ -1195,3 +1199,227 @@ class TestAlignAndMergeBgbCleanup:
             (row.get("synopsis2024") or {}).get("left") != "Bürgerliches Gesetzbuch"
             for row in result["rows"]
         )
+
+
+class TestBuildNormalizedTextWithPositionMap:
+    def test_no_extra_whitespace_returns_identity_mapping(self):
+        normalized, position_map = build_normalized_text_with_position_map("hello world")
+        assert normalized == "hello world"
+        assert position_map == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    def test_multiple_spaces_collapsed_to_single(self):
+        normalized, position_map = build_normalized_text_with_position_map("hello   world")
+        assert normalized == "hello world"
+        assert len(position_map) == len(normalized)
+        assert position_map[5] == 5
+        assert position_map[6] == 8
+
+    def test_leading_trailing_whitespace_stripped(self):
+        normalized, position_map = build_normalized_text_with_position_map("  hello  ")
+        assert normalized == "hello"
+        assert position_map == [2, 3, 4, 5, 6]
+
+    def test_newlines_treated_as_whitespace(self):
+        normalized, position_map = build_normalized_text_with_position_map("hello\n\nworld")
+        assert normalized == "hello world"
+        assert len(position_map) == len(normalized)
+
+    def test_empty_string(self):
+        normalized, position_map = build_normalized_text_with_position_map("")
+        assert normalized == ""
+        assert position_map == []
+
+    def test_whitespace_only_string(self):
+        normalized, position_map = build_normalized_text_with_position_map("   ")
+        assert normalized == ""
+        assert position_map == []
+
+
+class TestComputeCharacterDiffRanges:
+    def test_identical_texts_produce_no_ranges(self):
+        ranges_a, ranges_b = compute_character_diff_ranges("hello world", "hello world")
+        assert ranges_a == []
+        assert ranges_b == []
+
+    def test_word_added_at_end_in_b(self):
+        ranges_a, ranges_b = compute_character_diff_ranges("hello", "hello world")
+        assert ranges_a == []
+        assert ranges_b == [[6, 11]]
+
+    def test_word_removed_from_a(self):
+        ranges_a, ranges_b = compute_character_diff_ranges("hello world", "hello")
+        assert ranges_a == [[6, 11]]
+        assert ranges_b == []
+
+    def test_single_word_replaced_uses_character_level(self):
+        ranges_a, ranges_b = compute_character_diff_ranges("hello old text", "hello new text")
+        assert ranges_a == [[6, 9]]
+        assert ranges_b == [[6, 9]]
+
+    def test_partial_word_change_highlights_changed_characters(self):
+        ranges_a, ranges_b = compute_character_diff_ranges(
+            "Jugendarbeit", "Jugendsozialarbeit"
+        )
+        assert ranges_a == []
+        assert ranges_b == [[6, 12]]
+
+    def test_multi_word_replace_highlights_whole_ranges(self):
+        ranges_a, ranges_b = compute_character_diff_ranges(
+            "Die Betroffenen sind", "Der Leistungsberechtigte und der Personensorgeberechtigte sind"
+        )
+        assert ranges_a == [[0, 15]]
+        assert ranges_b == [[0, 57]]
+
+    def test_whitespace_differences_ignored(self):
+        ranges_a, ranges_b = compute_character_diff_ranges("hello   world", "hello world")
+        assert ranges_a == []
+        assert ranges_b == []
+
+    def test_german_umlauts_handled(self):
+        ranges_a, ranges_b = compute_character_diff_ranges(
+            "unverändert", "unverändert und mehr"
+        )
+        assert ranges_a == []
+        assert len(ranges_b) == 1
+
+    def test_both_empty_produces_no_ranges(self):
+        ranges_a, ranges_b = compute_character_diff_ranges("", "")
+        assert ranges_a == []
+        assert ranges_b == []
+
+
+class TestIsCellEmpty:
+    def test_none_row_is_empty(self):
+        assert is_cell_empty(None, "right") is True
+
+    def test_blank_right_text_is_empty(self):
+        assert is_cell_empty({"right": "  "}, "right") is True
+
+    def test_unveraendert_text_is_empty(self):
+        assert is_cell_empty({"right": "unverändert"}, "right") is True
+
+    def test_spaced_ocr_unveraendert_is_empty(self):
+        assert is_cell_empty({"right": "u n v e r ä n d e r t"}, "right") is True
+
+    def test_numbered_unveraendert_is_empty(self):
+        assert is_cell_empty({"right": "(1) unverändert"}, "right") is True
+
+    def test_normal_text_is_not_empty(self):
+        assert is_cell_empty({"right": "some text"}, "right") is False
+
+    def test_missing_key_is_empty(self):
+        assert is_cell_empty({"left": "text"}, "right") is True
+
+    def test_none_text_value_is_empty(self):
+        assert is_cell_empty({"right": None}, "right") is True
+
+
+class TestComputeDiffRangesForRow:
+    def test_both_identical_text_no_coloring(self):
+        row_2024 = make_row(right="same text")
+        row_2026 = make_row(right="same text")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        assert diff_2024 == []
+        assert diff_2026 == []
+
+    def test_col3_empty_all_col2_red(self):
+        row_2024 = make_row(right="some text here")
+        row_2026 = make_row(right="")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        assert diff_2024 == [[0, 14, "red"]]
+        assert diff_2026 == []
+
+    def test_col2_empty_col3_compared_against_synopsis2026_left(self):
+        row_2024 = make_row(right="")
+        row_2026 = make_row(left="existing law text", right="new green text")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        assert diff_2024 == []
+        assert len(diff_2026) > 0
+        assert all(r[2] == "green" for r in diff_2026)
+
+    def test_col2_unveraendert_no_coloring_on_col2_col3_compared_against_left(self):
+        row_2024 = make_row(right="unverändert")
+        row_2026 = make_row(left="old law", right="new law")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        assert diff_2024 == []
+        assert len(diff_2026) > 0
+        assert all(r[2] == "green" for r in diff_2026)
+
+    def test_col3_unveraendert_no_coloring_on_col3_col2_all_red(self):
+        row_2024 = make_row(right="some old text")
+        row_2026 = make_row(right="unverändert")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        assert diff_2024 == [[0, 13, "red"]]
+        assert diff_2026 == []
+
+    def test_both_unveraendert_no_coloring(self):
+        row_2024 = make_row(right="unverändert")
+        row_2026 = make_row(right="unverändert")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        assert diff_2024 == []
+        assert diff_2026 == []
+
+    def test_null_row_2024_col3_compared_against_synopsis2026_left(self):
+        row_2026 = make_row(left="original law text", right="newly added section text")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(None, row_2026)
+        assert diff_2024 is None
+        assert len(diff_2026) > 0
+        assert all(r[2] == "green" for r in diff_2026)
+
+    def test_null_row_2024_col3_unveraendert_no_coloring(self):
+        row_2026 = make_row(left="existing law", right="3. unverändert")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(None, row_2026)
+        assert diff_2024 is None
+        assert diff_2026 == []
+
+    def test_null_row_2026_col2_all_red(self):
+        row_2024 = make_row(right="old text only")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, None)
+        assert diff_2024 == [[0, 13, "red"]]
+        assert diff_2026 is None
+
+    def test_diff_ranges_include_correct_color_tags(self):
+        row_2024 = make_row(right="old word here")
+        row_2026 = make_row(right="new word here")
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(row_2024, row_2026)
+        for r in diff_2024:
+            assert r[2] == "red"
+        for r in diff_2026:
+            assert r[2] == "green"
+
+    def test_both_null_returns_none_none(self):
+        diff_2024, diff_2026 = compute_diff_ranges_for_row(None, None)
+        assert diff_2024 is None
+        assert diff_2026 is None
+
+
+class TestAlignAndMergeDiffRanges:
+    def test_diff_ranges_present_in_output(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="content", right="old text"),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="content", right="new text"),
+            ],
+        }
+        result = align_and_merge(data_2024, data_2026)
+        content_rows = [
+            row
+            for row in result["rows"]
+            if row.get("synopsis2024")
+            and (row["synopsis2024"].get("right") or "").startswith("old")
+        ]
+        assert len(content_rows) == 1
+        assert "right_diff_ranges" in content_rows[0]["synopsis2024"]
+        assert "right_diff_ranges" in content_rows[0]["synopsis2026"]
+        assert any(r[2] == "red" for r in content_rows[0]["synopsis2024"]["right_diff_ranges"])
+        assert any(r[2] == "green" for r in content_rows[0]["synopsis2026"]["right_diff_ranges"])
