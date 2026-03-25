@@ -23,7 +23,7 @@ Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen de
 ./run.sh     # Erzeugt synopsis_combined.pdf
 ```
 
-Die fertige Synopse liegt anschließend als [synopsis_combined.pdf](output/synopsis_combined.pdf) im `output/`-Verzeichnis.
+Die fertige Synopse liegt anschließend als [synopsis_combined.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/synopsis_combined.pdf) im `output/`-Verzeichnis.
 
 | Markierungsfarbe | Änderungen RefE 2024                      | Änderungen RefE 2026                                                                                               |
 | ---------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
