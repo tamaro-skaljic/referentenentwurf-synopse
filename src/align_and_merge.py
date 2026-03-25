@@ -22,6 +22,7 @@ class SectionKey:
 
 
 SECTION_HEADER_PATTERN = re.compile(r"^\s*§\s*(\d+)\s*([a-z]*)\s*$")
+SECTION_SIGN_START_PATTERN = re.compile(r"^\s*§\s*\d+\s*[a-z]*\b", re.IGNORECASE)
 
 
 def parse_section_key(text: str) -> SectionKey | None:
@@ -316,6 +317,13 @@ def is_structural_marker_with_unveraendert_row(row: dict[str, Any]) -> bool:
     )
 
 
+def starts_with_section_sign(text: str | None) -> bool:
+    """Return True when text starts with a section sign marker like '§ 34'."""
+    if text is None:
+        return False
+    return bool(SECTION_SIGN_START_PATTERN.match(text))
+
+
 def merge_column_text_and_bold_ranges(
     previous_text: str,
     previous_bold_ranges: list[list[int]],
@@ -364,6 +372,22 @@ def merge_page_break_continuation_rows(
         if left_is_empty and right_is_empty:
             continue
 
+        previous_row = result[-1]
+
+        if (
+            starts_with_section_sign(previous_row.get("left"))
+            or starts_with_section_sign(previous_row.get("right"))
+        ):
+            result.append(dict(current_row))
+            continue
+
+        if (
+            starts_with_section_sign(left_text)
+            or starts_with_section_sign(right_text)
+        ):
+            result.append(dict(current_row))
+            continue
+
         if is_structural_marker_with_unveraendert_row(current_row):
             result.append(dict(current_row))
             continue
@@ -378,8 +402,6 @@ def merge_page_break_continuation_rows(
         if not any_non_empty_merges:
             result.append(dict(current_row))
             continue
-
-        previous_row = result[-1]
 
         if left_merges and not left_is_empty:
             merged_text, merged_bold = merge_column_text_and_bold_ranges(

@@ -260,6 +260,31 @@ class TestMergePageBreakContinuationRows:
         result = merge_page_break_continuation_rows(rows)
         assert len(result) == 2
 
+    def test_section_sign_row_not_partially_merged_when_other_column_looks_like_continuation(self):
+        rows = [
+            make_row(left="3. laufender Text", right="3. unverändert", page=1),
+            make_row(left="§ 34", right="Betreute Wohnformen", page=2),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+
+        assert len(result) == 2
+        assert result[1]["left"] == "§ 34"
+        assert result[1]["right"] == "Betreute Wohnformen"
+
+    def test_row_after_section_header_at_page_break_does_not_merge_into_header(self):
+        rows = [
+            make_row(left="§ 34", right="§ 34", page=1),
+            make_row(left="Heimerziehung, sonstige betreute Wohnform", right="Betreute Wohnformen", page=2),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+
+        assert len(result) == 2
+        assert result[0]["left"] == "§ 34"
+        assert result[1]["left"] == "Heimerziehung, sonstige betreute Wohnform"
+        assert result[1]["right"] == "Betreute Wohnformen"
+
     def test_structural_marker_at_boundary_not_merged(self):
         rows = [
             make_row(left="laufender text", right="2. unverändert", page=1),
