@@ -53,6 +53,9 @@ PARENTHESIZED_NUMBER_MARKER_PATTERN = re.compile(r"^\(\s*\d+\s*\)")
 LEADING_LIST_NUMBER_PATTERN = re.compile(r"^\s*(\d+)\s*\.(?!\d)")
 LEADING_LIST_NUMBER_REWRITE_PATTERN = re.compile(r"^(\s*)\d+(\s*)\.(?!\d)")
 
+MERGED_LEFT_SOURCE_LABEL_2024 = "- Aus Synopsis 2024 -"
+MERGED_LEFT_SOURCE_LABEL_2026 = "- Aus Synopsis 2026 -"
+
 
 def is_page_continuation_header(row: dict[str, Any]) -> bool:
     """Detect page-break table header rows that should be filtered out."""
@@ -396,6 +399,172 @@ def merge_column_text_and_bold_ranges(
         for start, end in continuation_bold_ranges
     ]
     return merged_text, previous_bold_ranges + offset_continuation_bold_ranges
+
+
+def normalize_text_for_merge_comparison(text: str) -> str:
+    """Normalize text for semantic equality checks in merged-left rendering."""
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def _extract_text_and_bold_ranges(
+    row: dict[str, Any] | None,
+    side: str,
+) -> tuple[str, list[list[int]]]:
+    if not isinstance(row, dict):
+        return "", []
+
+    text = row.get(side)
+    text_value = text if isinstance(text, str) else ""
+
+    bold_ranges = row.get(f"{side}_bold_ranges", [])
+    if not isinstance(bold_ranges, list):
+        return text_value, []
+    return text_value, bold_ranges
+
+
+def _shift_bold_ranges(
+    bold_ranges: list[list[int]],
+    offset: int,
+) -> list[list[int]]:
+    return [[start + offset, end + offset] for start, end in bold_ranges]
+
+
+def _is_empty_text(text: str) -> bool:
+    return text.strip() == ""
+
+
+def build_merged_left_entry(
+    row_2024: dict[str, Any] | None,
+    row_2026: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Build merged-left output with source labels and shifted bold ranges."""
+    text_2024, bold_ranges_2024 = _extract_text_and_bold_ranges(row_2024, "left")
+    text_2026, bold_ranges_2026 = _extract_text_and_bold_ranges(row_2026, "left")
+
+    text_2024_is_empty = _is_empty_text(text_2024)
+    text_2026_is_empty = _is_empty_text(text_2026)
+
+    if text_2024_is_empty and text_2026_is_empty:
+        return {"text": "", "bold_ranges": []}
+
+    if not text_2024_is_empty and text_2026_is_empty:
+        prefix = MERGED_LEFT_SOURCE_LABEL_2024 + "\n\n"
+        return {
+            "text": prefix + text_2024,
+            "bold_ranges": _shift_bold_ranges(bold_ranges_2024, len(prefix)),
+        }
+
+    if text_2024_is_empty and not text_2026_is_empty:
+        prefix = MERGED_LEFT_SOURCE_LABEL_2026 + "\n\n"
+        return {
+            "text": prefix + text_2026,
+            "bold_ranges": _shift_bold_ranges(bold_ranges_2026, len(prefix)),
+        }
+
+    text_2024_normalized = normalize_text_for_merge_comparison(text_2024)
+    text_2026_normalized = normalize_text_for_merge_comparison(text_2026)
+
+    if text_2024_normalized == text_2026_normalized:
+        return {
+            "text": text_2024,
+            "bold_ranges": sorted_bold_ranges(bold_ranges_2024),
+        }
+
+    prefix_2024 = MERGED_LEFT_SOURCE_LABEL_2024 + "\n\n"
+    separator = "\n\n"
+    prefix_2026 = MERGED_LEFT_SOURCE_LABEL_2026 + "\n\n"
+
+    merged_text = prefix_2024 + text_2024 + separator + prefix_2026 + text_2026
+    merged_bold_ranges_2024 = _shift_bold_ranges(bold_ranges_2024, len(prefix_2024))
+    merged_bold_ranges_2026 = _shift_bold_ranges(
+        bold_ranges_2026,
+        len(prefix_2024) + len(text_2024) + len(separator) + len(prefix_2026),
+    )
+
+    return {
+        "text": merged_text,
+        "bold_ranges": sorted_bold_ranges(
+            merged_bold_ranges_2024 + merged_bold_ranges_2026,
+        ),
+    }
+
+
+def _is_law_citation_text(text: str | None) -> bool:
+    if not isinstance(text, str):
+        return False
+    return bool(LAW_CITATION_PATTERN.match(text.strip()))
+
+
+def cleanup_first_page_bgb_header_rows(
+    aligned_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Replace first-page BGB header cells with following citation row and remove it.
+
+    Safety conditions for deletion:
+    - current row has exact 'Bürgerliches Gesetzbuch' in synopsis2024 left/right,
+    - next row has a matching law citation in the same column(s),
+    - next row is not a section header,
+    - next synopsis2026 cells for those columns are empty.
+    """
+    if not aligned_rows:
+        return []
+
+    cleaned_rows = [dict(row) for row in aligned_rows]
+
+    for index in range(len(cleaned_rows) - 1):
+        current_row = dict(cleaned_rows[index])
+        next_row = dict(cleaned_rows[index + 1])
+
+        current_row_2024 = current_row.get("synopsis2024")
+        next_row_2024 = next_row.get("synopsis2024")
+
+        if not isinstance(current_row_2024, dict) or not isinstance(next_row_2024, dict):
+            continue
+
+        if current_row_2024.get("page") != 1:
+            continue
+
+        columns_to_replace: list[str] = []
+        for side in ("left", "right"):
+            current_text = current_row_2024.get(side)
+            next_text = next_row_2024.get(side)
+            if (
+                isinstance(current_text, str)
+                and current_text.strip() == "Bürgerliches Gesetzbuch"
+                and _is_law_citation_text(next_text)
+            ):
+                columns_to_replace.append(side)
+
+        if not columns_to_replace:
+            continue
+
+        if bool(next_row.get("is_section_header", False)):
+            continue
+
+        next_row_2026 = next_row.get("synopsis2026")
+        if isinstance(next_row_2026, dict):
+            all_next_2026_cells_empty = all(
+                ((next_row_2026.get(side) or "").strip() == "")
+                for side in columns_to_replace
+            )
+            if not all_next_2026_cells_empty:
+                continue
+
+        updated_row_2024 = dict(current_row_2024)
+        for side in columns_to_replace:
+            updated_row_2024[side] = next_row_2024.get(side)
+            updated_row_2024[f"{side}_bold_ranges"] = next_row_2024.get(
+                f"{side}_bold_ranges",
+                [],
+            )
+
+        current_row["synopsis2024"] = updated_row_2024
+        cleaned_rows[index] = current_row
+
+        del cleaned_rows[index + 1]
+        break
+
+    return cleaned_rows
 
 
 def merge_page_break_continuation_rows(
@@ -860,6 +1029,13 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
         all_aligned_rows.extend(aligned)
 
     all_aligned_rows = collapse_orphan_insert_rows(all_aligned_rows)
+    all_aligned_rows = cleanup_first_page_bgb_header_rows(all_aligned_rows)
+
+    for row in all_aligned_rows:
+        row["merged_left"] = build_merged_left_entry(
+            row.get("synopsis2024"),
+            row.get("synopsis2026"),
+        )
 
     for index, row in enumerate(all_aligned_rows):
         row["row_index"] = index

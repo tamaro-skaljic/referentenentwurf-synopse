@@ -1,9 +1,7 @@
 """Generate a LaTeX document from the merged raw synopsis JSON.
 
-Produces a simple 4-column landscape A4 longtable:
-    2024 Geltendes Recht | 2026 Geltendes Recht | 2024 Änderungen | 2026 Änderungen
-
-No semantic restructuring is performed here.
+Produces a 3-column landscape A4 longtable:
+    Kombiniertes Geltendes Recht | 2024 Änderungen | 2026 Änderungen
 
 Usage:
         uv run python generate_latex.py synopsis_merged.json synopsis_combined.tex
@@ -120,6 +118,11 @@ def render_cell(row: dict | None, side: str) -> str:
     )
 
 
+def render_merged_left_cell(aligned_row: dict) -> str:
+    """Render the merged left column from precomputed alignment output."""
+    return sanitize_cell(format_text_entry(aligned_row.get("merged_left")))
+
+
 def _wrap_in_bold(cell_text: str) -> str:
     """Wrap cell text in bold if not empty and not already bold."""
     stripped = cell_text.strip()
@@ -163,21 +166,20 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\vspace{0.5cm}")
     lines.append("")
 
-    # 4 columns in landscape. Keep widths conservative for longtable stability.
-    col_width = "6.2cm"
+    # 3 columns in landscape. Keep widths conservative for longtable stability.
+    col_width = "8.2cm"
 
     lines.append(
-        r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
+        r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
     )
     lines.append(r"\hline")
     lines.append(
-        r"\multicolumn{2}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht}} & "
+        r"\multicolumn{1}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht (kombiniert)}} & "
         r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Änderungen durch den Referentenentwurf}} \\"
     )
     lines.append(r"\hline")
     lines.append(
-        r"\textbf{Synopsis 2024} & "
-        r"\textbf{Synopsis 2026} & "
+        r"\textbf{Synopsis 2024/2026} & "
         r"\textbf{Synopsis 2024} & "
         r"\textbf{Synopsis 2026} \\"
     )
@@ -190,19 +192,17 @@ def generate_latex(data: dict) -> str:
         row_2026 = row.get("synopsis2026")
         is_section_header = row.get("is_section_header", False)
 
-        c1 = render_cell(row_2024, "left")
-        c2 = render_cell(row_2026, "left")
-        c3 = render_cell(row_2024, "right")
-        c4 = render_cell(row_2026, "right")
+        c1 = render_merged_left_cell(row)
+        c2 = render_cell(row_2024, "right")
+        c3 = render_cell(row_2026, "right")
 
         if is_section_header:
             lines.append(r"\rowcolor{gray!25}")
             c1 = _wrap_in_bold(c1)
             c2 = _wrap_in_bold(c2)
             c3 = _wrap_in_bold(c3)
-            c4 = _wrap_in_bold(c4)
 
-        lines.append(f"{c1} & {c2} & {c3} & {c4} \\\\")
+        lines.append(f"{c1} & {c2} & {c3} \\\\")
         lines.append(r"\hline")
 
     lines.append(r"\end{longtable}")

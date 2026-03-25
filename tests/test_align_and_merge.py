@@ -5,6 +5,7 @@ from src.align_and_merge import (
     align_and_merge,
     align_law_sections,
     apply_known_ocr_fixes,
+    build_merged_left_entry,
     column_should_merge,
     detect_leading_marker_type,
     extract_leading_list_number,
@@ -1097,3 +1098,83 @@ class TestAlignAndMerge:
         merged_right = section_rows[0]["synopsis2026"]["right"]
         assert "1. eingeschobener Punkt" in merged_right
         assert "2. Angebote A neu" in merged_right
+
+
+class TestBuildMergedLeftEntry:
+    def test_both_empty_results_in_empty_cell(self):
+        entry = build_merged_left_entry(
+            {"left": "", "left_bold_ranges": []},
+            {"left": "  ", "left_bold_ranges": []},
+        )
+
+        assert entry == {"text": "", "bold_ranges": []}
+
+    def test_one_sided_non_empty_adds_2024_label(self):
+        entry = build_merged_left_entry(
+            {"left": "Alpha", "left_bold_ranges": [[0, 5]]},
+            {"left": "", "left_bold_ranges": []},
+        )
+
+        assert entry["text"] == "- Aus Synopsis 2024 -\n\nAlpha"
+        assert entry["bold_ranges"] == [[23, 28]]
+
+    def test_equal_text_after_normalization_uses_plain_text_without_labels(self):
+        entry = build_merged_left_entry(
+            {"left": "Wort\nlaut", "left_bold_ranges": [[0, 4]]},
+            {"left": "Wort laut", "left_bold_ranges": [[0, 4]]},
+        )
+
+        assert entry["text"] == "Wort\nlaut"
+        assert entry["bold_ranges"] == [[0, 4]]
+
+    def test_different_non_empty_texts_include_both_labels(self):
+        entry = build_merged_left_entry(
+            {"left": "Alt", "left_bold_ranges": [[0, 3]]},
+            {"left": "Neu", "left_bold_ranges": [[0, 3]]},
+        )
+
+        assert (
+            entry["text"]
+            == "- Aus Synopsis 2024 -\n\nAlt\n\n- Aus Synopsis 2026 -\n\nNeu"
+        )
+        assert entry["bold_ranges"] == [[23, 26], [51, 54]]
+
+
+class TestAlignAndMergeBgbCleanup:
+    def test_first_page_bgb_row_is_replaced_with_below_citation_and_next_row_removed(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="Bürgerliches Gesetzbuch", right="Bürgerliches Gesetzbuch", page=1),
+                make_row(
+                    left="( - SGB VIII) \\nvom: 11.09.2012",
+                    right="( - SGB VIII) \\nvom: 11.09.2012",
+                    page=1,
+                ),
+                make_row(left="§ 2 ", right="§ 2 ", page=1),
+                make_row(left="Inhalt 2024", right="Inhalt 2024", page=1),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(
+                    left="( - SGB VIII) \\nvom: 11.09.2012",
+                    right="( - SGB VIII) \\nvom: 11.09.2012",
+                    page=1,
+                ),
+                make_row(left="", right="", page=1),
+                make_row(left="§ 2 ", right="§ 2 ", page=1),
+                make_row(left="Inhalt 2026", right="Inhalt 2026", page=1),
+            ],
+        }
+
+        result = align_and_merge(data_2024, data_2026)
+        first_row = result["rows"][0]
+
+        assert first_row["synopsis2024"]["left"].startswith("( - SGB VIII)")
+        assert first_row["synopsis2024"]["right"].startswith("( - SGB VIII)")
+        assert all(
+            (row.get("synopsis2024") or {}).get("left") != "Bürgerliches Gesetzbuch"
+            for row in result["rows"]
+        )
