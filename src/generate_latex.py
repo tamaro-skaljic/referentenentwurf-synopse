@@ -65,10 +65,10 @@ def apply_bold_ranges(text: str, bold_ranges: list[list[int]]) -> str:
     return result
 
 
-def format_text_entry(entry: dict | None, fallback: str = "") -> str:
+def format_text_entry(entry: dict | None) -> str:
     """Format a {text, bold_ranges} entry for LaTeX."""
     if entry is None:
-        return escape_latex(fallback) if fallback else ""
+        return ""
 
     text = entry.get("text", "")
     bold_ranges = entry.get("bold_ranges", [])

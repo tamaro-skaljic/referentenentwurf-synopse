@@ -67,9 +67,6 @@ should_run_step() {
 
 load_state
 
-# Remove legacy keys from previous cache format.
-unset 'STATE[extract_2024]' 'STATE[extract_2026]' 'STATE[cleanup_2024]' 'STATE[cleanup_2026]' 'STATE[cleanup]' 'STATE[merge]'
-
 echo "=== Step 1: Extract 2024 synopsis ==="
 extract_2024_hash=$(source_hash "src/extract_synopsis.py")
 extract_2024_ran=0

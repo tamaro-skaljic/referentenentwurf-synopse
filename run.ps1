@@ -57,13 +57,6 @@ if (Test-Path $stateFile) {
     }
 }
 
-# Remove legacy keys from previous cache format.
-foreach ($legacyKey in @("extract_2024", "extract_2026", "cleanup_2024", "cleanup_2026", "cleanup", "merge")) {
-    if ($state.ContainsKey($legacyKey)) {
-        [void]$state.Remove($legacyKey)
-    }
-}
-
 Write-Host "=== Step 1: Extract 2024 synopsis ===" -ForegroundColor Cyan
 $extract2024Hash = Get-SourceHash "src/extract_synopsis.py"
 $extract2024Ran = Should-RunStep -StepName "extract" -CurrentHash $extract2024Hash -ExpectedOutputs @("output/synopsis_2024_raw.json")
