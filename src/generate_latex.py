@@ -201,6 +201,31 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\scriptsize")
     lines.append("")
 
+    # Legend table for color semantics
+    lines.append(r"\begin{center}")
+    lines.append(r"\begin{tabular}{|p{2.8cm}|p{6.9cm}|p{13.0cm}|}")
+    lines.append(r"\hline")
+    lines.append(
+        r"\textbf{Markierungsfarbe} & "
+        r"\textbf{Änderungen RefE 2024} & "
+        r"\textbf{Änderungen RefE 2026} \\"
+    )
+    lines.append(r"\hline")
+    lines.append(
+        r"\textcolor{diffgreen}{Grün} & - & "
+        r"Wurde im Vergleich zum RefE 2024 (oder geltendem Recht, falls RefE 2024 nicht vorhanden / unverändert) hinzugefügt \\"
+    )
+    lines.append(r"\hline")
+    lines.append(
+        r"\textcolor{diffred}{Rot} & "
+        r"Wurde im Vergleich zum RefE 2026 gelöscht & - \\"
+    )
+    lines.append(r"\hline")
+    lines.append(r"\end{tabular}")
+    lines.append(r"\end{center}")
+    lines.append(r"\vspace{0.3cm}")
+    lines.append("")
+
     # Title
     title = data.get("metadata", {}).get("title", "Synopse")
     lines.append(r"\begin{center}")

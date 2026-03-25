@@ -29,6 +29,10 @@ def test_generate_latex_renders_three_column_layout_with_merged_left_cell():
     assert "- Aus Synopsis 2024 -" in latex
     assert "rechts 2024" in latex
     assert "rechts 2026" in latex
+    assert "Markierungsfarbe" in latex
+    assert "Änderungen RefE 2024" in latex
+    assert "Änderungen RefE 2026" in latex
+    assert "Wurde im Vergleich zum RefE 2026 gelöscht" in latex
     assert "rechts 2024 & rechts 2026 \\\\" in latex
     assert "\\textbf{Synopsis 2024} & \\textbf{Synopsis 2026} & \\textbf{Synopsis 2024} & \\textbf{Synopsis 2026}" not in latex
 
