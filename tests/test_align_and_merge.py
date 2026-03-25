@@ -11,6 +11,8 @@ from src.align_and_merge import (
     extract_law_identifier,
     group_rows_into_law_sections,
     is_page_continuation_header,
+    is_structural_marker_with_unveraendert_row,
+    is_unveraendert_text,
     merge_column_text_and_bold_ranges,
     merge_page_break_continuation_rows,
     parse_section_key,
@@ -147,6 +149,31 @@ class TestColumnShouldMerge:
         assert column_should_merge("Abschnitt 3") is False
 
 
+class TestUnveraendertDetection:
+    def test_matches_plain_unveraendert(self):
+        assert is_unveraendert_text("unverändert") is True
+
+    def test_matches_spaced_ocr_unveraendert(self):
+        assert is_unveraendert_text("u n v e r ä n d e r t") is True
+
+    def test_rejects_other_text(self):
+        assert is_unveraendert_text("unveraendert") is False
+
+
+class TestStructuralMarkerWithUnveraendertRow:
+    def test_detects_left_structural_and_right_unveraendert(self):
+        row = make_row(left="Absatz 4", right="unverändert")
+        assert is_structural_marker_with_unveraendert_row(row) is True
+
+    def test_detects_left_structural_and_right_spaced_unveraendert(self):
+        row = make_row(left="Absatz 4", right="u n v e r ä n d e r t")
+        assert is_structural_marker_with_unveraendert_row(row) is True
+
+    def test_rejects_structural_without_unveraendert(self):
+        row = make_row(left="Absatz 4", right="2. neu")
+        assert is_structural_marker_with_unveraendert_row(row) is False
+
+
 class TestMergePageBreakContinuationRows:
     def test_empty_input_returns_empty(self):
         assert merge_page_break_continuation_rows([]) == []
@@ -242,6 +269,19 @@ class TestMergePageBreakContinuationRows:
         assert len(result) == 2
         assert result[0]["left"] == "laufender text"
         assert result[1]["left"] == "Absatz 4"
+
+    def test_structural_marker_with_unveraendert_stays_on_same_row(self):
+        rows = [
+            make_row(left="begleitete Umgang soll", right="begleitete Umgang soll ...", page=1),
+            make_row(left="Absatz 4", right="u n v e r ä n d e r t", page=2),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+        assert len(result) == 2
+        assert result[0]["left"] == "begleitete Umgang soll"
+        assert result[0]["right"] == "begleitete Umgang soll ..."
+        assert result[1]["left"] == "Absatz 4"
+        assert result[1]["right"] == "u n v e r ä n d e r t"
 
     def test_bold_ranges_offset_on_merge(self):
         rows = [

@@ -288,6 +288,34 @@ def column_should_merge(text: str | None) -> bool:
     return stripped[0].isalpha() and stripped[1].isalpha()
 
 
+def is_unveraendert_text(text: str | None) -> bool:
+    """Return True when text represents 'unverändert', including spaced OCR forms."""
+    if text is None:
+        return False
+    normalized = "".join(character for character in text.lower() if character.isalpha())
+    return normalized == "unverändert"
+
+
+def is_structural_marker_with_unveraendert_row(row: dict[str, Any]) -> bool:
+    """Detect rows like 'Absatz 4' paired with 'unverändert'.
+
+    These rows are semantic structural boundaries and must not be split by
+    page-break continuation merging.
+    """
+    left_text = row.get("left")
+    right_text = row.get("right")
+
+    left_is_structural = detect_leading_marker_type(left_text) == "structural"
+    right_is_structural = detect_leading_marker_type(right_text) == "structural"
+    left_is_unveraendert = is_unveraendert_text(left_text)
+    right_is_unveraendert = is_unveraendert_text(right_text)
+
+    return (
+        (left_is_structural and right_is_unveraendert)
+        or (right_is_structural and left_is_unveraendert)
+    )
+
+
 def merge_column_text_and_bold_ranges(
     previous_text: str,
     previous_bold_ranges: list[list[int]],
@@ -334,6 +362,10 @@ def merge_page_break_continuation_rows(
         right_is_empty = right_text is None or right_text.strip() == ""
 
         if left_is_empty and right_is_empty:
+            continue
+
+        if is_structural_marker_with_unveraendert_row(current_row):
+            result.append(dict(current_row))
             continue
 
         left_merges = column_should_merge(left_text)
