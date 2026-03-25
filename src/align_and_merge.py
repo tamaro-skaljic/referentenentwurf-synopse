@@ -45,9 +45,11 @@ STRUCTURAL_MARKER_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-NUMBER_DOT_MARKER_PATTERN = re.compile(r"^\d+\s*\.")
+NUMBER_DOT_MARKER_PATTERN = re.compile(r"^\d+\s*\.(?!\d)")
 LETTER_BRACKET_MARKER_PATTERN = re.compile(r"^[A-Za-zÄÖÜäöüß]\s*\)")
 PARENTHESIZED_NUMBER_MARKER_PATTERN = re.compile(r"^\(\s*\d+\s*\)")
+
+LEADING_LIST_NUMBER_PATTERN = re.compile(r"^\s*(\d+)\s*\.(?!\d)")
 
 
 def is_page_continuation_header(row: dict[str, Any]) -> bool:
@@ -138,13 +140,43 @@ def detect_row_marker_type(row: dict[str, Any] | None) -> str | None:
     return detect_leading_marker_type(row.get("right"))
 
 
-def _find_next_row_index_with_marker_type(
+def detect_row_marker_signature(
+    row: dict[str, Any] | None,
+) -> tuple[str, tuple[str, ...]] | None:
+    """Detect marker signature as (type, columns) for alignment decisions.
+
+    Columns contain where the selected marker type is present: ("left",),
+    ("right",), or ("left", "right").
+    """
+    if row is None:
+        return None
+
+    left_marker_type = detect_leading_marker_type(row.get("left"))
+    right_marker_type = detect_leading_marker_type(row.get("right"))
+
+    if left_marker_type is None and right_marker_type is None:
+        return None
+
+    selected_marker_type = left_marker_type or right_marker_type
+    if selected_marker_type is None:
+        return None
+    marker_columns: list[str] = []
+
+    if left_marker_type == selected_marker_type:
+        marker_columns.append("left")
+    if right_marker_type == selected_marker_type:
+        marker_columns.append("right")
+
+    return selected_marker_type, tuple(marker_columns)
+
+
+def _find_next_row_index_with_marker_signature(
     rows: list[dict[str, Any]],
     start_index: int,
-    marker_type: str,
+    marker_signature: tuple[str, tuple[str, ...]],
 ) -> int | None:
     for index in range(start_index, len(rows)):
-        if detect_row_marker_type(rows[index]) == marker_type:
+        if detect_row_marker_signature(rows[index]) == marker_signature:
             return index
     return None
 
@@ -170,10 +202,10 @@ def align_rows_by_marker_type(
     while index_2024 < len(rows_2024) and index_2026 < len(rows_2026):
         row_2024 = rows_2024[index_2024]
         row_2026 = rows_2026[index_2026]
-        marker_type_2024 = detect_row_marker_type(row_2024)
-        marker_type_2026 = detect_row_marker_type(row_2026)
+        marker_signature_2024 = detect_row_marker_signature(row_2024)
+        marker_signature_2026 = detect_row_marker_signature(row_2026)
 
-        if marker_type_2024 == marker_type_2026:
+        if marker_signature_2024 == marker_signature_2026:
             aligned_pairs.append((row_2024, row_2026))
             index_2024 += 1
             index_2026 += 1
@@ -182,17 +214,17 @@ def align_rows_by_marker_type(
         nearest_index_2026: int | None = None
         nearest_index_2024: int | None = None
 
-        if marker_type_2024 is not None:
-            nearest_index_2026 = _find_next_row_index_with_marker_type(
+        if marker_signature_2024 is not None:
+            nearest_index_2026 = _find_next_row_index_with_marker_signature(
                 rows_2026,
                 index_2026 + 1,
-                marker_type_2024,
+                marker_signature_2024,
             )
-        if marker_type_2026 is not None:
-            nearest_index_2024 = _find_next_row_index_with_marker_type(
+        if marker_signature_2026 is not None:
+            nearest_index_2024 = _find_next_row_index_with_marker_signature(
                 rows_2024,
                 index_2024 + 1,
-                marker_type_2026,
+                marker_signature_2026,
             )
 
         if nearest_index_2026 is None and nearest_index_2024 is None:
@@ -202,6 +234,7 @@ def align_rows_by_marker_type(
             continue
 
         if nearest_index_2026 is None:
+            assert nearest_index_2024 is not None
             while index_2024 < nearest_index_2024:
                 aligned_pairs.append((rows_2024[index_2024], None))
                 index_2024 += 1
@@ -320,7 +353,7 @@ def merge_page_break_continuation_rows(
             merged_text, merged_bold = merge_column_text_and_bold_ranges(
                 previous_row.get("left") or "",
                 previous_row.get("left_bold_ranges", []),
-                left_text,
+                left_text or "",
                 current_row.get("left_bold_ranges", []),
             )
             previous_row["left"] = merged_text
@@ -330,7 +363,7 @@ def merge_page_break_continuation_rows(
             merged_text, merged_bold = merge_column_text_and_bold_ranges(
                 previous_row.get("right") or "",
                 previous_row.get("right_bold_ranges", []),
-                right_text,
+                right_text or "",
                 current_row.get("right_bold_ranges", []),
             )
             previous_row["right"] = merged_text
@@ -354,6 +387,151 @@ def merge_page_break_continuation_rows(
             result.append(remainder_row)
 
     return result
+
+
+def extract_leading_list_number(text: str | None) -> int | None:
+    """Extract leading list number for markers like '5.' (not dates like '2.7')."""
+    if text is None:
+        return None
+    match = LEADING_LIST_NUMBER_PATTERN.match(text)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def remove_suspected_struck_duplicate_number_cells(
+    rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Drop likely struck duplicate numbered cells caused by PDF extraction limits.
+
+    Heuristic:
+    - Same column repeats the same leading number as previous row, and
+    - Opposite column on current row advances to the next number.
+
+    In this case, the repeated number cell is considered struck/deleted and is
+    set to None (with empty bold ranges) to avoid false alignment.
+    """
+    if not rows:
+        return []
+
+    cleaned_rows: list[dict[str, Any]] = []
+
+    for row in rows:
+        cleaned_row = dict(row)
+        previous_row = cleaned_rows[-1] if cleaned_rows else None
+
+        for column_name, opposite_column_name in (("left", "right"), ("right", "left")):
+            current_number = extract_leading_list_number(cleaned_row.get(column_name))
+            if current_number is None:
+                continue
+
+            previous_number = extract_leading_list_number(
+                None if previous_row is None else previous_row.get(column_name)
+            )
+            opposite_number = extract_leading_list_number(cleaned_row.get(opposite_column_name))
+
+            if (
+                previous_number is not None
+                and current_number == previous_number
+                and opposite_number == current_number + 1
+            ):
+                cleaned_row[column_name] = None
+                cleaned_row[f"{column_name}_bold_ranges"] = []
+
+        cleaned_rows.append(cleaned_row)
+
+    return cleaned_rows
+
+
+def collapse_orphan_insert_rows(
+    aligned_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Collapse orphan inserted right-column rows into the following matched row.
+
+    This specifically addresses cases where an inserted item appears in
+    synopsis2026 right column while synopsis2026 left is empty, followed by a
+    row where synopsis2026 left starts with the same list number and
+    synopsis2026 right continues with the next number.
+    """
+    if not aligned_rows:
+        return []
+
+    collapsed_rows: list[dict[str, Any]] = []
+    index = 0
+
+    while index < len(aligned_rows):
+        current_row = dict(aligned_rows[index])
+
+        if index + 1 >= len(aligned_rows):
+            collapsed_rows.append(current_row)
+            break
+
+        next_row = dict(aligned_rows[index + 1])
+
+        current_2026 = current_row.get("synopsis2026")
+        next_2026 = next_row.get("synopsis2026")
+
+        if not isinstance(current_2026, dict) or not isinstance(next_2026, dict):
+            collapsed_rows.append(current_row)
+            index += 1
+            continue
+
+        current_2026_dict: dict[str, Any] = current_2026
+        next_2026_dict: dict[str, Any] = next_2026
+
+        current_left_text = current_2026_dict.get("left")
+        current_left_text = current_left_text if isinstance(current_left_text, str) else ""
+        current_right_text = current_2026_dict.get("right")
+        current_right_text = current_right_text if isinstance(current_right_text, str) else ""
+
+        next_left_text = next_2026_dict.get("left")
+        next_left_text = next_left_text if isinstance(next_left_text, str) else ""
+        next_right_text = next_2026_dict.get("right")
+        next_right_text = next_right_text if isinstance(next_right_text, str) else ""
+
+        current_right_bold_ranges = current_2026_dict.get("right_bold_ranges", [])
+        if not isinstance(current_right_bold_ranges, list):
+            current_right_bold_ranges = []
+
+        next_right_bold_ranges = next_2026_dict.get("right_bold_ranges", [])
+        if not isinstance(next_right_bold_ranges, list):
+            next_right_bold_ranges = []
+
+        can_collapse_orphan = (
+            current_row.get("synopsis2024") is None
+            and current_left_text.strip() == ""
+            and current_right_text.strip() != ""
+        )
+
+        if can_collapse_orphan:
+            orphan_number = extract_leading_list_number(current_right_text)
+            next_left_number = extract_leading_list_number(next_left_text)
+            next_right_number = extract_leading_list_number(next_right_text)
+
+            if (
+                orphan_number is not None
+                and next_left_number == orphan_number
+                and next_right_number == orphan_number + 1
+                and next_right_text != ""
+            ):
+                merged_right_text, merged_right_bold_ranges = merge_column_text_and_bold_ranges(
+                    current_right_text,
+                    current_right_bold_ranges,
+                    next_right_text,
+                    next_right_bold_ranges,
+                )
+                next_2026_dict["right"] = merged_right_text
+                next_2026_dict["right_bold_ranges"] = merged_right_bold_ranges
+                next_row["synopsis2026"] = next_2026_dict
+
+                collapsed_rows.append(next_row)
+                index += 2
+                continue
+
+        collapsed_rows.append(current_row)
+        index += 1
+
+    return collapsed_rows
 
 
 SectionKeyOrPseudo = SectionKey | str
@@ -496,6 +674,9 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
     rows_2024 = merge_page_break_continuation_rows(rows_2024)
     rows_2026 = merge_page_break_continuation_rows(rows_2026)
 
+    rows_2024 = remove_suspected_struck_duplicate_number_cells(rows_2024)
+    rows_2026 = remove_suspected_struck_duplicate_number_cells(rows_2026)
+
     laws_2024 = group_rows_into_law_sections(rows_2024)
     laws_2026 = group_rows_into_law_sections(rows_2026)
 
@@ -513,6 +694,8 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
         sections_2026 = laws_2026_by_identifier.get(law_identifier, {})
         aligned = align_law_sections(sections_2024, sections_2026)
         all_aligned_rows.extend(aligned)
+
+    all_aligned_rows = collapse_orphan_insert_rows(all_aligned_rows)
 
     for index, row in enumerate(all_aligned_rows):
         row["row_index"] = index

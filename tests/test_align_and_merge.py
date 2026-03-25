@@ -7,12 +7,14 @@ from src.align_and_merge import (
     apply_known_ocr_fixes,
     column_should_merge,
     detect_leading_marker_type,
+    extract_leading_list_number,
     extract_law_identifier,
     group_rows_into_law_sections,
     is_page_continuation_header,
     merge_column_text_and_bold_ranges,
     merge_page_break_continuation_rows,
     parse_section_key,
+    remove_suspected_struck_duplicate_number_cells,
 )
 
 
@@ -53,6 +55,43 @@ class TestDetectLeadingMarkerType:
 
     def test_non_marker_returns_none(self):
         assert detect_leading_marker_type("Die Jugendhilfe") is None
+
+    def test_date_like_prefix_is_not_number_dot_marker(self):
+        assert detect_leading_marker_type("2.7.2019, S. 1") is None
+
+
+class TestExtractLeadingListNumber:
+    def test_extracts_simple_list_number(self):
+        assert extract_leading_list_number("5. Hilfe") == 5
+
+    def test_extracts_with_spacing(self):
+        assert extract_leading_list_number("  12 . Hilfe") == 12
+
+    def test_rejects_date_like_prefix(self):
+        assert extract_leading_list_number("2.7.2019, S. 1") is None
+
+
+class TestRemoveSuspectedStruckDuplicateNumberCells:
+    def test_removes_repeated_number_when_other_column_advances(self):
+        rows = [
+            make_row(left="5. alte links", right="5. alt rechts"),
+            make_row(left="6. neue links", right="5. gestrichen rechts"),
+        ]
+
+        result = remove_suspected_struck_duplicate_number_cells(rows)
+        assert result[0]["right"] == "5. alt rechts"
+        assert result[1]["left"] == "6. neue links"
+        assert result[1]["right"] is None
+        assert result[1]["right_bold_ranges"] == []
+
+    def test_keeps_repeated_number_when_other_column_does_not_advance(self):
+        rows = [
+            make_row(left="5. alte links", right="5. alt rechts"),
+            make_row(left="Hinweistext", right="5. möglicherweise korrekt"),
+        ]
+
+        result = remove_suspected_struck_duplicate_number_cells(rows)
+        assert result[1]["right"] == "5. möglicherweise korrekt"
 
 
 class TestColumnShouldMerge:
@@ -643,6 +682,37 @@ class TestAlignLawSections:
         assert aligned[3]["synopsis2024"]["left"] == "1. links eins"
         assert aligned[3]["synopsis2026"] is None
 
+    def test_asymmetric_marker_columns_same_number_do_not_direct_match(self):
+        sections_2024 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2", right="§ 2"),
+                make_row(left="1. Angebote A", right="1. Angebote A"),
+                make_row(left="2. Angebote B", right="2. Angebote B"),
+            ],
+        }
+        sections_2026 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2", right="§ 2"),
+                make_row(left="", right="1. eingeschobener Punkt"),
+                make_row(left="1. Angebote A neu", right="1. Angebote A neu"),
+                make_row(left="2. Angebote B neu", right="2. Angebote B neu"),
+            ],
+        }
+
+        aligned = align_law_sections(sections_2024, sections_2026)
+        assert len(aligned) == 4
+        assert aligned[0]["synopsis2024"]["left"] == "§ 2"
+        assert aligned[0]["synopsis2026"]["left"] == "§ 2"
+
+        assert aligned[1]["synopsis2024"] is None
+        assert aligned[1]["synopsis2026"]["right"] == "1. eingeschobener Punkt"
+
+        assert aligned[2]["synopsis2024"]["left"] == "1. Angebote A"
+        assert aligned[2]["synopsis2026"]["left"] == "1. Angebote A neu"
+
+        assert aligned[3]["synopsis2024"]["left"] == "2. Angebote B"
+        assert aligned[3]["synopsis2026"]["left"] == "2. Angebote B neu"
+
 
 class TestAlignAndMerge:
     def test_full_pipeline_integration(self):
@@ -784,3 +854,69 @@ class TestAlignAndMerge:
         ]
         assert len(merged_rows) == 1
         assert "text ending oder" in merged_rows[0]["synopsis2024"]["left"]
+
+    def test_suspected_struck_duplicate_number_cell_is_cleared(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="5. Hilfe links", right="5. Hilfe rechts"),
+                make_row(left="6. Folge links", right="5. Gestrichen rechts"),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="5. Hilfe links neu", right="5. Hilfe rechts neu"),
+                make_row(left="6. Folge links neu", right="6. Folge rechts neu"),
+            ],
+        }
+
+        result = align_and_merge(data_2024, data_2026)
+
+        cleaned_rows = [
+            row for row in result["rows"]
+            if row.get("synopsis2024") and row["synopsis2024"].get("left") == "6. Folge links"
+        ]
+        assert len(cleaned_rows) == 1
+        assert cleaned_rows[0]["synopsis2024"]["right"] is None
+
+    def test_orphan_2026_right_insert_is_collapsed_into_following_row(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="1. Angebote A", right="1. Angebote A"),
+                make_row(left="2. Angebote B", right="2. Angebote B"),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="", right="1. eingeschobener Punkt"),
+                make_row(left="1. Angebote A neu", right="2. Angebote A neu"),
+                make_row(left="2. Angebote B neu", right="3. Angebote B neu"),
+            ],
+        }
+
+        result = align_and_merge(data_2024, data_2026)
+
+        section_rows = [
+            row
+            for row in result["rows"]
+            if not row["is_section_header"]
+            and row.get("synopsis2024")
+            and row.get("synopsis2026")
+            and (row["synopsis2024"].get("left") or "").startswith("1.")
+        ]
+
+        assert len(section_rows) == 1
+        merged_right = section_rows[0]["synopsis2026"]["right"]
+        assert "1. eingeschobener Punkt" in merged_right
+        assert "2. Angebote A neu" in merged_right
