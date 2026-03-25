@@ -1118,6 +1118,23 @@ class TestBuildMergedLeftEntry:
         assert entry["text"] == "- Aus Synopsis 2024 -\n\nAlpha"
         assert entry["bold_ranges"] == [[23, 28]]
 
+    def test_one_sided_aenderungen_value_suppresses_source_label(self):
+        entry = build_merged_left_entry(
+            {
+                "left": "Alpha",
+                "right": "Änderung 2024",
+                "left_bold_ranges": [[0, 5]],
+            },
+            {
+                "left": "",
+                "right": "",
+                "left_bold_ranges": [],
+            },
+        )
+
+        assert entry["text"] == "Alpha"
+        assert entry["bold_ranges"] == [[0, 5]]
+
     def test_equal_text_after_normalization_uses_plain_text_without_labels(self):
         entry = build_merged_left_entry(
             {"left": "Wort\nlaut", "left_bold_ranges": [[0, 4]]},

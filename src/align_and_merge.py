@@ -440,14 +440,26 @@ def build_merged_left_entry(
     """Build merged-left output with source labels and shifted bold ranges."""
     text_2024, bold_ranges_2024 = _extract_text_and_bold_ranges(row_2024, "left")
     text_2026, bold_ranges_2026 = _extract_text_and_bold_ranges(row_2026, "left")
+    right_text_2024, _ = _extract_text_and_bold_ranges(row_2024, "right")
+    right_text_2026, _ = _extract_text_and_bold_ranges(row_2026, "right")
 
     text_2024_is_empty = _is_empty_text(text_2024)
     text_2026_is_empty = _is_empty_text(text_2026)
+    right_text_2024_has_value = not _is_empty_text(right_text_2024)
+    right_text_2026_has_value = not _is_empty_text(right_text_2026)
+    only_one_changes_column_has_value = (
+        right_text_2024_has_value != right_text_2026_has_value
+    )
 
     if text_2024_is_empty and text_2026_is_empty:
         return {"text": "", "bold_ranges": []}
 
     if not text_2024_is_empty and text_2026_is_empty:
+        if only_one_changes_column_has_value:
+            return {
+                "text": text_2024,
+                "bold_ranges": sorted_bold_ranges(bold_ranges_2024),
+            }
         prefix = MERGED_LEFT_SOURCE_LABEL_2024 + "\n\n"
         return {
             "text": prefix + text_2024,
@@ -455,6 +467,11 @@ def build_merged_left_entry(
         }
 
     if text_2024_is_empty and not text_2026_is_empty:
+        if only_one_changes_column_has_value:
+            return {
+                "text": text_2026,
+                "bold_ranges": sorted_bold_ranges(bold_ranges_2026),
+            }
         prefix = MERGED_LEFT_SOURCE_LABEL_2026 + "\n\n"
         return {
             "text": prefix + text_2026,
