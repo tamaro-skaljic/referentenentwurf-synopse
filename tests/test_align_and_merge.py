@@ -81,10 +81,10 @@ class TestRemoveSuspectedStruckDuplicateNumberCells:
         ]
 
         result = remove_suspected_struck_duplicate_number_cells(rows)
-        assert result[0]["right"] == "5. alt rechts"
+        assert result[0]["right"] == "5. entfällt"
+        assert result[1]["right"] == "5. gestrichen rechts"
+        assert result[1]["right_bold_ranges"] == [[0, 2]]
         assert result[1]["left"] == "6. neue links"
-        assert result[1]["right"] is None
-        assert result[1]["right_bold_ranges"] == []
 
     def test_keeps_repeated_number_when_other_column_does_not_advance(self):
         rows = [
@@ -94,6 +94,22 @@ class TestRemoveSuspectedStruckDuplicateNumberCells:
 
         result = remove_suspected_struck_duplicate_number_cells(rows)
         assert result[1]["right"] == "5. möglicherweise korrekt"
+
+    def test_removes_repeated_number_when_cell_has_format_ranges(self):
+        rows = [
+            make_row(left="5. alte links", right="5. alt rechts"),
+            make_row(
+                left="6. neue links",
+                right="5. markiert rechts",
+                right_bold_ranges=[[0, 1]],
+            ),
+        ]
+
+        result = remove_suspected_struck_duplicate_number_cells(rows)
+        assert result[0]["right"] == "5. entfällt"
+        assert result[0]["right_bold_ranges"] == []
+        assert result[1]["right"] == "5. markiert rechts"
+        assert result[1]["right_bold_ranges"] == [[0, 2]]
 
 
 class TestColumnShouldMerge:
@@ -778,6 +794,36 @@ class TestAlignLawSections:
         assert aligned[3]["synopsis2024"]["left"] == "2. Angebote B"
         assert aligned[3]["synopsis2026"]["left"] == "2. Angebote B neu"
 
+    def test_left_only_number_dot_can_align_with_both_columns_without_shift(self):
+        sections_2024 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2", right="§ 2"),
+                make_row(left="5. Hilfe A", right="5. Hilfe A"),
+                make_row(left="6. Hilfe B", right=None),
+                make_row(left="(3) Andere Aufgaben", right="(3) Andere Aufgaben"),
+                make_row(left="1. Inobhutnahme", right="1. unverändert"),
+            ],
+        }
+        sections_2026 = {
+            SectionKey(2, ""): [
+                make_row(left="§ 2", right="§ 2"),
+                make_row(left="5. Hilfe A neu", right="5. Hilfe A neu"),
+                make_row(left="6. Hilfe B neu", right="6. Hilfe B neu"),
+                make_row(left="(3) Andere Aufgaben", right="(3) Andere Aufgaben"),
+                make_row(left="1. Inobhutnahme neu", right="1. unverändert"),
+            ],
+        }
+
+        aligned = align_law_sections(sections_2024, sections_2026)
+
+        assert len(aligned) == 5
+        assert aligned[2]["synopsis2024"]["left"].startswith("6.")
+        assert aligned[2]["synopsis2026"]["left"].startswith("6.")
+        assert aligned[3]["synopsis2024"]["left"].startswith("(3)")
+        assert aligned[3]["synopsis2026"]["left"].startswith("(3)")
+        assert aligned[4]["synopsis2024"]["left"].startswith("1.")
+        assert aligned[4]["synopsis2026"]["left"].startswith("1.")
+
 
 class TestAlignAndMerge:
     def test_full_pipeline_integration(self):
@@ -920,7 +966,7 @@ class TestAlignAndMerge:
         assert len(merged_rows) == 1
         assert "text ending oder" in merged_rows[0]["synopsis2024"]["left"]
 
-    def test_suspected_struck_duplicate_number_cell_is_cleared(self):
+    def test_suspected_struck_duplicate_number_cell_is_labeled(self):
         data_2024 = {
             "source_file": "2024.pdf",
             "rows": [
@@ -947,7 +993,73 @@ class TestAlignAndMerge:
             if row.get("synopsis2024") and row["synopsis2024"].get("left") == "6. Folge links"
         ]
         assert len(cleaned_rows) == 1
-        assert cleaned_rows[0]["synopsis2024"]["right"] is None
+        assert cleaned_rows[0]["synopsis2024"]["right"] == "5. Gestrichen rechts"
+        assert cleaned_rows[0]["synopsis2024"]["right_bold_ranges"] == [[0, 2]]
+
+        deleted_rows = [
+            row for row in result["rows"]
+            if row.get("synopsis2024") and row["synopsis2024"].get("left") == "5. Hilfe links"
+        ]
+        assert len(deleted_rows) == 1
+        assert deleted_rows[0]["synopsis2024"]["right"] == "5. entfällt"
+
+    def test_struck_item_becomes_entfaellt_and_next_item_is_renumbered_bold(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(
+                    left="5. Hilfe für seelisch behinderte Kinder und Jugendliche",
+                    right="5. Hilfe für seelisch behinderte Kinder und Jugendliche",
+                ),
+                make_row(
+                    left="6. Hilfe für junge Volljährige und Nachbetreuung (den §§ 41 und 41a).",
+                    right="5. Hilfe für junge Volljährige und Nachbetreuung (den §§ 41 und 41a).",
+                ),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(
+                    left="5. Hilfe für seelisch behinderte Kinder und Jugendliche",
+                    right="5. Hilfe für seelisch behinderte Kinder und Jugendliche",
+                ),
+                make_row(
+                    left="6. Hilfe für junge Volljährige und Nachbetreuung (den §§ 41 und 41a).",
+                    right="6. Hilfe für junge Volljährige und Nachbetreuung (den §§ 41 und 41a).",
+                    right_bold_ranges=[[0, 2]],
+                ),
+            ],
+        }
+
+        result = align_and_merge(data_2024, data_2026)
+        matching_rows = [
+            row
+            for row in result["rows"]
+            if row.get("synopsis2024")
+            and row["synopsis2024"].get("left")
+            == "6. Hilfe für junge Volljährige und Nachbetreuung (den §§ 41 und 41a)."
+        ]
+
+        assert len(matching_rows) == 1
+        synopsis_2024_row = matching_rows[0]["synopsis2024"]
+        assert synopsis_2024_row["right"] == "5. Hilfe für junge Volljährige und Nachbetreuung (den §§ 41 und 41a)."
+        assert synopsis_2024_row["right"] != ""
+        assert synopsis_2024_row["right_bold_ranges"] == [[0, 2]]
+
+        deleted_rows = [
+            row
+            for row in result["rows"]
+            if row.get("synopsis2024")
+            and row["synopsis2024"].get("left")
+            == "5. Hilfe für seelisch behinderte Kinder und Jugendliche"
+        ]
+        assert len(deleted_rows) == 1
+        assert deleted_rows[0]["synopsis2024"]["right"] == "5. entfällt"
 
     def test_orphan_2026_right_insert_is_collapsed_into_following_row(self):
         data_2024 = {

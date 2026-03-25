@@ -51,6 +51,7 @@ LETTER_BRACKET_MARKER_PATTERN = re.compile(r"^[A-Za-zÄÖÜäöüß]\s*\)")
 PARENTHESIZED_NUMBER_MARKER_PATTERN = re.compile(r"^\(\s*\d+\s*\)")
 
 LEADING_LIST_NUMBER_PATTERN = re.compile(r"^\s*(\d+)\s*\.(?!\d)")
+LEADING_LIST_NUMBER_REWRITE_PATTERN = re.compile(r"^(\s*)\d+(\s*)\.(?!\d)")
 
 
 def is_page_continuation_header(row: dict[str, Any]) -> bool:
@@ -182,6 +183,57 @@ def _find_next_row_index_with_marker_signature(
     return None
 
 
+def _extract_number_dot_marker_number(
+    row: dict[str, Any],
+    marker_signature: tuple[str, tuple[str, ...]],
+) -> int | None:
+    marker_columns = marker_signature[1]
+    if "left" in marker_columns:
+        return extract_leading_list_number(row.get("left"))
+    if "right" in marker_columns:
+        return extract_leading_list_number(row.get("right"))
+    return None
+
+
+def marker_signatures_can_directly_align(
+    row_2024: dict[str, Any],
+    marker_signature_2024: tuple[str, tuple[str, ...]] | None,
+    row_2026: dict[str, Any],
+    marker_signature_2026: tuple[str, tuple[str, ...]] | None,
+) -> bool:
+    if marker_signature_2024 == marker_signature_2026:
+        return True
+
+    if marker_signature_2024 is None or marker_signature_2026 is None:
+        return False
+
+    marker_type_2024, marker_columns_2024 = marker_signature_2024
+    marker_type_2026, marker_columns_2026 = marker_signature_2026
+
+    if marker_type_2024 != marker_type_2026:
+        return False
+
+    if marker_type_2024 != "number_dot":
+        return False
+
+    left_only_to_both_columns = (
+        marker_columns_2024 == ("left",)
+        and marker_columns_2026 == ("left", "right")
+    )
+    both_columns_to_left_only = (
+        marker_columns_2024 == ("left", "right")
+        and marker_columns_2026 == ("left",)
+    )
+
+    if not (left_only_to_both_columns or both_columns_to_left_only):
+        return False
+
+    list_number_2024 = _extract_number_dot_marker_number(row_2024, marker_signature_2024)
+    list_number_2026 = _extract_number_dot_marker_number(row_2026, marker_signature_2026)
+
+    return list_number_2024 is not None and list_number_2024 == list_number_2026
+
+
 def align_rows_by_marker_type(
     rows_2024: list[dict[str, Any]],
     rows_2026: list[dict[str, Any]],
@@ -206,7 +258,12 @@ def align_rows_by_marker_type(
         marker_signature_2024 = detect_row_marker_signature(row_2024)
         marker_signature_2026 = detect_row_marker_signature(row_2026)
 
-        if marker_signature_2024 == marker_signature_2026:
+        if marker_signatures_can_directly_align(
+            row_2024,
+            marker_signature_2024,
+            row_2026,
+            marker_signature_2026,
+        ):
             aligned_pairs.append((row_2024, row_2026))
             index_2024 += 1
             index_2026 += 1
@@ -453,46 +510,99 @@ def extract_leading_list_number(text: str | None) -> int | None:
     return int(match.group(1))
 
 
+def rewrite_leading_list_number(
+    text: str,
+    new_number: int,
+) -> tuple[str, list[int] | None]:
+    """Rewrite leading number-dot marker and return rewritten bold range.
+
+    Returned bold range covers only the rewritten numeric marker (excluding
+    leading whitespace).
+    """
+    match = LEADING_LIST_NUMBER_REWRITE_PATTERN.match(text)
+    if not match:
+        return text, None
+
+    leading_whitespace = match.group(1)
+    spacing_before_dot = match.group(2)
+    rewritten_prefix = f"{leading_whitespace}{new_number}{spacing_before_dot}."
+    rewritten_text = rewritten_prefix + text[match.end():]
+
+    bold_range_start = len(leading_whitespace)
+    bold_range_end = len(rewritten_prefix)
+    return rewritten_text, [bold_range_start, bold_range_end]
+
+
+def sorted_bold_ranges(bold_ranges: list[list[int]]) -> list[list[int]]:
+    """Return normalized bold ranges sorted and merged by overlap/adjacency."""
+    if not bold_ranges:
+        return []
+
+    sorted_ranges = sorted(bold_ranges, key=lambda range_pair: (range_pair[0], range_pair[1]))
+    merged_ranges: list[list[int]] = [list(sorted_ranges[0])]
+
+    for start, end in sorted_ranges[1:]:
+        previous_start, previous_end = merged_ranges[-1]
+        if start <= previous_end:
+            merged_ranges[-1] = [previous_start, max(previous_end, end)]
+            continue
+        merged_ranges.append([start, end])
+
+    return merged_ranges
+
+
 def remove_suspected_struck_duplicate_number_cells(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
-    """Drop likely struck duplicate numbered cells caused by PDF extraction limits.
+    """Normalize likely struck duplicate numbered list cells.
 
     Heuristic:
     - Same column repeats the same leading number as previous row, and
     - Opposite column on current row advances to the next number.
 
     In this case, the repeated number cell is considered struck/deleted and is
-    set to None (with empty bold ranges) to avoid false alignment.
+    normalized to '<n>. entfällt' (plain text) on the previous row. The current
+    row keeps its text and receives bold formatting on the leading number-dot
+    marker to highlight numbering shift.
     """
     if not rows:
         return []
 
-    cleaned_rows: list[dict[str, Any]] = []
+    cleaned_rows: list[dict[str, Any]] = [dict(row) for row in rows]
 
-    for row in rows:
-        cleaned_row = dict(row)
-        previous_row = cleaned_rows[-1] if cleaned_rows else None
+    for index in range(1, len(cleaned_rows)):
+        current_row = cleaned_rows[index]
+        previous_row = cleaned_rows[index - 1]
 
         for column_name, opposite_column_name in (("left", "right"), ("right", "left")):
-            current_number = extract_leading_list_number(cleaned_row.get(column_name))
-            if current_number is None:
-                continue
-
-            previous_number = extract_leading_list_number(
-                None if previous_row is None else previous_row.get(column_name)
-            )
-            opposite_number = extract_leading_list_number(cleaned_row.get(opposite_column_name))
+            previous_number = extract_leading_list_number(previous_row.get(column_name))
+            current_number = extract_leading_list_number(current_row.get(column_name))
+            opposite_number = extract_leading_list_number(current_row.get(opposite_column_name))
 
             if (
                 previous_number is not None
+                and current_number is not None
                 and current_number == previous_number
                 and opposite_number == current_number + 1
             ):
-                cleaned_row[column_name] = None
-                cleaned_row[f"{column_name}_bold_ranges"] = []
+                previous_row[column_name] = f"{current_number}. entfällt"
+                previous_row[f"{column_name}_bold_ranges"] = []
 
-        cleaned_rows.append(cleaned_row)
+                current_text = current_row.get(column_name)
+                if not isinstance(current_text, str):
+                    continue
+                _, current_number_bold_range = rewrite_leading_list_number(
+                    current_text,
+                    current_number,
+                )
+                if current_number_bold_range is None:
+                    continue
+
+                bold_ranges = current_row.get(f"{column_name}_bold_ranges", [])
+                if not isinstance(bold_ranges, list):
+                    bold_ranges = []
+                bold_ranges = [*bold_ranges, current_number_bold_range]
+                current_row[f"{column_name}_bold_ranges"] = sorted_bold_ranges(bold_ranges)
 
     return cleaned_rows
 
