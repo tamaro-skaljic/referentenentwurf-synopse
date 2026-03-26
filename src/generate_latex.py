@@ -195,6 +195,22 @@ _PLACEHOLDER_ROW: dict = {
 }
 
 
+def _is_unveraendert(text: str | None) -> bool:
+    """Return True when text represents 'unverändert' (tolerates OCR spacing)."""
+    if text is None:
+        return False
+    normalized = "".join(c for c in text.lower() if c.isalpha())
+    return normalized == "unverändert"
+
+
+def _right_is_empty_or_unveraendert(row: dict | None) -> bool:
+    """Return True when the right cell is absent, blank, or 'unverändert'."""
+    if row is None:
+        return True
+    text = (row.get("right") or "").strip()
+    return not text or _is_unveraendert(text)
+
+
 def minify_rows(rows: list[dict]) -> list[dict]:
     """Return a filtered row list for the minified Synopse.
 
@@ -202,7 +218,9 @@ def minify_rows(rows: list[dict]) -> list[dict]:
     - Structural rows: any row whose merged_left column contains bold text
       (covers §-section headers, law-name headers, paragraph/subsection headers)
     - Changed rows: any row where the 2024 or 2026 right column has diff ranges,
-      or where one side is entirely absent (whole section added/removed)
+      or where one side is entirely absent (whole section added/removed),
+      UNLESS col3 (2026 right) says 'unverändert' and col2 (2024 right) is
+      empty or also 'unverändert' — those carry no meaningful change.
 
     All other rows are replaced by a single placeholder row (three "..." cells).
     Consecutive placeholder rows are deduplicated to one.
@@ -220,6 +238,12 @@ def minify_rows(rows: list[dict]) -> list[dict]:
             or r2024 is None
             or r2026 is None
         )
+        # Override: col3 says "unverändert" and col2 is empty or also
+        # "unverändert" → nothing meaningful to show.
+        if has_changes and _is_unveraendert(
+            (r2026 or {}).get("right")
+        ) and _right_is_empty_or_unveraendert(r2024):
+            has_changes = False
         if is_structural or has_changes:
             result.append(row)
             last_was_placeholder = False
