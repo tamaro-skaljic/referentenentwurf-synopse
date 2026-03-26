@@ -125,6 +125,19 @@ else
 fi
 
 echo ""
+echo "=== Step 4b: Generate Minified LaTeX ==="
+generate_minified_ran=0
+if should_run_step "generate_latex_minified" "$generate_hash" "$align_merge_ran" "output/synopsis_combined_minified.tex"; then
+    uv run python src/generate_latex.py --minified \
+        output/synopsis_merged.json \
+        output/synopsis_combined_minified.tex
+    STATE["generate_latex_minified"]="$generate_hash"
+    generate_minified_ran=1
+else
+    echo "Skipping minified LaTeX generation (no relevant changes detected)."
+fi
+
+echo ""
 echo "=== Step 5: Compile PDF ==="
 compile_ran=0
 if [[ ! -f "output/synopsis_combined.pdf" ]]; then
@@ -143,8 +156,28 @@ else
     echo "Skipping PDF compile (up to date)."
 fi
 
+echo ""
+echo "=== Step 5b: Compile Minified PDF ==="
+compile_minified_ran=0
+if [[ ! -f "output/synopsis_combined_minified.pdf" ]]; then
+    compile_minified_ran=1
+elif [[ "$generate_minified_ran" == "1" ]]; then
+    compile_minified_ran=1
+elif [[ "output/synopsis_combined_minified.tex" -nt "output/synopsis_combined_minified.pdf" ]]; then
+    compile_minified_ran=1
+fi
+
+if [[ "$compile_minified_ran" == "1" ]]; then
+    cd output
+    xelatex -interaction=nonstopmode synopsis_combined_minified.tex
+    cd ..
+else
+    echo "Skipping minified PDF compile (up to date)."
+fi
+
 save_state
 
 echo ""
 echo "=== Done ==="
 echo "Output: output/synopsis_combined.pdf"
+echo "Output: output/synopsis_combined_minified.pdf"

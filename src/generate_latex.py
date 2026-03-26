@@ -174,6 +174,61 @@ def _wrap_in_bold(cell_text: str) -> str:
     return r"\textbf{" + cell_text + "}"
 
 
+_PLACEHOLDER_ROW: dict = {
+    "synopsis2024": {
+        "left": "...",
+        "right": "...",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "right_diff_ranges": [],
+    },
+    "synopsis2026": {
+        "left": "...",
+        "right": "...",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "right_diff_ranges": [],
+    },
+    "merged_left": {"text": "...", "bold_ranges": [], "diff_ranges": []},
+    "is_section_header": False,
+    "row_index": -1,
+}
+
+
+def minify_rows(rows: list[dict]) -> list[dict]:
+    """Return a filtered row list for the minified Synopse.
+
+    Keeps:
+    - Structural rows: any row whose merged_left column contains bold text
+      (covers §-section headers, law-name headers, paragraph/subsection headers)
+    - Changed rows: any row where the 2024 or 2026 right column has diff ranges,
+      or where one side is entirely absent (whole section added/removed)
+
+    All other rows are replaced by a single placeholder row (three "..." cells).
+    Consecutive placeholder rows are deduplicated to one.
+    """
+    result: list[dict] = []
+    last_was_placeholder = False
+    for row in rows:
+        r2024 = row.get("synopsis2024")
+        r2026 = row.get("synopsis2026")
+        merged_left = row.get("merged_left") or {}
+        is_structural = bool(merged_left.get("bold_ranges"))
+        has_changes = (
+            (r2024 is not None and bool(r2024.get("right_diff_ranges")))
+            or (r2026 is not None and bool(r2026.get("right_diff_ranges")))
+            or r2024 is None
+            or r2026 is None
+        )
+        if is_structural or has_changes:
+            result.append(row)
+            last_was_placeholder = False
+        elif not last_was_placeholder:
+            result.append(_PLACEHOLDER_ROW)
+            last_was_placeholder = True
+    return result
+
+
 def generate_latex(data: dict) -> str:
     """Generate the full LaTeX document."""
     lines = []
@@ -281,15 +336,23 @@ def generate_latex(data: dict) -> str:
 
 
 def main():
-    if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} <merged.json> <output.tex>", file=sys.stderr)
+    args = sys.argv[1:]
+    minified = False
+    if args and args[0] == "--minified":
+        minified = True
+        args = args[1:]
+    if len(args) != 2:
+        print(f"Usage: {sys.argv[0]} [--minified] <merged.json> <output.tex>", file=sys.stderr)
         sys.exit(1)
 
-    json_path = sys.argv[1]
-    tex_path = sys.argv[2]
+    json_path, tex_path = args
 
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
+
+    if minified:
+        data = dict(data)
+        data["rows"] = minify_rows(data.get("rows", []))
 
     latex = generate_latex(data)
 
