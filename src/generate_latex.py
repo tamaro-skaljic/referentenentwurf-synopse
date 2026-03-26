@@ -8,8 +8,11 @@ Usage:
 """
 
 import json
+import os
 import re
 import sys
+from datetime import datetime
+from urllib.parse import quote as url_quote
 
 
 def escape_latex(text: str) -> str:
@@ -30,6 +33,104 @@ def escape_latex(text: str) -> str:
     for old, new in replacements:
         text = text.replace(old, new)
     return text
+
+
+def format_german_datetime(dt: datetime) -> str:
+    """Format a datetime as 'DD.MM.YYYY, HH:MM Uhr'."""
+    return dt.strftime("%d.%m.%Y, %H:%M Uhr")
+
+
+def escape_url_for_latex(url: str) -> str:
+    """Escape only the LaTeX-special characters that appear in URLs.
+
+    Unlike escape_latex(), this preserves _, {, }, & etc. which are valid in URLs
+    but would be broken by full LaTeX escaping.
+    """
+    return url.replace("%", r"\%").replace("#", r"\#").replace("~", r"\textasciitilde{}")
+
+
+def build_logo_header(logo_path: str) -> str:
+    """Build the clickable logo used in the left page header.
+
+    Note: PDF link opening behavior (same tab/new tab/new window) is controlled
+    by the PDF viewer, not by LaTeX/PDF markup.
+    """
+    normalized_logo_path = logo_path.replace("\\", "/")
+    return (
+        r"\fancyhead[L]{\href{https://careleaver.de/}{\includegraphics[height=1.0cm]{"
+        + normalized_logo_path
+        + r"}}}"
+    )
+
+
+def generate_intro_paragraph(metadata: dict) -> list[str]:
+    """Generate the introductory paragraph LaTeX lines between title and legend."""
+    synopse_url = metadata["synopse_url"]
+    other_synopse_url = metadata["other_synopse_url"]
+    synopse_title = metadata["synopse_title"]
+    date = metadata["date"]
+    subscribe_url = metadata["subscribe_url"]
+    report_problem_url_template = metadata["report_problem_url_template"]
+
+    encoded_title = url_quote(synopse_title, safe="")
+    encoded_date = url_quote(date, safe="")
+    report_problem_url = (
+        report_problem_url_template
+        .replace("{synopse_title}", encoded_title)
+        .replace("{synopse_date}", encoded_date)
+    )
+
+    source_2024_url = "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/input/2024-09_Referentenentwurf_Synopse.pdf"
+    source_2026_url = "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/input/2026-03_Referentenentwurf_Synopse.pdf"
+    github_url = "https://github.com/tamaro-skaljic/referentenentwurf-synopse?tab=readme-ov-file#readme"
+    careleaver_url = "https://careleaver.de/ueber-uns/"
+    donation_url = "https://careleaver.de/spenden/jetzt-spenden/"
+
+    def href(url: str, text: str) -> str:
+        return r"\href{" + escape_url_for_latex(url) + "}{" + escape_latex(text) + "}"
+
+    paragraphs = [
+        (
+            "Diese und " + href(other_synopse_url, "die andere")
+            + r" Synopse wurden automatisiert auf Basis der beiden Synopsen der Referentenentw\"urfe aus dem Jahr "
+            + href(source_2024_url, "2024") + " und " + href(source_2026_url, "2026") + " generiert."
+        ),
+        (
+            "Die Generierung erfolgte durch ein " + href(github_url, "kostenloses und quelloffenes Programm")
+            + r", welches Tamaro Skaljic, seit Februar 2026 im Vorstandsbeisitz des "
+            + href(careleaver_url, "Careleaver e. V.") + ", programmiert hat."
+        ),
+        (
+            r"Da Menschen auch beim Programmieren Fehler machen k\"onnen, nutzen Sie bitte die aktuellste Version dieser Synopse, welche "
+            + href(synopse_url, "hier") + " heruntergeladen werden kann."
+        ),
+        (
+            r"Wenn Sie feststellen, dass Inhalte der beiden Referentenentw\"urfe in der Synopse nicht oder in fehlerhafter Form dargestellt werden, melden Sie dies bitte umgehend "
+            + href(report_problem_url, "per E-Mail")
+            + ", damit die Synopse korrigiert und aktualisiert werden kann."
+        ),
+        (
+            r"M\"ochten Sie \"uber neue Versionen dieser Synopse informiert werden, k\"onnen Sie sich ebenfalls "
+            + href(subscribe_url, "per E-Mail") + " in den Verteiler eintragen."
+        ),
+        (
+            r"Wenn wir Ihnen Ihre Arbeit erleichtern konnten, freut sich der Careleaver e. V. \"uber eine "
+            + href(donation_url, "Spende") + "."
+        ),
+    ]
+
+    lines = []
+    lines.append(r"\begin{center}")
+    lines.append(r"\begin{minipage}{25cm}")
+    lines.append(r"\small")
+    for i, paragraph in enumerate(paragraphs):
+        if i > 0:
+            lines.append(r"\par\medskip")
+        lines.append(paragraph)
+    lines.append(r"\end{minipage}")
+    lines.append(r"\end{center}")
+    lines.append(r"\vspace{0.3cm}")
+    return lines
 
 
 def apply_formatting_ranges(
@@ -325,15 +426,17 @@ def generate_latex(data: dict) -> str:
 
     # Preamble
     lines.append(r"\documentclass[10pt,a4paper,landscape]{article}")
-    lines.append(r"\usepackage[landscape,margin=1.2cm,headheight=14pt,includehead]{geometry}")
+    lines.append(r"\usepackage[landscape,margin=1.2cm,headheight=34pt,includehead]{geometry}")
     lines.append(r"\usepackage[ngerman]{babel}")
     lines.append(r"\usepackage{fontspec}")
+    lines.append(r"\usepackage{graphicx}")
     lines.append(r"\usepackage{longtable}")
     lines.append(r"\usepackage{array}")
     lines.append(r"\usepackage[table]{xcolor}")
     lines.append(r"\usepackage{hhline}")
     lines.append(r"\usepackage{ragged2e}")
     lines.append(r"\usepackage{fancyhdr}")
+    lines.append(r"\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,pdfencoding=auto]{hyperref}")
     lines.append("")
     lines.append(r"\definecolor{diffred}{RGB}{180, 0, 0}")
     lines.append(r"\definecolor{diffgreen}{RGB}{0, 130, 0}")
@@ -346,7 +449,13 @@ def generate_latex(data: dict) -> str:
     lines.append("")
     lines.append(r"\pagestyle{fancy}")
     lines.append(r"\fancyhf{}")
-    lines.append(r"\fancyhead[R]{\scriptsize\today}")
+    logo_path = data.get("metadata", {}).get("logo_path", "careleaver_logo_rgb.png")
+    lines.append(build_logo_header(logo_path))
+    header_date = data.get("metadata", {}).get("date", "")
+    if header_date:
+        lines.append(r"\fancyhead[R]{\scriptsize " + escape_latex(header_date) + "}")
+    else:
+        lines.append(r"\fancyhead[R]{\scriptsize\today}")
     lines.append(r"\renewcommand{\headrulewidth}{0pt}")
     lines.append("")
     lines.append(r"\begin{document}")
@@ -360,6 +469,12 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\end{center}")
     lines.append(r"\vspace{0.3cm}")
     lines.append("")
+
+    # Introductory paragraph
+    metadata = data.get("metadata", {})
+    if metadata.get("synopse_url"):
+        lines.extend(generate_intro_paragraph(metadata))
+        lines.append("")
 
     # Legend table for color semantics
     lines.append(r"\begin{center}")
@@ -437,6 +552,45 @@ def generate_latex(data: dict) -> str:
     return "\n".join(lines)
 
 
+FULL_PDF_URL = (
+    "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse"
+    "/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf"
+)
+
+MINIFIED_PDF_URL = (
+    "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse"
+    "/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20nur%20der%20%C3%84nderungen"
+    "%20zwischen%20den%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf"
+)
+
+SUBSCRIBE_URL = (
+    "mailto:tamaro.skaljic@careleaver.de"
+    "?subject=Eintragung%20in%20den%20Verteiler"
+    "&body=Hiermit%20stimme%20ich%20zu%2C%20dass%20Sie%20mich%20per%20E-Mail"
+    "%20%C3%BCber%20neue%20Versionen%20der%20Synopsen"
+    "%0D%0A%0D%0A-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026"
+    "%0D%0A%0D%0Aund"
+    "%0D%0A%0D%0A-%20Vergleich%20nur%20der%20%C3%84nderungen%20zwischen%20den"
+    "%20Referentenentw%C3%BCrfen%202024%20und%202026"
+    "%0D%0A%0D%0Ainformieren."
+    "%0D%0A%0D%0AIch%20wurde%20dar%C3%BCber%20informiert%2C%20dass%20ich%20mich"
+    "%20jederzeit%20formlos%20per%20E-Mail%20an%20tamaro.skaljic%40careleaver.de"
+    "%20aus%20dem%20Verteiler%20austragen%20kann."
+)
+
+REPORT_PROBLEM_URL_TEMPLATE = (
+    "mailto:tamaro.skaljic@careleaver.de"
+    "?subject=Problem%20melden%20-%20%22{synopse_title}%22%20(Stand%3A%20{synopse_date})"
+    "&body=---%20Hinweis%20---"
+    "%0D%0ABevor%20Sie%20ein%20Problem%20melden%2C%20%C3%BCberpr%C3%BCfen%20Sie%20bitte%2C"
+    "%20ob%20die%20Synopse%2C%20welche%20Sie%20sich%20anschauen"
+    "%20(Stand%3A%20{synopse_date})%2C%20der%20aktuellsten%20Version%20entspricht."
+    "%20Sie%20finden%20einen%20Link%20zur%20aktuellsten%20Version%20ganz%20oben%20in%20der%20Synopse."
+    "%0D%0AVielen%20Dank%20im%20Voraus."
+    "%0D%0A---%20Hinweis%20Ende%20---"
+)
+
+
 def main():
     args = sys.argv[1:]
     if len(args) != 2:
@@ -447,6 +601,26 @@ def main():
 
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
+
+    formatted_date = format_german_datetime(datetime.now())
+
+    repository_logo_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "careleaver_logo_rgb.png")
+    )
+    tex_directory = os.path.dirname(os.path.abspath(tex_path))
+    logo_path_for_tex = os.path.relpath(repository_logo_path, start=tex_directory)
+
+    full_title = data.get("metadata", {}).get("title", "Synopse")
+    metadata = data.setdefault("metadata", {})
+    metadata.setdefault("logo_path", logo_path_for_tex)
+    metadata.update({
+        "date": formatted_date,
+        "synopse_url": FULL_PDF_URL,
+        "other_synopse_url": MINIFIED_PDF_URL,
+        "synopse_title": full_title,
+        "subscribe_url": SUBSCRIBE_URL,
+        "report_problem_url_template": REPORT_PROBLEM_URL_TEMPLATE,
+    })
 
     latex = generate_latex(data)
 
@@ -463,6 +637,9 @@ def main():
         "Synopse IKJHG - Vergleich nur der Änderungen zwischen "
         "den Referentenentwürfe 2024 und 2026"
     )
+    minified_meta["synopse_url"] = MINIFIED_PDF_URL
+    minified_meta["other_synopse_url"] = FULL_PDF_URL
+    minified_meta["synopse_title"] = minified_meta["title"]
     minified_rows = minify_rows(data.get("rows", []))
     minified_data = {"metadata": minified_meta, "rows": minified_rows}
     minified_latex = generate_latex(minified_data)

@@ -1,4 +1,103 @@
-from src.generate_latex import apply_formatting_ranges, generate_latex, is_heading_row, minify_rows, render_cell
+from datetime import datetime
+
+from src.generate_latex import (
+    apply_formatting_ranges,
+    escape_url_for_latex,
+    format_german_datetime,
+    generate_intro_paragraph,
+    generate_latex,
+    is_heading_row,
+    minify_rows,
+    render_cell,
+)
+
+
+class TestGenerateIntroParagraph:
+    def _make_metadata(self):
+        return {
+            "title": "Test Synopse",
+            "date": "26.03.2026, 14:30 Uhr",
+            "synopse_url": "https://example.com/full.pdf",
+            "other_synopse_url": "https://example.com/minified.pdf",
+            "synopse_title": "Test Synopse",
+            "subscribe_url": "mailto:test@example.com?subject=Subscribe",
+            "report_problem_url_template": "mailto:test@example.com?subject={synopse_title}%20(Stand%3A%20{synopse_date})",
+        }
+
+    def test_contains_minipage_with_small_font(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\begin{minipage}{25cm}" in result
+        assert r"\small" in result
+
+    def test_contains_href_to_other_synopse(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\href{https://example.com/minified.pdf}{die andere}" in result
+
+    def test_contains_href_to_current_synopse_download(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\href{https://example.com/full.pdf}{hier}" in result
+
+    def test_contains_donation_link(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\href{https://careleaver.de/spenden/jetzt-spenden/}{Spende}" in result
+
+    def test_contains_careleaver_link(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\href{https://careleaver.de/ueber-uns/}{Careleaver e. V.}" in result
+
+    def test_contains_github_link(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\href{https://github.com/tamaro-skaljic/referentenentwurf-synopse?tab=readme-ov-file\#readme}{kostenloses und quelloffenes Programm}" in result
+
+    def test_contains_source_pdf_links(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\href{https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/input/2024-09_Referentenentwurf_Synopse.pdf}{2024}" in result
+        assert r"\href{https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/input/2026-03_Referentenentwurf_Synopse.pdf}{2026}" in result
+
+    def test_report_problem_url_encodes_title_and_date(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"Test\%20Synopse" in result
+        assert r"26.03.2026\%2C\%2014\%3A30\%20Uhr" in result
+
+    def test_urls_not_broken_by_escape_latex(self):
+        metadata = self._make_metadata()
+        metadata["synopse_url"] = "https://example.com/some_path%20file.pdf"
+        result = "\n".join(generate_intro_paragraph(metadata))
+        assert r"some\_path" not in result
+        assert "some_path" in result
+
+    def test_has_paragraph_spacing(self):
+        result = "\n".join(generate_intro_paragraph(self._make_metadata()))
+        assert r"\medskip" in result
+
+
+class TestEscapeUrlForLatex:
+    def test_escapes_percent(self):
+        assert escape_url_for_latex("https://example.com/foo%20bar") == r"https://example.com/foo\%20bar"
+
+    def test_escapes_hash(self):
+        assert escape_url_for_latex("https://example.com/page#readme") == r"https://example.com/page\#readme"
+
+    def test_escapes_tilde(self):
+        assert escape_url_for_latex("https://example.com/~user") == r"https://example.com/\textasciitilde{}user"
+
+    def test_leaves_underscores_intact(self):
+        url = "https://example.com/some_path"
+        assert escape_url_for_latex(url) == url
+
+    def test_leaves_ampersand_intact(self):
+        url = "mailto:x@y.com?subject=a&body=b"
+        assert escape_url_for_latex(url) == url
+
+
+class TestFormatGermanDatetime:
+    def test_formats_date_and_time(self):
+        dt = datetime(2026, 3, 26, 14, 30)
+        assert format_german_datetime(dt) == "26.03.2026, 14:30 Uhr"
+
+    def test_formats_midnight(self):
+        dt = datetime(2026, 1, 1, 0, 0)
+        assert format_german_datetime(dt) == "01.01.2026, 00:00 Uhr"
 
 
 def test_generate_latex_renders_three_column_layout_with_merged_left_cell():
@@ -35,6 +134,77 @@ def test_generate_latex_renders_three_column_layout_with_merged_left_cell():
     assert "Wurde im Vergleich zum RefE 2026 gelöscht" in latex
     assert "rechts 2024 & rechts 2026 \\\\" in latex
     assert "\\textbf{Synopsis 2024} & \\textbf{Synopsis 2026} & \\textbf{Synopsis 2024} & \\textbf{Synopsis 2026}" not in latex
+
+
+class TestIntroInGenerateLatex:
+    def _make_full_metadata(self):
+        return {
+            "title": "Test",
+            "date": "26.03.2026, 14:30 Uhr",
+            "synopse_url": "https://example.com/full.pdf",
+            "other_synopse_url": "https://example.com/mini.pdf",
+            "synopse_title": "Test",
+            "subscribe_url": "mailto:x@y.com",
+            "report_problem_url_template": "mailto:x@y.com?subject={synopse_title}",
+        }
+
+    def test_intro_present_when_metadata_has_urls(self):
+        data = {"metadata": self._make_full_metadata(), "rows": []}
+        latex = generate_latex(data)
+        assert r"\begin{minipage}{25cm}" in latex
+        assert r"\href{" in latex
+        assert "Markierungsfarbe" in latex
+
+    def test_intro_absent_when_no_url_metadata(self):
+        data = {"metadata": {"title": "Test"}, "rows": []}
+        latex = generate_latex(data)
+        assert r"\begin{minipage}" not in latex
+        assert "Markierungsfarbe" in latex
+
+    def test_intro_appears_between_title_and_legend(self):
+        data = {"metadata": self._make_full_metadata(), "rows": []}
+        latex = generate_latex(data)
+        title_pos = latex.index(r"{\Large\bfseries")
+        minipage_pos = latex.index(r"\begin{minipage}{25cm}")
+        legend_pos = latex.index("Markierungsfarbe")
+        assert title_pos < minipage_pos < legend_pos
+
+
+class TestHeaderDate:
+    def test_uses_metadata_date_when_provided(self):
+        data = {"metadata": {"title": "Test", "date": "01.01.2026, 00:00 Uhr"}, "rows": []}
+        latex = generate_latex(data)
+        assert "01.01.2026, 00:00 Uhr" in latex
+        assert r"\today" not in latex
+
+    def test_falls_back_to_today_when_no_date(self):
+        data = {"metadata": {"title": "Test"}, "rows": []}
+        latex = generate_latex(data)
+        assert r"\today" in latex
+
+
+def test_hyperref_in_preamble():
+    data = {"metadata": {"title": "Test"}, "rows": []}
+    latex = generate_latex(data)
+    assert r"\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue,pdfencoding=auto]{hyperref}" in latex
+
+
+def test_graphicx_in_preamble():
+    data = {"metadata": {"title": "Test"}, "rows": []}
+    latex = generate_latex(data)
+    assert r"\usepackage{graphicx}" in latex
+
+
+class TestHeaderLogo:
+    def test_left_header_contains_clickable_logo(self):
+        data = {"metadata": {"title": "Test"}, "rows": []}
+        latex = generate_latex(data)
+        assert r"\fancyhead[L]{\href{https://careleaver.de/}{\includegraphics[height=1.0cm]{careleaver_logo_rgb.png}}}" in latex
+
+    def test_left_header_supports_custom_logo_path(self):
+        data = {"metadata": {"title": "Test", "logo_path": "assets/logo.png"}, "rows": []}
+        latex = generate_latex(data)
+        assert r"\fancyhead[L]{\href{https://careleaver.de/}{\includegraphics[height=1.0cm]{assets/logo.png}}}" in latex
 
 
 class TestApplyFormattingRanges:

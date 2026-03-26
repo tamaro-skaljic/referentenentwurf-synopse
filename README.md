@@ -13,7 +13,7 @@
  <img src="./careleaver_logo_rgb.png" alt="Careleaver e. V. Logo" width="320" />
 </p>
 
-Dieses kostenlose und quelloffene Projekt wurde von Tamaro Skaljic entwickelt (seit Februar 2026 im Vorstandsbeisitz des [Careleaver e. V.](https://careleaver.de/ueber-uns/)).
+Die Generierung erfolgte durch dieses kostenlose und quelloffene Programm, welches Tamaro Skaljic, seit Februar 2026 im Vorstandsbeisitz des [Careleaver e. V.](https://careleaver.de/ueber-uns/), programmiert hat.
 
 Da Menschen auch beim Programmieren Fehler machen können, nutzen Sie bitte die aktuellste Version dieser Synopsen, die Download-Links sehen Sie oben.
 
