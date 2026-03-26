@@ -1,8 +1,8 @@
 # Referentenentwurf-Synopse
 
-- Direkt zur [Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf).
+- Direkt zur [Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentwürfe%202024%20und%202026.pdf).
 
-- Direkt zur [Synopse IKJHG - Vergleich nur der Änderungen zwischen den Referentenentwürfen 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20nur%20der%20%C3%84nderungen%20zwischen%20den%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf).
+- Direkt zur [Synopse IKJHG - Vergleich nur der Änderungen zwischen den Referentenentwürfen 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20nur%20der%20Änderungen%20zwischen%20den%20Referentenentwürfe%202024%20und%202026.pdf).
 
 ---
 
