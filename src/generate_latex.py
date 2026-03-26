@@ -337,22 +337,14 @@ def generate_latex(data: dict) -> str:
 
 def main():
     args = sys.argv[1:]
-    minified = False
-    if args and args[0] == "--minified":
-        minified = True
-        args = args[1:]
     if len(args) != 2:
-        print(f"Usage: {sys.argv[0]} [--minified] <merged.json> <output.tex>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} <merged.json> <output.tex>", file=sys.stderr)
         sys.exit(1)
 
     json_path, tex_path = args
 
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
-
-    if minified:
-        data = dict(data)
-        data["rows"] = minify_rows(data.get("rows", []))
 
     latex = generate_latex(data)
 
@@ -361,6 +353,18 @@ def main():
 
     print(f"Generated LaTeX: {tex_path}")
     print(f"Compile with: xelatex {tex_path}")
+
+    # Also generate minified version alongside the full output
+    minified_tex_path = tex_path.replace(".tex", "_minified.tex")
+    minified_data = dict(data)
+    minified_data["rows"] = minify_rows(data.get("rows", []))
+    minified_latex = generate_latex(minified_data)
+
+    with open(minified_tex_path, "w", encoding="utf-8") as f:
+        f.write(minified_latex)
+
+    print(f"Generated minified LaTeX: {minified_tex_path}")
+    print(f"Compile with: xelatex {minified_tex_path}")
 
 
 if __name__ == "__main__":
