@@ -6,6 +6,9 @@ export PATH="$PATH:$HOME/.local/bin:$HOME/AppData/Local/Programs/MiKTeX/miktex/b
 
 mkdir -p output
 
+PDF_FULL="output/Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf"
+PDF_MINI="output/Synopse IKJHG - Vergleich nur der Änderungen zwischen den Referentenentwürfe 2024 und 2026.pdf"
+
 STATE_FILE="output/.pipeline_hashes"
 declare -A STATE
 
@@ -165,6 +168,11 @@ fi
 save_state
 
 echo ""
+echo "=== Step 6: Rename PDFs to canonical names ==="
+mv "output/synopsis_combined.pdf"          "$PDF_FULL"
+mv "output/synopsis_combined_minified.pdf" "$PDF_MINI"
+
+echo ""
 echo "=== Done ==="
-echo "Output: output/synopsis_combined.pdf"
-echo "Output: output/synopsis_combined_minified.pdf"
+echo "Output: $PDF_FULL"
+echo "Output: $PDF_MINI"

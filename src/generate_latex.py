@@ -215,6 +215,24 @@ def _right_is_empty_or_unveraendert(row: dict | None) -> bool:
     return not text or _is_unveraendert(text)
 
 
+_UNVERAENDERT_PREFIX_RE = re.compile(
+    r'^[(\[]*[a-z0-9]{0,3}[.)\] ]*\s*unver[äa]ndert',
+    re.IGNORECASE,
+)
+
+
+def _starts_with_unveraendert(text: str | None) -> bool:
+    """Return True if text is – or starts with – an 'unverändert' marker.
+
+    Handles plain 'unverändert', prefixed forms like '3. unverändert' or
+    'c) unverändert', and those followed by a structural heading such as
+    '(2) unverändert  Zweites Buch Sozialgesetzbuch'.
+    """
+    if not text:
+        return False
+    return bool(_UNVERAENDERT_PREFIX_RE.match(text.strip()))
+
+
 def minify_rows(rows: list[dict]) -> list[dict]:
     """Return a filtered row list for the minified Synopse.
 
@@ -234,6 +252,15 @@ def minify_rows(rows: list[dict]) -> list[dict]:
     for row in rows:
         r2024 = row.get("synopsis2024")
         r2026 = row.get("synopsis2026")
+        # Both right columns say "unverändert" (plain or prefixed, possibly
+        # followed by a structural heading) → nothing to show, suppress unconditionally.
+        col2_text = (r2024 or {}).get("right") or ""
+        col3_text = (r2026 or {}).get("right") or ""
+        if _starts_with_unveraendert(col2_text) and _starts_with_unveraendert(col3_text):
+            if not last_was_placeholder:
+                result.append(_PLACEHOLDER_ROW)
+                last_was_placeholder = True
+            continue
         merged_left = row.get("merged_left") or {}
         is_structural = bool(merged_left.get("bold_ranges"))
         has_changes = (
@@ -271,13 +298,14 @@ def generate_latex(data: dict) -> str:
 
     # Preamble
     lines.append(r"\documentclass[10pt,a4paper,landscape]{article}")
-    lines.append(r"\usepackage[landscape,margin=1.2cm]{geometry}")
+    lines.append(r"\usepackage[landscape,margin=1.2cm,headheight=14pt,includehead]{geometry}")
     lines.append(r"\usepackage[ngerman]{babel}")
     lines.append(r"\usepackage{fontspec}")
     lines.append(r"\usepackage{longtable}")
     lines.append(r"\usepackage{array}")
     lines.append(r"\usepackage[table]{xcolor}")
     lines.append(r"\usepackage{ragged2e}")
+    lines.append(r"\usepackage{fancyhdr}")
     lines.append("")
     lines.append(r"\definecolor{diffred}{RGB}{180, 0, 0}")
     lines.append(r"\definecolor{diffgreen}{RGB}{0, 130, 0}")
@@ -288,8 +316,21 @@ def generate_latex(data: dict) -> str:
     lines.append("")
     lines.append(r"\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}")
     lines.append("")
+    lines.append(r"\pagestyle{fancy}")
+    lines.append(r"\fancyhf{}")
+    lines.append(r"\fancyhead[R]{\scriptsize\today}")
+    lines.append(r"\renewcommand{\headrulewidth}{0pt}")
+    lines.append("")
     lines.append(r"\begin{document}")
     lines.append(r"\scriptsize")
+    lines.append("")
+
+    # Title
+    title = data.get("metadata", {}).get("title", "Synopse")
+    lines.append(r"\begin{center}")
+    lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
+    lines.append(r"\end{center}")
+    lines.append(r"\vspace{0.3cm}")
     lines.append("")
 
     # Legend table for color semantics
@@ -313,14 +354,6 @@ def generate_latex(data: dict) -> str:
     )
     lines.append(r"\hline")
     lines.append(r"\end{tabular}")
-    lines.append(r"\end{center}")
-    lines.append(r"\vspace{0.3cm}")
-    lines.append("")
-
-    # Title
-    title = data.get("metadata", {}).get("title", "Synopse")
-    lines.append(r"\begin{center}")
-    lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
     lines.append(r"\end{center}")
     lines.append(r"\vspace{0.5cm}")
     lines.append("")
@@ -392,8 +425,13 @@ def main():
 
     # Also generate minified version alongside the full output
     minified_tex_path = tex_path.replace(".tex", "_minified.tex")
-    minified_data = dict(data)
-    minified_data["rows"] = minify_rows(data.get("rows", []))
+    minified_meta = dict(data.get("metadata", {}))
+    minified_meta["title"] = (
+        "Synopse IKJHG - Vergleich nur der Änderungen zwischen "
+        "den Referentenentwürfe 2024 und 2026"
+    )
+    minified_rows = minify_rows(data.get("rows", []))
+    minified_data = {"metadata": minified_meta, "rows": minified_rows}
     minified_latex = generate_latex(minified_data)
 
     with open(minified_tex_path, "w", encoding="utf-8") as f:
@@ -401,6 +439,23 @@ def main():
 
     print(f"Generated minified LaTeX: {minified_tex_path}")
     print(f"Compile with: xelatex {minified_tex_path}")
+
+    # Verify: no row in the minified output has "unverändert" in both right columns.
+    violations = [
+        r for r in minified_rows
+        if _starts_with_unveraendert((r.get("synopsis2024") or {}).get("right") or "")
+        and _starts_with_unveraendert((r.get("synopsis2026") or {}).get("right") or "")
+    ]
+    if violations:
+        print(
+            f"ERROR: {len(violations)} row(s) in minified output still have "
+            "'unverändert' in both columns:",
+            file=sys.stderr,
+        )
+        for v in violations[:5]:
+            print(f"  row_index={v.get('row_index')}", file=sys.stderr)
+        sys.exit(1)
+    print("Verification passed: no double-'unverändert' rows in minified output.")
 
 
 if __name__ == "__main__":

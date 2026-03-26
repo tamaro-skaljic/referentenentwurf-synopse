@@ -5,6 +5,9 @@ $env:PATH += ";$env:USERPROFILE\.local\bin;$env:LOCALAPPDATA\Programs\MiKTeX\mik
 
 New-Item -ItemType Directory -Path output -Force | Out-Null
 
+$PdfFull = "output\Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf"
+$PdfMini = "output\Synopse IKJHG - Vergleich nur der Änderungen zwischen den Referentenentwürfe 2024 und 2026.pdf"
+
 $stateFile = "output/.pipeline_hashes"
 $state = @{}
 
@@ -138,11 +141,41 @@ else {
     Write-Host "Skipping PDF compile (up to date)." -ForegroundColor DarkGray
 }
 
+Write-Host ""
+Write-Host "=== Step 5b: Compile Minified PDF ===" -ForegroundColor Cyan
+$compileMiniRan = $false
+if (-not (Test-Path "output/synopsis_combined_minified.pdf")) {
+    $compileMiniRan = $true
+}
+elseif ($generateRan) {
+    $compileMiniRan = $true
+}
+else {
+    $texMini = Get-Item "output/synopsis_combined_minified.tex"
+    $pdfMini = Get-Item "output/synopsis_combined_minified.pdf"
+    $compileMiniRan = $texMini.LastWriteTimeUtc -gt $pdfMini.LastWriteTimeUtc
+}
+
+if ($compileMiniRan) {
+    Push-Location output
+    xelatex -interaction=nonstopmode synopsis_combined_minified.tex
+    Pop-Location
+}
+else {
+    Write-Host "Skipping minified PDF compile (up to date)." -ForegroundColor DarkGray
+}
+
 $serializedState = $state.GetEnumerator() |
 Sort-Object Name |
 ForEach-Object { "$($_.Key)=$($_.Value)" }
 Set-Content -Path $stateFile -Value $serializedState -Encoding UTF8
 
 Write-Host ""
+Write-Host "=== Step 6: Rename PDFs to canonical names ===" -ForegroundColor Cyan
+Rename-Item "output\synopsis_combined.pdf"          (Split-Path $PdfFull -Leaf)
+Rename-Item "output\synopsis_combined_minified.pdf" (Split-Path $PdfMini -Leaf)
+
+Write-Host ""
 Write-Host "=== Done ===" -ForegroundColor Green
-Write-Host "Output: output/synopsis_combined.pdf"
+Write-Host "Output: $PdfFull"
+Write-Host "Output: $PdfMini"
