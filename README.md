@@ -1,6 +1,9 @@
 # Referentenentwurf-Synopse
 
-Hier geht es direkt zur Synopse: <https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/synopsis_combined.pdf>
+Hier geht es direkt zur Synopse:
+ <https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/synopsis_combined.pdf>
+
+Und eine Synopse, welche nur die Änderungen zwischen beiden Entwürfen beinhaltet (Jede Reihe, wo beide Referentenentwürfe identisch sind, wurde entfernt): <https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/synopsis_combined_minified.pdf>
 
 Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen der Referentenentwürfe von 2024 und 2026 gegenüberstellt.
 
