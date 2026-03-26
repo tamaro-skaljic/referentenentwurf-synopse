@@ -164,6 +164,26 @@ def render_merged_left_cell(aligned_row: dict) -> str:
     return sanitize_cell(format_text_entry(aligned_row.get("merged_left")))
 
 
+_SGB_PATTERN = re.compile(r"\( - SGB")
+
+
+def is_heading_row(row: dict, previous_row: dict | None) -> bool:
+    """Return True if row should be treated as a heading row.
+
+    Matches:
+    - Rows where any cell contains '( - SGB'
+    - Rows immediately following a § section header row
+    """
+    if row.get("is_section_header"):
+        return False
+    merged_left_text = (row.get("merged_left") or {}).get("text", "")
+    if _SGB_PATTERN.search(merged_left_text):
+        return True
+    if previous_row is not None and previous_row.get("is_section_header"):
+        return True
+    return False
+
+
 def _wrap_in_bold(cell_text: str) -> str:
     """Wrap cell text in bold if not empty and not already bold."""
     stripped = cell_text.strip()
@@ -249,6 +269,7 @@ def minify_rows(rows: list[dict]) -> list[dict]:
     """
     result: list[dict] = []
     last_was_placeholder = False
+    previous_row = None
     for row in rows:
         r2024 = row.get("synopsis2024")
         r2026 = row.get("synopsis2026")
@@ -260,9 +281,14 @@ def minify_rows(rows: list[dict]) -> list[dict]:
             if not last_was_placeholder:
                 result.append(_PLACEHOLDER_ROW)
                 last_was_placeholder = True
+            previous_row = row
             continue
         merged_left = row.get("merged_left") or {}
-        is_structural = bool(merged_left.get("bold_ranges"))
+        is_structural = (
+            bool(merged_left.get("bold_ranges"))
+            or row.get("is_section_header", False)
+            or is_heading_row(row, previous_row)
+        )
         has_changes = (
             (r2024 is not None and bool(r2024.get("right_diff_ranges")))
             or (r2026 is not None and bool(r2026.get("right_diff_ranges")))
@@ -289,6 +315,7 @@ def minify_rows(rows: list[dict]) -> list[dict]:
         elif not last_was_placeholder:
             result.append(_PLACEHOLDER_ROW)
             last_was_placeholder = True
+        previous_row = row
     return result
 
 
@@ -304,6 +331,7 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\usepackage{longtable}")
     lines.append(r"\usepackage{array}")
     lines.append(r"\usepackage[table]{xcolor}")
+    lines.append(r"\usepackage{hhline}")
     lines.append(r"\usepackage{ragged2e}")
     lines.append(r"\usepackage{fancyhdr}")
     lines.append("")
@@ -361,41 +389,46 @@ def generate_latex(data: dict) -> str:
     # 3 columns in landscape. Keep widths conservative for longtable stability.
     col_width = "8.2cm"
 
+    hline = r"\hhline{|---|}"
+
     lines.append(
         r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
     )
-    lines.append(r"\hline")
+    lines.append(hline)
     lines.append(
         r"\multicolumn{1}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht (kombiniert)}} & "
         r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Änderungen durch den Referentenentwurf}} \\"
     )
-    lines.append(r"\hline")
+    lines.append(hline)
+    lines.append(r"\rowcolor{gray!25}")
     lines.append(
         r"\textbf{Synopsis 2024/2026} & "
         r"\textbf{Synopsis 2024} & "
         r"\textbf{Synopsis 2026} \\"
     )
-    lines.append(r"\hline")
+    lines.append(hline)
     lines.append(r"\endhead")
     lines.append("")
 
+    previous_row = None
     for row in data.get("rows", []):
         row_2024 = row.get("synopsis2024")
         row_2026 = row.get("synopsis2026")
-        is_section_header = row.get("is_section_header", False)
+        is_header = row.get("is_section_header", False) or is_heading_row(row, previous_row)
 
         c1 = render_merged_left_cell(row)
         c2 = render_cell(row_2024, "right")
         c3 = render_cell(row_2026, "right")
 
-        if is_section_header:
+        if is_header:
             lines.append(r"\rowcolor{gray!25}")
             c1 = _wrap_in_bold(c1)
             c2 = _wrap_in_bold(c2)
             c3 = _wrap_in_bold(c3)
 
         lines.append(f"{c1} & {c2} & {c3} \\\\")
-        lines.append(r"\hline")
+        lines.append(hline)
+        previous_row = row
 
     lines.append(r"\end{longtable}")
     lines.append("")
