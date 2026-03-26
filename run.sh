@@ -143,8 +143,28 @@ else
     echo "Skipping PDF compile (up to date)."
 fi
 
+echo ""
+echo "=== Step 5b: Compile Minified PDF ==="
+compile_minified_ran=0
+if [[ ! -f "output/synopsis_combined_minified.pdf" ]]; then
+    compile_minified_ran=1
+elif [[ "$generate_ran" == "1" ]]; then
+    compile_minified_ran=1
+elif [[ "output/synopsis_combined_minified.tex" -nt "output/synopsis_combined_minified.pdf" ]]; then
+    compile_minified_ran=1
+fi
+
+if [[ "$compile_minified_ran" == "1" ]]; then
+    cd output
+    xelatex -interaction=nonstopmode synopsis_combined_minified.tex
+    cd ..
+else
+    echo "Skipping minified PDF compile (up to date)."
+fi
+
 save_state
 
 echo ""
 echo "=== Done ==="
 echo "Output: output/synopsis_combined.pdf"
+echo "Output: output/synopsis_combined_minified.pdf"

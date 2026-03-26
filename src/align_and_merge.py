@@ -591,11 +591,17 @@ def is_cell_empty(row: dict[str, Any] | None, side: str) -> bool:
 
 
 def is_unveraendert_text(text: str | None) -> bool:
-    """Return True when text represents 'unverändert', including spaced OCR forms."""
+    """Return True when text represents 'unverändert', including spaced OCR forms
+    and short prefixed forms like 'e) unverändert' or '1a. unverändert'."""
     if text is None:
         return False
-    normalized = "".join(character for character in text.lower() if character.isalpha())
-    return normalized == "unverändert"
+    stripped = text.strip()
+    normalized = "".join(c for c in stripped.lower() if c.isalpha())
+    # Exact match — also covers OCR-spaced "u n v e r ä n d e r t"
+    if normalized == "unverändert":
+        return True
+    # Prefixed forms: list marker + "unverändert", e.g. "e) unverändert"
+    return len(stripped) < 20 and "unverändert" in normalized
 
 
 def is_structural_marker_with_unveraendert_row(row: dict[str, Any]) -> bool:

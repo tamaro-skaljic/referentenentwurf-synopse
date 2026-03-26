@@ -174,6 +174,97 @@ def _wrap_in_bold(cell_text: str) -> str:
     return r"\textbf{" + cell_text + "}"
 
 
+_PLACEHOLDER_ROW: dict = {
+    "synopsis2024": {
+        "left": "...",
+        "right": "...",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "right_diff_ranges": [],
+    },
+    "synopsis2026": {
+        "left": "...",
+        "right": "...",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "right_diff_ranges": [],
+    },
+    "merged_left": {"text": "...", "bold_ranges": [], "diff_ranges": []},
+    "is_section_header": False,
+    "row_index": -1,
+}
+
+
+def _is_unveraendert(text: str | None) -> bool:
+    """Return True when text represents 'unverändert', including spaced OCR forms
+    and short prefixed forms like 'e) unverändert' or '1a. unverändert'."""
+    if text is None:
+        return False
+    stripped = text.strip()
+    normalized = "".join(c for c in stripped.lower() if c.isalpha())
+    if normalized == "unverändert":
+        return True
+    return len(stripped) < 20 and "unverändert" in normalized
+
+
+def _right_is_empty_or_unveraendert(row: dict | None) -> bool:
+    """Return True when the right cell is absent, blank, or 'unverändert'."""
+    if row is None:
+        return True
+    text = (row.get("right") or "").strip()
+    return not text or _is_unveraendert(text)
+
+
+def minify_rows(rows: list[dict]) -> list[dict]:
+    """Return a filtered row list for the minified Synopse.
+
+    Keeps:
+    - Structural rows: any row whose merged_left column contains bold text
+      (covers §-section headers, law-name headers, paragraph/subsection headers)
+    - Changed rows: any row where the 2024 or 2026 right column has diff ranges,
+      or where one side is entirely absent (whole section added/removed),
+      UNLESS col3 (2026 right) says 'unverändert' and col2 (2024 right) is
+      empty or also 'unverändert' — those carry no meaningful change.
+
+    All other rows are replaced by a single placeholder row (three "..." cells).
+    Consecutive placeholder rows are deduplicated to one.
+    """
+    result: list[dict] = []
+    last_was_placeholder = False
+    for row in rows:
+        r2024 = row.get("synopsis2024")
+        r2026 = row.get("synopsis2026")
+        merged_left = row.get("merged_left") or {}
+        is_structural = bool(merged_left.get("bold_ranges"))
+        has_changes = (
+            (r2024 is not None and bool(r2024.get("right_diff_ranges")))
+            or (r2026 is not None and bool(r2026.get("right_diff_ranges")))
+            or r2024 is None
+            or r2026 is None
+        )
+        # Override: if neither column carries a meaningful change, suppress.
+        # Case 1: col3 says "unverändert" and col2 is empty or also "unverändert".
+        # Case 2: col2 says "unverändert" and col3 is empty.
+        if has_changes and (
+            (
+                _is_unveraendert((r2026 or {}).get("right"))
+                and _right_is_empty_or_unveraendert(r2024)
+            )
+            or (
+                _is_unveraendert((r2024 or {}).get("right"))
+                and _right_is_empty_or_unveraendert(r2026)
+            )
+        ):
+            has_changes = False
+        if is_structural or has_changes:
+            result.append(row)
+            last_was_placeholder = False
+        elif not last_was_placeholder:
+            result.append(_PLACEHOLDER_ROW)
+            last_was_placeholder = True
+    return result
+
+
 def generate_latex(data: dict) -> str:
     """Generate the full LaTeX document."""
     lines = []
@@ -281,12 +372,12 @@ def generate_latex(data: dict) -> str:
 
 
 def main():
-    if len(sys.argv) != 3:
+    args = sys.argv[1:]
+    if len(args) != 2:
         print(f"Usage: {sys.argv[0]} <merged.json> <output.tex>", file=sys.stderr)
         sys.exit(1)
 
-    json_path = sys.argv[1]
-    tex_path = sys.argv[2]
+    json_path, tex_path = args
 
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -298,6 +389,18 @@ def main():
 
     print(f"Generated LaTeX: {tex_path}")
     print(f"Compile with: xelatex {tex_path}")
+
+    # Also generate minified version alongside the full output
+    minified_tex_path = tex_path.replace(".tex", "_minified.tex")
+    minified_data = dict(data)
+    minified_data["rows"] = minify_rows(data.get("rows", []))
+    minified_latex = generate_latex(minified_data)
+
+    with open(minified_tex_path, "w", encoding="utf-8") as f:
+        f.write(minified_latex)
+
+    print(f"Generated minified LaTeX: {minified_tex_path}")
+    print(f"Compile with: xelatex {minified_tex_path}")
 
 
 if __name__ == "__main__":
