@@ -196,11 +196,15 @@ _PLACEHOLDER_ROW: dict = {
 
 
 def _is_unveraendert(text: str | None) -> bool:
-    """Return True when text represents 'unverändert' (tolerates OCR spacing)."""
+    """Return True when text represents 'unverändert', including spaced OCR forms
+    and short prefixed forms like 'e) unverändert' or '1a. unverändert'."""
     if text is None:
         return False
-    normalized = "".join(c for c in text.lower() if c.isalpha())
-    return normalized == "unverändert"
+    stripped = text.strip()
+    normalized = "".join(c for c in stripped.lower() if c.isalpha())
+    if normalized == "unverändert":
+        return True
+    return len(stripped) < 20 and "unverändert" in normalized
 
 
 def _right_is_empty_or_unveraendert(row: dict | None) -> bool:

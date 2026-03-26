@@ -19020,13 +19020,7 @@
         "page": 81,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            3,
-            14,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": {
         "left": "d)  in sonstiger teilstationärer oder stationärer \nForm (§ 27), ",
@@ -19047,8 +19041,8 @@
         "row": 13,
         "right_diff_ranges": [
           [
-            4,
-            64,
+            61,
+            62,
             "green"
           ]
         ]
@@ -24684,13 +24678,7 @@
         "page": 102,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            16,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -24766,13 +24754,7 @@
         "page": 103,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -24791,13 +24773,7 @@
         "page": 103,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25451,13 +25427,7 @@
         "page": 105,
         "table": 1,
         "row": 8,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25476,13 +25446,7 @@
         "page": 105,
         "table": 1,
         "row": 9,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25550,13 +25514,7 @@
         "page": 105,
         "table": 1,
         "row": 12,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25575,13 +25533,7 @@
         "page": 106,
         "table": 1,
         "row": 1,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25600,13 +25552,7 @@
         "page": 106,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25625,13 +25571,7 @@
         "page": 106,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25650,13 +25590,7 @@
         "page": 106,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25675,13 +25609,7 @@
         "page": 106,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25749,13 +25677,7 @@
         "page": 106,
         "table": 1,
         "row": 8,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25774,13 +25696,7 @@
         "page": 106,
         "table": 1,
         "row": 9,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25932,13 +25848,7 @@
         "page": 107,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25957,13 +25867,7 @@
         "page": 107,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -25982,13 +25886,7 @@
         "page": 108,
         "table": 1,
         "row": 1,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26007,13 +25905,7 @@
         "page": 108,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26032,13 +25924,7 @@
         "page": 108,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26057,13 +25943,7 @@
         "page": 108,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26101,13 +25981,7 @@
         "page": 108,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26126,13 +26000,7 @@
         "page": 109,
         "table": 1,
         "row": 1,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26170,13 +26038,7 @@
         "page": 109,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26195,13 +26057,7 @@
         "page": 109,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26220,13 +26076,7 @@
         "page": 109,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            16,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26245,13 +26095,7 @@
         "page": 109,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            16,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26270,13 +26114,7 @@
         "page": 109,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            16,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26542,13 +26380,7 @@
         "page": 111,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            17,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26567,13 +26399,7 @@
         "page": 111,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            17,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26725,13 +26551,7 @@
         "page": 112,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26750,13 +26570,7 @@
         "page": 112,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26775,13 +26589,7 @@
         "page": 112,
         "table": 1,
         "row": 8,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26800,13 +26608,7 @@
         "page": 112,
         "table": 1,
         "row": 9,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26825,13 +26627,7 @@
         "page": 112,
         "table": 1,
         "row": 10,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26850,13 +26646,7 @@
         "page": 112,
         "table": 1,
         "row": 11,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26894,13 +26684,7 @@
         "page": 113,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26919,13 +26703,7 @@
         "page": 113,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26963,13 +26741,7 @@
         "page": 113,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -26988,13 +26760,7 @@
         "page": 113,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27013,13 +26779,7 @@
         "page": 113,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27038,13 +26798,7 @@
         "page": 113,
         "table": 1,
         "row": 8,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27063,13 +26817,7 @@
         "page": 113,
         "table": 1,
         "row": 9,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27088,13 +26836,7 @@
         "page": 113,
         "table": 1,
         "row": 10,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27113,13 +26855,7 @@
         "page": 113,
         "table": 1,
         "row": 11,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27138,13 +26874,7 @@
         "page": 114,
         "table": 1,
         "row": 1,
-        "right_diff_ranges": [
-          [
-            0,
-            17,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27182,13 +26912,7 @@
         "page": 114,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27207,13 +26931,7 @@
         "page": 114,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27251,13 +26969,7 @@
         "page": 114,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27276,13 +26988,7 @@
         "page": 114,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27301,13 +27007,7 @@
         "page": 114,
         "table": 1,
         "row": 8,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27326,13 +27026,7 @@
         "page": 114,
         "table": 1,
         "row": 9,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27351,13 +27045,7 @@
         "page": 114,
         "table": 1,
         "row": 10,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27376,13 +27064,7 @@
         "page": 114,
         "table": 1,
         "row": 11,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27401,13 +27083,7 @@
         "page": 114,
         "table": 1,
         "row": 12,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27426,13 +27102,7 @@
         "page": 115,
         "table": 1,
         "row": 1,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27451,13 +27121,7 @@
         "page": 115,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27476,13 +27140,7 @@
         "page": 115,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            17,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27501,13 +27159,7 @@
         "page": 115,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            17,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27735,13 +27387,7 @@
         "page": 116,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27760,13 +27406,7 @@
         "page": 116,
         "table": 1,
         "row": 8,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27785,13 +27425,7 @@
         "page": 116,
         "table": 1,
         "row": 9,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27810,13 +27444,7 @@
         "page": 116,
         "table": 1,
         "row": 10,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27854,13 +27482,7 @@
         "page": 117,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27879,13 +27501,7 @@
         "page": 117,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27923,13 +27539,7 @@
         "page": 117,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27948,13 +27558,7 @@
         "page": 117,
         "table": 1,
         "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -27973,13 +27577,7 @@
         "page": 117,
         "table": 1,
         "row": 7,
-        "right_diff_ranges": [
-          [
-            0,
-            15,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,
@@ -30250,13 +29848,7 @@
         "page": 132,
         "table": 1,
         "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            16,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": false,

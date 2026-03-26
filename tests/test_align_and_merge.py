@@ -177,6 +177,21 @@ class TestUnveraendertDetection:
     def test_matches_spaced_ocr_unveraendert(self):
         assert is_unveraendert_text("u n v e r ä n d e r t") is True
 
+    def test_matches_letter_bracket_prefix(self):
+        assert is_unveraendert_text("e) unverändert") is True
+
+    def test_matches_alphanumeric_dot_prefix(self):
+        assert is_unveraendert_text("1a. unverändert") is True
+
+    def test_matches_parenthesized_letter_prefix(self):
+        assert is_unveraendert_text("(6b) unverändert") is True
+
+    def test_matches_number_letter_dot_prefix(self):
+        assert is_unveraendert_text("6a. unverändert") is True
+
+    def test_rejects_prefixed_form_over_20_chars(self):
+        assert is_unveraendert_text("sehr langer text unverändert") is False
+
     def test_rejects_other_text(self):
         assert is_unveraendert_text("unveraendert") is False
 
