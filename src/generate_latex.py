@@ -164,6 +164,26 @@ def render_merged_left_cell(aligned_row: dict) -> str:
     return sanitize_cell(format_text_entry(aligned_row.get("merged_left")))
 
 
+_SGB_PATTERN = re.compile(r"\( - SGB")
+
+
+def is_heading_row(row: dict, previous_row: dict | None) -> bool:
+    """Return True if row should be treated as a heading row.
+
+    Matches:
+    - Rows where any cell contains '( - SGB'
+    - Rows immediately following a § section header row
+    """
+    if row.get("is_section_header"):
+        return False
+    merged_left_text = (row.get("merged_left") or {}).get("text", "")
+    if _SGB_PATTERN.search(merged_left_text):
+        return True
+    if previous_row is not None and previous_row.get("is_section_header"):
+        return True
+    return False
+
+
 def _wrap_in_bold(cell_text: str) -> str:
     """Wrap cell text in bold if not empty and not already bold."""
     stripped = cell_text.strip()
@@ -215,6 +235,24 @@ def _right_is_empty_or_unveraendert(row: dict | None) -> bool:
     return not text or _is_unveraendert(text)
 
 
+_UNVERAENDERT_PREFIX_RE = re.compile(
+    r'^[(\[]*[a-z0-9]{0,3}[.)\] ]*\s*unver[äa]ndert',
+    re.IGNORECASE,
+)
+
+
+def _starts_with_unveraendert(text: str | None) -> bool:
+    """Return True if text is – or starts with – an 'unverändert' marker.
+
+    Handles plain 'unverändert', prefixed forms like '3. unverändert' or
+    'c) unverändert', and those followed by a structural heading such as
+    '(2) unverändert  Zweites Buch Sozialgesetzbuch'.
+    """
+    if not text:
+        return False
+    return bool(_UNVERAENDERT_PREFIX_RE.match(text.strip()))
+
+
 def minify_rows(rows: list[dict]) -> list[dict]:
     """Return a filtered row list for the minified Synopse.
 
@@ -231,11 +269,26 @@ def minify_rows(rows: list[dict]) -> list[dict]:
     """
     result: list[dict] = []
     last_was_placeholder = False
+    previous_row = None
     for row in rows:
         r2024 = row.get("synopsis2024")
         r2026 = row.get("synopsis2026")
+        # Both right columns say "unverändert" (plain or prefixed, possibly
+        # followed by a structural heading) → nothing to show, suppress unconditionally.
+        col2_text = (r2024 or {}).get("right") or ""
+        col3_text = (r2026 or {}).get("right") or ""
+        if _starts_with_unveraendert(col2_text) and _starts_with_unveraendert(col3_text):
+            if not last_was_placeholder:
+                result.append(_PLACEHOLDER_ROW)
+                last_was_placeholder = True
+            previous_row = row
+            continue
         merged_left = row.get("merged_left") or {}
-        is_structural = bool(merged_left.get("bold_ranges"))
+        is_structural = (
+            bool(merged_left.get("bold_ranges"))
+            or row.get("is_section_header", False)
+            or is_heading_row(row, previous_row)
+        )
         has_changes = (
             (r2024 is not None and bool(r2024.get("right_diff_ranges")))
             or (r2026 is not None and bool(r2026.get("right_diff_ranges")))
@@ -262,6 +315,7 @@ def minify_rows(rows: list[dict]) -> list[dict]:
         elif not last_was_placeholder:
             result.append(_PLACEHOLDER_ROW)
             last_was_placeholder = True
+        previous_row = row
     return result
 
 
@@ -271,13 +325,15 @@ def generate_latex(data: dict) -> str:
 
     # Preamble
     lines.append(r"\documentclass[10pt,a4paper,landscape]{article}")
-    lines.append(r"\usepackage[landscape,margin=1.2cm]{geometry}")
+    lines.append(r"\usepackage[landscape,margin=1.2cm,headheight=14pt,includehead]{geometry}")
     lines.append(r"\usepackage[ngerman]{babel}")
     lines.append(r"\usepackage{fontspec}")
     lines.append(r"\usepackage{longtable}")
     lines.append(r"\usepackage{array}")
     lines.append(r"\usepackage[table]{xcolor}")
+    lines.append(r"\usepackage{hhline}")
     lines.append(r"\usepackage{ragged2e}")
+    lines.append(r"\usepackage{fancyhdr}")
     lines.append("")
     lines.append(r"\definecolor{diffred}{RGB}{180, 0, 0}")
     lines.append(r"\definecolor{diffgreen}{RGB}{0, 130, 0}")
@@ -288,8 +344,21 @@ def generate_latex(data: dict) -> str:
     lines.append("")
     lines.append(r"\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}")
     lines.append("")
+    lines.append(r"\pagestyle{fancy}")
+    lines.append(r"\fancyhf{}")
+    lines.append(r"\fancyhead[R]{\scriptsize\today}")
+    lines.append(r"\renewcommand{\headrulewidth}{0pt}")
+    lines.append("")
     lines.append(r"\begin{document}")
     lines.append(r"\scriptsize")
+    lines.append("")
+
+    # Title
+    title = data.get("metadata", {}).get("title", "Synopse")
+    lines.append(r"\begin{center}")
+    lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
+    lines.append(r"\end{center}")
+    lines.append(r"\vspace{0.3cm}")
     lines.append("")
 
     # Legend table for color semantics
@@ -314,55 +383,52 @@ def generate_latex(data: dict) -> str:
     lines.append(r"\hline")
     lines.append(r"\end{tabular}")
     lines.append(r"\end{center}")
-    lines.append(r"\vspace{0.3cm}")
-    lines.append("")
-
-    # Title
-    title = data.get("metadata", {}).get("title", "Synopse")
-    lines.append(r"\begin{center}")
-    lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
-    lines.append(r"\end{center}")
     lines.append(r"\vspace{0.5cm}")
     lines.append("")
 
     # 3 columns in landscape. Keep widths conservative for longtable stability.
     col_width = "8.2cm"
 
+    hline = r"\hhline{|---|}"
+
     lines.append(
         r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
     )
-    lines.append(r"\hline")
+    lines.append(hline)
     lines.append(
         r"\multicolumn{1}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht (kombiniert)}} & "
         r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Änderungen durch den Referentenentwurf}} \\"
     )
-    lines.append(r"\hline")
+    lines.append(hline)
+    lines.append(r"\rowcolor{gray!25}")
     lines.append(
         r"\textbf{Synopsis 2024/2026} & "
         r"\textbf{Synopsis 2024} & "
         r"\textbf{Synopsis 2026} \\"
     )
-    lines.append(r"\hline")
+    lines.append(hline)
     lines.append(r"\endhead")
     lines.append("")
 
+    previous_row = None
     for row in data.get("rows", []):
         row_2024 = row.get("synopsis2024")
         row_2026 = row.get("synopsis2026")
-        is_section_header = row.get("is_section_header", False)
+        is_header = row.get("is_section_header", False) or is_heading_row(row, previous_row)
 
         c1 = render_merged_left_cell(row)
         c2 = render_cell(row_2024, "right")
         c3 = render_cell(row_2026, "right")
 
-        if is_section_header:
+        if is_header:
             lines.append(r"\rowcolor{gray!25}")
             c1 = _wrap_in_bold(c1)
             c2 = _wrap_in_bold(c2)
             c3 = _wrap_in_bold(c3)
 
         lines.append(f"{c1} & {c2} & {c3} \\\\")
-        lines.append(r"\hline")
+        lines.append(hline)
+        previous_row = row
 
     lines.append(r"\end{longtable}")
     lines.append("")
@@ -392,8 +458,13 @@ def main():
 
     # Also generate minified version alongside the full output
     minified_tex_path = tex_path.replace(".tex", "_minified.tex")
-    minified_data = dict(data)
-    minified_data["rows"] = minify_rows(data.get("rows", []))
+    minified_meta = dict(data.get("metadata", {}))
+    minified_meta["title"] = (
+        "Synopse IKJHG - Vergleich nur der Änderungen zwischen "
+        "den Referentenentwürfe 2024 und 2026"
+    )
+    minified_rows = minify_rows(data.get("rows", []))
+    minified_data = {"metadata": minified_meta, "rows": minified_rows}
     minified_latex = generate_latex(minified_data)
 
     with open(minified_tex_path, "w", encoding="utf-8") as f:
@@ -401,6 +472,23 @@ def main():
 
     print(f"Generated minified LaTeX: {minified_tex_path}")
     print(f"Compile with: xelatex {minified_tex_path}")
+
+    # Verify: no row in the minified output has "unverändert" in both right columns.
+    violations = [
+        r for r in minified_rows
+        if _starts_with_unveraendert((r.get("synopsis2024") or {}).get("right") or "")
+        and _starts_with_unveraendert((r.get("synopsis2026") or {}).get("right") or "")
+    ]
+    if violations:
+        print(
+            f"ERROR: {len(violations)} row(s) in minified output still have "
+            "'unverändert' in both columns:",
+            file=sys.stderr,
+        )
+        for v in violations[:5]:
+            print(f"  row_index={v.get('row_index')}", file=sys.stderr)
+        sys.exit(1)
+    print("Verification passed: no double-'unverändert' rows in minified output.")
 
 
 if __name__ == "__main__":

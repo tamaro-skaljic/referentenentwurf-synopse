@@ -1,38 +1,21 @@
 # Referentenentwurf-Synopse
 
-- Direkt zur [Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentwürfe%202024%20und%202026.pdf).
+- Direkt zur [Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf).
 
-- Direkt zur [Synopse IKJHG - Vergleich nur der Änderungen zwischen den Referentenentwürfen 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20nur%20der%20Änderungen%20zwischen%20den%20Referentenentwürfe%202024%20und%202026.pdf).
+- Direkt zur [Synopse IKJHG - Vergleich nur der Änderungen zwischen den Referentenentwürfen 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20nur%20der%20%C3%84nderungen%20zwischen%20den%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf).
 
-Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen der Referentenentwürfe von 2024 und 2026 gegenüberstellt.
-
-| Geltendes Recht | Änderungen RefE 2024 | Änderungen RefE 2026 |
-|-----------------|----------------------|----------------------|
+---
 
 ## Schnellstart
 
 ### Einrichtung & Ausführung
-
-**PowerShell:**
 
 ```powershell
 .\setup.ps1   # Installiert uv, Python, Abhängigkeiten und MiKTeX
 .\run.ps1     # Erzeugt synopsis_combined.pdf
 ```
 
-**Bash:**
-
-```bash
-./setup.sh   # Installiert uv, Python, Abhängigkeiten und MiKTeX
-./run.sh     # Erzeugt synopsis_combined.pdf
-```
-
-Die fertige Synopse liegt anschließend als [synopsis_combined.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/synopsis_combined.pdf) im `output/`-Verzeichnis.
-
-| Markierungsfarbe | Änderungen RefE 2024                      | Änderungen RefE 2026                                                                                               |
-| ---------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Grün             | -                                         | Wurde im Vergleich zum RefE 2024 (oder geltendem Recht, falls RefE 2024 nicht vorhanden / unverändert) hinzugefügt |
-| Rot              | Wurde im Vergleich zum RefE 2026 gelöscht | -                                                                                                                  |
+Die fertigen Synopsen liegen anschließend im [`output`](output)-Verzeichnis.
 
 ## Lizenz
 
