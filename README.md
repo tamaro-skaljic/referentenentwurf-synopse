@@ -14,18 +14,9 @@ Erzeugt eine dreispaltige PDF-Synopse, die das geltende Recht den Änderungen de
 
 ### Einrichtung & Ausführung
 
-**PowerShell:**
-
 ```powershell
 .\setup.ps1   # Installiert uv, Python, Abhängigkeiten und MiKTeX
 .\run.ps1     # Erzeugt synopsis_combined.pdf
-```
-
-**Bash:**
-
-```bash
-./setup.sh   # Installiert uv, Python, Abhängigkeiten und MiKTeX
-./run.sh     # Erzeugt synopsis_combined.pdf
 ```
 
 Die fertige Synopse liegt anschließend als [Synopse IKJHG - Vergleich der Referentenentwürfe 2024 und 2026.pdf](https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf) im `output/`-Verzeichnis.
