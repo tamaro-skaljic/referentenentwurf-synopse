@@ -238,11 +238,19 @@ def minify_rows(rows: list[dict]) -> list[dict]:
             or r2024 is None
             or r2026 is None
         )
-        # Override: col3 says "unverändert" and col2 is empty or also
-        # "unverändert" → nothing meaningful to show.
-        if has_changes and _is_unveraendert(
-            (r2026 or {}).get("right")
-        ) and _right_is_empty_or_unveraendert(r2024):
+        # Override: if neither column carries a meaningful change, suppress.
+        # Case 1: col3 says "unverändert" and col2 is empty or also "unverändert".
+        # Case 2: col2 says "unverändert" and col3 is empty.
+        if has_changes and (
+            (
+                _is_unveraendert((r2026 or {}).get("right"))
+                and _right_is_empty_or_unveraendert(r2024)
+            )
+            or (
+                _is_unveraendert((r2024 or {}).get("right"))
+                and _right_is_empty_or_unveraendert(r2026)
+            )
+        ):
             has_changes = False
         if is_structural or has_changes:
             result.append(row)
