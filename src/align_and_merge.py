@@ -15,16 +15,29 @@ import sys
 from dataclasses import dataclass
 from typing import Any, cast
 
+from src.patterns import (
+    ARTIKEL_HEADING_PATTERN,
+    LEADING_LIST_NUMBER_PATTERN,
+    LEADING_LIST_NUMBER_REWRITE_PATTERN,
+    LAW_IDENTIFIER_CITATION_PATTERN,
+    LAW_NAME_STANDALONE_PATTERN,
+    LETTER_BRACKET_MARKER_PATTERN,
+    NUMBER_DOT_MARKER_PATTERN,
+    NUMBERED_SGB_LAW_NAME_PATTERN,
+    PAGE_HEADER_RIGHT_PATTERN,
+    PARENTHESIZED_NUMBER_MARKER_PATTERN,
+    SECTION_HEADER_PATTERN,
+    SECTION_SIGN_START_PATTERN,
+    STRUCTURAL_MARKER_PATTERN,
+)
+from src.text_utils import is_empty_text, is_unveraendert_text, normalize_bold_ranges
+from src.synopsis_types import AlignedRow, MergedLeftEntry, SynopsisCell
+
 
 @dataclass(frozen=True, order=True)
 class SectionKey:
     number: int
     suffix: str
-
-
-SECTION_HEADER_PATTERN = re.compile(r"^\s*§\s*(\d+)\s*([a-z]*)\s*$")
-SECTION_SIGN_START_PATTERN = re.compile(r"^\s*§\s*\d+\s*[a-z]*\b", re.IGNORECASE)
-ARTIKEL_HEADING_PATTERN = re.compile(r"^\s*Artikel\s+\d+\s*$", re.IGNORECASE)
 
 
 def parse_section_key(text: str) -> SectionKey | None:
@@ -38,43 +51,10 @@ def parse_section_key(text: str) -> SectionKey | None:
     return SectionKey(number=int(match.group(1)), suffix=match.group(2))
 
 
-PAGE_HEADER_RIGHT_PATTERN = re.compile(
-    r"Änderungen\s+durch\s+den\s+Referentenentwurf", re.DOTALL
-)
-
-
-STRUCTURAL_MARKER_PATTERN = re.compile(
-    r"^(Absatz|Absätze|Unterabschnitt|Abschnitt|Untertitel|Titel|Kapitel|Teil|Satz|Buchstabe|Anlage)\b",
-    re.IGNORECASE,
-)
-
-NUMBER_DOT_MARKER_PATTERN = re.compile(r"^\d+\s*\.(?!\d)")
-LETTER_BRACKET_MARKER_PATTERN = re.compile(r"^[A-Za-zÄÖÜäöüß]\s*\)")
-PARENTHESIZED_NUMBER_MARKER_PATTERN = re.compile(r"^\(\s*\d+\s*\)")
-
-LEADING_LIST_NUMBER_PATTERN = re.compile(r"^\s*(\d+)\s*\.(?!\d)")
-LEADING_LIST_NUMBER_REWRITE_PATTERN = re.compile(r"^(\s*)\d+(\s*)\.(?!\d)")
-
 MERGED_LEFT_SOURCE_LABEL_2024 = "- Aus Synopsis 2024 -"
 MERGED_LEFT_SOURCE_LABEL_2026 = "- Aus Synopsis 2026 -"
 
 
-def _coerce_bold_ranges(value: Any) -> list[list[int]]:
-    """Normalize unknown bold range payloads to ``list[list[int]]``."""
-    if not isinstance(value, list):
-        return []
-    coerced: list[list[int]] = []
-    for item in cast(list[Any], value):
-        if not isinstance(item, list):
-            continue
-        typed_item = cast(list[Any], item)
-        if (
-            len(typed_item) == 2
-            and isinstance(typed_item[0], int)
-            and isinstance(typed_item[1], int)
-        ):
-            coerced.append([typed_item[0], typed_item[1]])
-    return coerced
 
 
 def is_page_continuation_header(row: dict[str, Any]) -> bool:
@@ -86,19 +66,6 @@ def is_page_continuation_header(row: dict[str, Any]) -> bool:
     )
 
 
-LAW_CITATION_PATTERN = re.compile(r"^\(\s*-\s*(SGB\s+\w+)\s*\)")
-
-LAW_NAME_STANDALONE_PATTERN = re.compile(
-    r"^(Bürgerliches Gesetzbuch"
-    r"|(\w+\s+)?Buch Sozialgesetzbuch"
-    r"|Sozialgerichtsgesetz"
-    r"|Jugendschutzgesetz)\s*$"
-)
-
-NUMBERED_SGB_LAW_NAME_PATTERN = re.compile(
-    r"^\s*(?P<prefix>\w+)\s+Buch\s+Sozialgesetzbuch\s*$",
-    re.IGNORECASE,
-)
 
 STANDALONE_LAW_NAME_TO_IDENTIFIER = {
     "Sozialgerichtsgesetz": "SGG",
@@ -117,7 +84,7 @@ def extract_law_identifier(row: dict[str, Any]) -> str | None:
     that always precede a citation — those are detected by is_law_name_row instead.
     """
     left = (row.get("left") or "").strip()
-    citation_match = LAW_CITATION_PATTERN.match(left)
+    citation_match = LAW_IDENTIFIER_CITATION_PATTERN.match(left)
     if citation_match:
         return citation_match.group(1).replace(" ", "_")
     return STANDALONE_LAW_NAME_TO_IDENTIFIER.get(left)
@@ -152,7 +119,7 @@ def standalone_law_names_semantically_equal(text_a: str, text_b: str) -> bool:
     )
 
 
-def is_artikel_heading_row(row: dict[str, Any]) -> bool:
+def is_raw_artikel_heading_row(row: dict[str, Any]) -> bool:
     """Detect standalone article heading rows like 'Artikel 3'."""
     left = (row.get("left") or "").strip()
     right = (row.get("right") or "").strip()
@@ -386,7 +353,7 @@ def align_rows_by_marker_type(
     return aligned_pairs
 
 
-def column_should_merge(text: str | None) -> bool:
+def text_indicates_row_continuation(text: str | None) -> bool:
     """Determine if a continuation column should merge into the previous row.
 
     Returns True if text is None/empty/whitespace (null column = no-op merge)
@@ -631,6 +598,46 @@ def _diff_col3_against_fallback(
     return [[start, end, "green"] for start, end in ranges_in_col3]
 
 
+def compute_merged_left_diff_ranges(
+    merged_left: dict[str, Any],
+    _row_2024: dict[str, Any] | None,
+    row_2026: dict[str, Any] | None,
+) -> list[list[int | str]]:
+    """Compute red diff_ranges for the merged_left column.
+
+    Diffs merged_left.text against synopsis2026.right to highlight deletions
+    in the current law that are changed by the 2026 amendment.
+    """
+    merged_text = (merged_left.get("text") or "")
+    if not merged_text.strip():
+        return []
+
+    if row_2026 is None:
+        return []
+
+    col3_text = (row_2026.get("right") or "").strip()
+    if not col3_text or is_unveraendert_text(col3_text):
+        return []
+
+    label_2026 = MERGED_LEFT_SOURCE_LABEL_2026 + "\n\n"
+    label_2024 = MERGED_LEFT_SOURCE_LABEL_2024 + "\n\n"
+    is_labeled = label_2024 in merged_text and label_2026 in merged_text
+
+    if is_labeled:
+        portion_2026_start = merged_text.index(label_2026) + len(label_2026)
+        text_to_diff = merged_text[portion_2026_start:]
+    else:
+        portion_2026_start = 0
+        text_to_diff = merged_text
+
+    ranges_in_merged_left, _ = compute_character_diff_ranges(text_to_diff, col3_text)
+
+    return [
+        [start + portion_2026_start, end + portion_2026_start, "red"]
+        for start, end in ranges_in_merged_left
+    ]
+
+
 def is_cell_empty(row: dict[str, Any] | None, side: str) -> bool:
     """Return True when the cell on the given side is effectively empty.
 
@@ -645,18 +652,6 @@ def is_cell_empty(row: dict[str, Any] | None, side: str) -> bool:
     return is_unveraendert_text(text)
 
 
-def is_unveraendert_text(text: str | None) -> bool:
-    """Return True when text represents 'unverändert', including spaced OCR forms
-    and short prefixed forms like 'e) unverändert' or '1a. unverändert'."""
-    if text is None:
-        return False
-    stripped = text.strip()
-    normalized = "".join(c for c in stripped.lower() if c.isalpha())
-    # Exact match — also covers OCR-spaced "u n v e r ä n d e r t"
-    if normalized == "unverändert":
-        return True
-    # Prefixed forms: list marker + "unverändert", e.g. "e) unverändert"
-    return len(stripped) < 20 and "unverändert" in normalized
 
 
 def is_structural_marker_with_unveraendert_row(row: dict[str, Any]) -> bool:
@@ -718,7 +713,7 @@ def _extract_text_and_bold_ranges(
     text = row.get(side)
     text_value = text if isinstance(text, str) else ""
 
-    bold_ranges = _coerce_bold_ranges(row.get(f"{side}_bold_ranges", []))
+    bold_ranges = normalize_bold_ranges(row.get(f"{side}_bold_ranges", []))
     return text_value, bold_ranges
 
 
@@ -729,8 +724,6 @@ def _shift_bold_ranges(
     return [[start + offset, end + offset] for start, end in bold_ranges]
 
 
-def _is_empty_text(text: str) -> bool:
-    return text.strip() == ""
 
 
 def build_merged_left_entry(
@@ -743,10 +736,10 @@ def build_merged_left_entry(
     right_text_2024, _ = _extract_text_and_bold_ranges(row_2024, "right")
     right_text_2026, _ = _extract_text_and_bold_ranges(row_2026, "right")
 
-    text_2024_is_empty = _is_empty_text(text_2024)
-    text_2026_is_empty = _is_empty_text(text_2026)
-    right_text_2024_has_value = not _is_empty_text(right_text_2024)
-    right_text_2026_has_value = not _is_empty_text(right_text_2026)
+    text_2024_is_empty = is_empty_text(text_2024)
+    text_2026_is_empty = is_empty_text(text_2026)
+    right_text_2024_has_value = not is_empty_text(right_text_2024)
+    right_text_2026_has_value = not is_empty_text(right_text_2026)
     only_one_changes_column_has_value = (
         right_text_2024_has_value != right_text_2026_has_value
     )
@@ -815,7 +808,7 @@ def build_merged_left_entry(
 def _is_law_citation_text(text: str | None) -> bool:
     if not isinstance(text, str):
         return False
-    return bool(LAW_CITATION_PATTERN.match(text.strip()))
+    return bool(LAW_IDENTIFIER_CITATION_PATTERN.match(text.strip()))
 
 
 def cleanup_first_page_bgb_header_rows(
@@ -894,6 +887,32 @@ def cleanup_first_page_bgb_header_rows(
     return cleaned_rows
 
 
+def _should_skip_merge(
+    current_row: dict[str, Any],
+    previous_row: dict[str, Any],
+) -> bool:
+    """Return True if current_row should NOT be merged into previous_row."""
+    if (
+        starts_with_section_sign(previous_row.get("left"))
+        or starts_with_section_sign(previous_row.get("right"))
+    ):
+        return True
+    left_text = current_row.get("left")
+    right_text = current_row.get("right")
+    if (
+        starts_with_section_sign(left_text)
+        or starts_with_section_sign(right_text)
+    ):
+        return True
+    if is_law_name_row(current_row):
+        return True
+    if is_raw_artikel_heading_row(current_row):
+        return True
+    if is_structural_marker_with_unveraendert_row(current_row):
+        return True
+    return False
+
+
 def merge_page_break_continuation_rows(
     rows: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
@@ -927,34 +946,12 @@ def merge_page_break_continuation_rows(
 
         previous_row = result[-1]
 
-        if (
-            starts_with_section_sign(previous_row.get("left"))
-            or starts_with_section_sign(previous_row.get("right"))
-        ):
+        if _should_skip_merge(current_row, previous_row):
             result.append(dict(current_row))
             continue
 
-        if (
-            starts_with_section_sign(left_text)
-            or starts_with_section_sign(right_text)
-        ):
-            result.append(dict(current_row))
-            continue
-
-        if is_law_name_row(current_row):
-            result.append(dict(current_row))
-            continue
-
-        if is_artikel_heading_row(current_row):
-            result.append(dict(current_row))
-            continue
-
-        if is_structural_marker_with_unveraendert_row(current_row):
-            result.append(dict(current_row))
-            continue
-
-        left_merges = column_should_merge(left_text)
-        right_merges = column_should_merge(right_text)
+        left_merges = text_indicates_row_continuation(left_text)
+        right_merges = text_indicates_row_continuation(right_text)
         any_non_empty_merges = (
             (left_merges and not left_is_empty)
             or (right_merges and not right_is_empty)
@@ -1102,7 +1099,7 @@ def remove_suspected_struck_duplicate_number_cells(
                 if current_number_bold_range is None:
                     continue
 
-                bold_ranges = _coerce_bold_ranges(current_row.get(f"{column_name}_bold_ranges", []))
+                bold_ranges = normalize_bold_ranges(current_row.get(f"{column_name}_bold_ranges", []))
                 bold_ranges = [*bold_ranges, current_number_bold_range]
                 current_row[f"{column_name}_bold_ranges"] = sorted_bold_ranges(bold_ranges)
 
@@ -1155,11 +1152,11 @@ def collapse_orphan_insert_rows(
         next_right_text = next_2026_dict.get("right")
         next_right_text = next_right_text if isinstance(next_right_text, str) else ""
 
-        current_right_bold_ranges = _coerce_bold_ranges(
+        current_right_bold_ranges = normalize_bold_ranges(
             current_2026_dict.get("right_bold_ranges", []),
         )
 
-        next_right_bold_ranges = _coerce_bold_ranges(
+        next_right_bold_ranges = normalize_bold_ranges(
             next_2026_dict.get("right_bold_ranges", []),
         )
 
@@ -1226,17 +1223,12 @@ def group_rows_into_law_sections(
     current_section_key: SectionKeyOrPseudo = "law_header"
     pending_law_name_rows: list[dict[str, Any]] = []
 
-    def _finalize_current_law() -> None:
-        nonlocal current_sections
-        if current_law_identifier is not None and current_sections:
-            laws.append((current_law_identifier, current_sections))
-            current_sections = {}
-
     for row in rows:
         law_identifier = extract_law_identifier(row)
 
         if law_identifier is not None:
-            _finalize_current_law()
+            if current_law_identifier is not None and current_sections:
+                laws.append((current_law_identifier, current_sections))
             current_law_identifier = law_identifier
             current_sections = {
                 "law_header": [*pending_law_name_rows, row],
@@ -1265,7 +1257,8 @@ def group_rows_into_law_sections(
             continue
         current_sections.setdefault(current_section_key, []).append(row)
 
-    _finalize_current_law()
+    if current_law_identifier is not None and current_sections:
+        laws.append((current_law_identifier, current_sections))
     return laws
 
 
@@ -1305,8 +1298,6 @@ def align_law_sections(
     return aligned_rows
 
 
-def _is_empty_text_value(text: Any) -> bool:
-    return not isinstance(text, str) or text.strip() == ""
 
 
 def _is_artikel_control_synopsis_row(row: dict[str, Any] | None) -> bool:
@@ -1319,9 +1310,9 @@ def _is_artikel_control_synopsis_row(row: dict[str, Any] | None) -> bool:
     left_is_artikel = bool(ARTIKEL_HEADING_PATTERN.match(left_text))
     right_is_artikel = bool(ARTIKEL_HEADING_PATTERN.match(right_text))
 
-    if left_is_artikel and _is_empty_text_value(right_text):
+    if left_is_artikel and is_empty_text(right_text):
         return True
-    if right_is_artikel and _is_empty_text_value(left_text):
+    if right_is_artikel and is_empty_text(left_text):
         return True
     return left_is_artikel and right_is_artikel
 
@@ -1349,8 +1340,8 @@ def _strip_artikel_control_from_synopsis_row(
         stripped_row["right"] = None
         stripped_row["right_bold_ranges"] = []
 
-    left_is_empty = _is_empty_text_value(stripped_row.get("left"))
-    right_is_empty = _is_empty_text_value(stripped_row.get("right"))
+    left_is_empty = is_empty_text(stripped_row.get("left"))
+    right_is_empty = is_empty_text(stripped_row.get("right"))
     if left_is_empty and right_is_empty:
         return None
 
@@ -1483,6 +1474,11 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
             row["synopsis2024"]["right_diff_ranges"] = diff_ranges_2024 or []
         if row.get("synopsis2026") is not None:
             row["synopsis2026"]["right_diff_ranges"] = diff_ranges_2026 or []
+        row["merged_left"]["diff_ranges"] = compute_merged_left_diff_ranges(
+            row["merged_left"],
+            row.get("synopsis2024"),
+            row.get("synopsis2026"),
+        )
 
     for index, row in enumerate(all_aligned_rows):
         row["row_index"] = index

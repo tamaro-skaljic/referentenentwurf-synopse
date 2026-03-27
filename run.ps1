@@ -1,4 +1,8 @@
 # Run the full pipeline: extract PDFs -> merge -> generate LaTeX -> compile PDF
+param(
+    [switch]$DisableMergedLeftRedHighlight
+)
+
 $ErrorActionPreference = "Stop"
 
 $env:PATH += ";$env:USERPROFILE\.local\bin;$env:LOCALAPPDATA\Programs\MiKTeX\miktex\bin\x64"
@@ -70,7 +74,7 @@ $shouldRunExtract = Should-RunExtract -CurrentHash $extractHash -OutputPaths @(
 Write-Host "=== Step 1: Extract 2024 synopsis ===" -ForegroundColor Cyan
 Measure-Step "Extract 2024" {
     if ($shouldRunExtract) {
-        uv run python src/extract_synopsis.py `
+        uv run python -m src.extract_synopsis `
             "input/2024-09_Referentenentwurf_Synopse.pdf" `
             "output/synopsis_2024_raw.json"
     }
@@ -83,7 +87,7 @@ Write-Host ""
 Write-Host "=== Step 2: Extract 2026 synopsis ===" -ForegroundColor Cyan
 Measure-Step "Extract 2026" {
     if ($shouldRunExtract) {
-        uv run python src/extract_synopsis.py `
+        uv run python -m src.extract_synopsis `
             "input/2026-03_Referentenentwurf_Synopse.pdf" `
             "output/synopsis_2026_raw.json"
         $state["extract"] = $extractHash
@@ -96,7 +100,7 @@ Measure-Step "Extract 2026" {
 Write-Host ""
 Write-Host "=== Step 3: Align and merge synopses ===" -ForegroundColor Cyan
 Measure-Step "Align and merge" {
-    uv run python src/align_and_merge.py `
+    uv run python -m src.align_and_merge `
         output/synopsis_2024_raw.json `
         output/synopsis_2026_raw.json `
         output/synopsis_merged.json
@@ -105,9 +109,17 @@ Measure-Step "Align and merge" {
 Write-Host ""
 Write-Host "=== Step 4: Generate LaTeX ===" -ForegroundColor Cyan
 Measure-Step "Generate LaTeX" {
-    uv run python src/generate_latex.py `
-        output/synopsis_merged.json `
-        output/synopsis_combined.tex
+    if ($DisableMergedLeftRedHighlight) {
+        uv run python -m src.generate_latex `
+            output/synopsis_merged.json `
+            output/synopsis_combined.tex `
+            --no-merged-left-red-highlight
+    }
+    else {
+        uv run python -m src.generate_latex `
+            output/synopsis_merged.json `
+            output/synopsis_combined.tex
+    }
 }
 
 Write-Host ""
@@ -119,7 +131,7 @@ Measure-Step "Compile PDF" {
 }
 
 Write-Host ""
-Write-Host "=== Step 5b: Compile Minified PDF ===" -ForegroundColor Cyan
+Write-Host "=== Step 6: Compile Minified PDF ===" -ForegroundColor Cyan
 Measure-Step "Compile minified PDF" {
     Push-Location output
     xelatex -interaction=nonstopmode synopsis_combined_minified.tex
@@ -132,7 +144,7 @@ ForEach-Object { "$($_.Key)=$($_.Value)" }
 Set-Content -Path $stateFile -Value $serializedState -Encoding UTF8
 
 Write-Host ""
-Write-Host "=== Step 6: Rename PDFs to canonical names ===" -ForegroundColor Cyan
+Write-Host "=== Step 7: Rename PDFs to canonical names ===" -ForegroundColor Cyan
 Measure-Step "Rename PDFs" {
     Move-Item -Force "output\synopsis_combined.pdf"          $PdfFull
     Move-Item -Force "output\synopsis_combined_minified.pdf" $PdfMini

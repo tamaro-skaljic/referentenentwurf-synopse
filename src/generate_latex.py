@@ -7,6 +7,7 @@ Usage:
         uv run python generate_latex.py synopsis_merged.json synopsis_combined.tex
 """
 
+import bisect
 import json
 import os
 import re
@@ -14,6 +15,26 @@ import sys
 from datetime import datetime
 from typing import TypeGuard
 from urllib.parse import quote as url_quote
+
+from src.config import (
+    CARELEAVER_URL,
+    DONATION_URL,
+    FULL_PDF_URL,
+    GITHUB_URL,
+    MINIFIED_PDF_URL,
+    REPORT_PROBLEM_URL_TEMPLATE,
+    SOURCE_2024_PDF_URL,
+    SOURCE_2026_PDF_URL,
+    SUBSCRIBE_URL,
+)
+from src.patterns import (
+    ARTIKEL_HEADING_PREFIX_PATTERN,
+    LAW_CITATION_PATTERN,
+    LAW_NAME_STANDALONE_PATTERN,
+    UNVERAENDERT_PREFIX_PATTERN,
+)
+from src.text_utils import is_unveraendert_text, normalize_bold_ranges
+from src.synopsis_types import AlignedRow, MergedLeftEntry, SynopsisCell
 
 
 def _is_object_dict(value: object) -> TypeGuard[dict[str, object]]:
@@ -38,20 +59,6 @@ def _as_text(value: object) -> str:
     return value if isinstance(value, str) else ""
 
 
-def _as_bold_ranges(value: object) -> list[list[int]]:
-    typed_value = _as_object_list(value)
-    result: list[list[int]] = []
-    for item in typed_value:
-        if not _is_object_list(item):
-            continue
-        typed_item = item
-        if (
-            len(typed_item) == 2
-            and isinstance(typed_item[0], int)
-            and isinstance(typed_item[1], int)
-        ):
-            result.append([typed_item[0], typed_item[1]])
-    return result
 
 
 def _as_diff_ranges(value: object) -> list[list[int | str]]:
@@ -118,6 +125,35 @@ def build_logo_header(logo_path: str) -> str:
     )
 
 
+INTRO_AUTOMATED_GENERATION = (
+    r"Diese und {other_synopse_link} Synopse wurden automatisiert auf Basis der beiden"
+    r" Synopsen der Referentenentw\"urfe aus dem Jahr {source_2024_link} und"
+    r" {source_2026_link} generiert."
+)
+INTRO_AUTHOR_ATTRIBUTION = (
+    r"Die Generierung erfolgte durch ein {github_link}, welches Tamaro Skaljic,"
+    r" seit Februar 2026 im Vorstandsbeisitz des {careleaver_link}, programmiert hat."
+)
+INTRO_USE_LATEST_VERSION = (
+    r"Da Menschen auch beim Programmieren Fehler machen k\"onnen, nutzen Sie bitte"
+    r" die aktuellste Version dieser Synopse, welche {synopse_link} heruntergeladen"
+    r" werden kann."
+)
+INTRO_REPORT_PROBLEMS = (
+    r"Wenn Sie feststellen, dass Inhalte der beiden Referentenentw\"urfe in der Synopse"
+    r" nicht oder in fehlerhafter Form dargestellt werden, melden Sie dies bitte umgehend"
+    r" {report_problem_link}, damit die Synopse korrigiert und aktualisiert werden kann."
+)
+INTRO_SUBSCRIBE = (
+    r"M\"ochten Sie \"uber neue Versionen dieser Synopse informiert werden,"
+    r" k\"onnen Sie sich ebenfalls {subscribe_link} in den Verteiler eintragen."
+)
+INTRO_DONATION = (
+    r"Wenn wir Ihnen Ihre Arbeit erleichtern konnten, freut sich der"
+    r" Careleaver e. V. \"uber eine {donation_link}."
+)
+
+
 def generate_intro_paragraph(metadata: dict[str, object]) -> list[str]:
     """Generate the introductory paragraph LaTeX lines between title and legend."""
     synopse_url = str(metadata["synopse_url"])
@@ -135,42 +171,30 @@ def generate_intro_paragraph(metadata: dict[str, object]) -> list[str]:
         .replace("{synopse_date}", encoded_date)
     )
 
-    source_2024_url = "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/input/2024-09_Referentenentwurf_Synopse.pdf"
-    source_2026_url = "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse/refs/heads/main/input/2026-03_Referentenentwurf_Synopse.pdf"
-    github_url = "https://github.com/tamaro-skaljic/referentenentwurf-synopse?tab=readme-ov-file#readme"
-    careleaver_url = "https://careleaver.de/ueber-uns/"
-    donation_url = "https://careleaver.de/spenden/jetzt-spenden/"
-
     def href(url: str, text: str) -> str:
         return r"\href{" + escape_url_for_latex(url) + "}{" + escape_latex(text) + "}"
 
     paragraphs = [
-        (
-            "Diese und " + href(other_synopse_url, "die andere")
-            + r" Synopse wurden automatisiert auf Basis der beiden Synopsen der Referentenentw\"urfe aus dem Jahr "
-            + href(source_2024_url, "2024") + " und " + href(source_2026_url, "2026") + " generiert."
+        INTRO_AUTOMATED_GENERATION.format(
+            other_synopse_link=href(other_synopse_url, "die andere"),
+            source_2024_link=href(SOURCE_2024_PDF_URL, "2024"),
+            source_2026_link=href(SOURCE_2026_PDF_URL, "2026"),
         ),
-        (
-            "Die Generierung erfolgte durch ein " + href(github_url, "kostenloses und quelloffenes Programm")
-            + r", welches Tamaro Skaljic, seit Februar 2026 im Vorstandsbeisitz des "
-            + href(careleaver_url, "Careleaver e. V.") + ", programmiert hat."
+        INTRO_AUTHOR_ATTRIBUTION.format(
+            github_link=href(GITHUB_URL, "kostenloses und quelloffenes Programm"),
+            careleaver_link=href(CARELEAVER_URL, "Careleaver e. V."),
         ),
-        (
-            r"Da Menschen auch beim Programmieren Fehler machen k\"onnen, nutzen Sie bitte die aktuellste Version dieser Synopse, welche "
-            + href(synopse_url, "hier") + " heruntergeladen werden kann."
+        INTRO_USE_LATEST_VERSION.format(
+            synopse_link=href(synopse_url, "hier"),
         ),
-        (
-            r"Wenn Sie feststellen, dass Inhalte der beiden Referentenentw\"urfe in der Synopse nicht oder in fehlerhafter Form dargestellt werden, melden Sie dies bitte umgehend "
-            + href(report_problem_url, "per E-Mail")
-            + ", damit die Synopse korrigiert und aktualisiert werden kann."
+        INTRO_REPORT_PROBLEMS.format(
+            report_problem_link=href(report_problem_url, "per E-Mail"),
         ),
-        (
-            r"M\"ochten Sie \"uber neue Versionen dieser Synopse informiert werden, k\"onnen Sie sich ebenfalls "
-            + href(subscribe_url, "per E-Mail") + " in den Verteiler eintragen."
+        INTRO_SUBSCRIBE.format(
+            subscribe_link=href(subscribe_url, "per E-Mail"),
         ),
-        (
-            r"Wenn wir Ihnen Ihre Arbeit erleichtern konnten, freut sich der Careleaver e. V. \"uber eine "
-            + href(donation_url, "Spende") + "."
+        INTRO_DONATION.format(
+            donation_link=href(DONATION_URL, "Spende"),
         ),
     ]
 
@@ -214,21 +238,35 @@ def apply_formatting_ranges(
 
     sorted_boundaries = sorted(boundaries)
 
-    # Pre-compute which positions are bold / colored using simple lookup.
-    bold_set: set[int] = set()
-    for start, end in bold_ranges:
-        start = max(0, min(start, len(text)))
-        end = max(0, min(end, len(text)))
-        for position in range(start, end):
-            bold_set.add(position)
+    clamped_bold_starts = sorted(
+        max(0, min(start, len(text))) for start, _end in bold_ranges
+    )
+    clamped_bold_ends = sorted(
+        max(0, min(end, len(text))) for _start, end in bold_ranges
+    )
+    clamped_bold_ranges = list(zip(clamped_bold_starts, clamped_bold_ends))
 
-    color_map: dict[int, str] = {}
+    clamped_diff_ranges: list[tuple[int, int, str]] = []
     for entry in diff_ranges:
-        start, end, color = int(entry[0]), int(entry[1]), str(entry[2])
-        start = max(0, min(start, len(text)))
-        end = max(0, min(end, len(text)))
-        for position in range(start, end):
-            color_map[position] = color
+        start = max(0, min(int(entry[0]), len(text)))
+        end = max(0, min(int(entry[1]), len(text)))
+        clamped_diff_ranges.append((start, end, str(entry[2])))
+    clamped_diff_ranges.sort()
+
+    def _position_in_ranges(position: int, ranges: list[tuple[int, int]]) -> bool:
+        index = bisect.bisect_right([start for start, _ in ranges], position) - 1
+        if index < 0:
+            return False
+        return position < ranges[index][1]
+
+    def _color_at_position(position: int) -> str | None:
+        index = bisect.bisect_right([start for start, _, _ in clamped_diff_ranges], position) - 1
+        if index < 0:
+            return None
+        start, end, color = clamped_diff_ranges[index]
+        if position < end:
+            return color
+        return None
 
     result_parts: list[str] = []
     for segment_index in range(len(sorted_boundaries) - 1):
@@ -241,8 +279,8 @@ def apply_formatting_ranges(
         if not segment_text:
             continue
 
-        is_bold = segment_start in bold_set
-        color = color_map.get(segment_start)
+        is_bold = _position_in_ranges(segment_start, clamped_bold_ranges)
+        color = _color_at_position(segment_start)
 
         if color is not None:
             latex_color = "diffred" if color == "red" else "diffgreen"
@@ -262,7 +300,7 @@ def format_text_entry(entry: dict[str, object] | None) -> str:
         return ""
 
     text = _as_text(entry.get("text", ""))
-    bold_ranges = _as_bold_ranges(entry.get("bold_ranges", []))
+    bold_ranges = normalize_bold_ranges(entry.get("bold_ranges", []))
     diff_ranges = _as_diff_ranges(entry.get("diff_ranges", []))
 
     if not text.strip():
@@ -271,23 +309,43 @@ def format_text_entry(entry: dict[str, object] | None) -> str:
     return apply_formatting_ranges(text, bold_ranges, diff_ranges)
 
 
-def sanitize_cell(text: str) -> str:
-    """Clean up cell content for LaTeX longtable."""
-    # Replace literal newlines with LaTeX newlines
-    text = text.replace("\n", r" \newline ")
-    # Remove empty \textbf{} and \textcolor{}{} spans (whitespace/newline only)
+def _normalize_newlines(text: str) -> str:
+    """Pre: text may contain literal newlines. Post: all \\n replaced with \\newline."""
+    return text.replace("\n", r" \newline ")
+
+
+def _remove_empty_formatting(text: str) -> str:
+    """Pre: text uses \\newline. Post: empty \\textbf and \\textcolor spans removed."""
     text = re.sub(r"\\textbf\{(?:\s|\\newline)*\}", " ", text)
     text = re.sub(r"\\textcolor\{[^}]*\}\{(?:\s|\\newline)*\}", " ", text)
-    # Collapse repeated \newline BEFORE moving them out of braces,
-    # otherwise multiple \newline before } get reduced to one that stays inside.
-    text = re.sub(r"(\\newline\s*){2,}", r"\\newline ", text)
-    # Move trailing \newline from inside closing } to after it
-    text = re.sub(r"\s*\\newline\s*\}", r"} \\newline ", text)
-    # Remove leading/trailing \newline (causes "no line here to end" errors)
+    return text
+
+
+def _collapse_adjacent_newlines(text: str) -> str:
+    """Pre: text uses \\newline. Post: runs of 2+ \\newline reduced to one."""
+    return re.sub(r"(\\newline\s*){2,}", r"\\newline ", text)
+
+
+def _move_newlines_outside_braces(text: str) -> str:
+    """Pre: adjacent \\newline already collapsed. Post: trailing \\newline inside } moved after }."""
+    return re.sub(r"\s*\\newline\s*\}", r"} \\newline ", text)
+
+
+def _trim_edge_newlines(text: str) -> str:
+    """Pre: \\newline commands positioned correctly. Post: leading/trailing \\newline removed."""
     text = re.sub(r"^\s*(\\newline\s*)+", "", text)
     text = re.sub(r"(\s*\\newline\s*)+\s*$", "", text)
-    # Final collapse in case the move created new adjacent \newline commands
-    text = re.sub(r"(\\newline\s*){2,}", r"\\newline ", text)
+    return text
+
+
+def sanitize_cell(text: str) -> str:
+    """Clean up cell content for LaTeX longtable."""
+    text = _normalize_newlines(text)
+    text = _remove_empty_formatting(text)
+    text = _collapse_adjacent_newlines(text)
+    text = _move_newlines_outside_braces(text)
+    text = _trim_edge_newlines(text)
+    text = _collapse_adjacent_newlines(text)
     return text.strip()
 
 
@@ -315,34 +373,35 @@ def render_cell(row: dict[str, object] | None, side: str) -> str:
     )
 
 
-def render_merged_left_cell(aligned_row: dict[str, object]) -> str:
+def render_merged_left_cell(
+    aligned_row: dict[str, object],
+    highlight_diff_ranges: bool = True,
+) -> str:
     """Render the merged left column from precomputed alignment output."""
-    return sanitize_cell(format_text_entry(_as_dict(aligned_row.get("merged_left"))))
+    merged_left_entry = _as_dict(aligned_row.get("merged_left", {}))
+    if not highlight_diff_ranges:
+        merged_left_entry = {
+            "text": merged_left_entry.get("text", ""),
+            "bold_ranges": merged_left_entry.get("bold_ranges", []),
+        }
+    return sanitize_cell(format_text_entry(merged_left_entry))
 
 
-_LAW_CITATION_PATTERN = re.compile(r"\(\s*-\s*[A-Za-zÄÖÜäöüß0-9 ]+\s*\)")
-_ARTIKEL_HEADING_PATTERN = re.compile(r"^\s*Artikel\s+\d+\b", re.IGNORECASE)
-_LAW_NAME_STANDALONE_PATTERN = re.compile(
-    r"^(Bürgerliches Gesetzbuch"
-    r"|(\w+\s+)?Buch Sozialgesetzbuch"
-    r"|Sozialgerichtsgesetz"
-    r"|Jugendschutzgesetz)\s*$"
-)
 
 
 def _is_artikel_heading_text(text: str | None) -> bool:
     if not isinstance(text, str):
         return False
-    return bool(_ARTIKEL_HEADING_PATTERN.match(text.strip()))
+    return bool(ARTIKEL_HEADING_PREFIX_PATTERN.match(text.strip()))
 
 
 def _is_standalone_law_name_text(text: str | None) -> bool:
     if not isinstance(text, str):
         return False
-    return bool(_LAW_NAME_STANDALONE_PATTERN.match(text.strip()))
+    return bool(LAW_NAME_STANDALONE_PATTERN.match(text.strip()))
 
 
-def is_artikel_heading_row(row: dict[str, object]) -> bool:
+def is_merged_artikel_heading_row(row: dict[str, object]) -> bool:
     if row.get("is_section_header"):
         return False
     merged_left_text = _as_text(_as_dict(row.get("merged_left")).get("text", ""))
@@ -380,7 +439,7 @@ def is_heading_row(row: dict[str, object], previous_row: dict[str, object] | Non
     if row.get("is_section_header"):
         return False
     merged_left_text = _as_text(_as_dict(row.get("merged_left")).get("text", ""))
-    if _LAW_CITATION_PATTERN.search(merged_left_text):
+    if LAW_CITATION_PATTERN.search(merged_left_text):
         return True
     if _is_standalone_law_name_text(merged_left_text):
         return True
@@ -426,16 +485,6 @@ _PLACEHOLDER_ROW: dict[str, object] = {
 }
 
 
-def _is_unveraendert(text: str | None) -> bool:
-    """Return True when text represents 'unverändert', including spaced OCR forms
-    and short prefixed forms like 'e) unverändert' or '1a. unverändert'."""
-    if text is None:
-        return False
-    stripped = text.strip()
-    normalized = "".join(c for c in stripped.lower() if c.isalpha())
-    if normalized == "unverändert":
-        return True
-    return len(stripped) < 20 and "unverändert" in normalized
 
 
 def _right_is_empty_or_unveraendert(row: dict[str, object] | None) -> bool:
@@ -443,13 +492,9 @@ def _right_is_empty_or_unveraendert(row: dict[str, object] | None) -> bool:
     if row is None:
         return True
     text = _as_text(row.get("right", "")).strip()
-    return not text or _is_unveraendert(text)
+    return not text or is_unveraendert_text(text)
 
 
-_UNVERAENDERT_PREFIX_RE = re.compile(
-    r'^[(\[]*[a-z0-9]{0,3}[.)\] ]*\s*unver[äa]ndert',
-    re.IGNORECASE,
-)
 
 
 def _starts_with_unveraendert(text: str | None) -> bool:
@@ -461,7 +506,7 @@ def _starts_with_unveraendert(text: str | None) -> bool:
     """
     if not text:
         return False
-    return bool(_UNVERAENDERT_PREFIX_RE.match(text.strip()))
+    return bool(UNVERAENDERT_PREFIX_PATTERN.match(text.strip()))
 
 
 def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -471,6 +516,7 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     - Structural rows: any row whose merged_left column contains bold text
       (covers §-section headers, law-name headers, paragraph/subsection headers)
     - Changed rows: any row where the 2024 or 2026 right column has diff ranges,
+            or where the merged left column has diff ranges,
       or where one side is entirely absent (whole section added/removed),
       UNLESS col3 (2026 right) says 'unverändert' and col2 (2024 right) is
       empty or also 'unverändert' — those carry no meaningful change.
@@ -490,13 +536,18 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
         # followed by a structural heading) → nothing to show, suppress unconditionally.
         col2_text = _as_text(r2024.get("right") or "")
         col3_text = _as_text(r2026.get("right") or "")
-        if _starts_with_unveraendert(col2_text) and _starts_with_unveraendert(col3_text):
+        merged_left = _as_dict(row.get("merged_left"))
+        has_left_side_changes = bool(_as_object_list(merged_left.get("diff_ranges")))
+        if (
+            _starts_with_unveraendert(col2_text)
+            and _starts_with_unveraendert(col3_text)
+            and not has_left_side_changes
+        ):
             if not last_was_placeholder:
                 result.append(_PLACEHOLDER_ROW)
                 last_was_placeholder = True
             previous_row = row
             continue
-        merged_left = _as_dict(row.get("merged_left"))
         is_structural = (
             row.get("starts_new_table", False)
             or
@@ -504,22 +555,23 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
             or row.get("is_section_header", False)
             or is_heading_row(row, previous_row)
         )
-        has_changes = (
+        has_right_side_changes = (
             bool(r2024.get("right_diff_ranges"))
             or bool(r2026.get("right_diff_ranges"))
             or raw_r2024 is None
             or raw_r2026 is None
         )
+        has_changes = has_left_side_changes or has_right_side_changes
         # Override: if neither column carries a meaningful change, suppress.
         # Case 1: col3 says "unverändert" and col2 is empty or also "unverändert".
         # Case 2: col2 says "unverändert" and col3 is empty.
-        if has_changes and (
+        if has_right_side_changes and not has_left_side_changes and (
             (
-                _is_unveraendert(_as_text(r2026.get("right")))
+                is_unveraendert_text(_as_text(r2026.get("right")))
                 and _right_is_empty_or_unveraendert(r2024)
             )
             or (
-                _is_unveraendert(_as_text(r2024.get("right")))
+                is_unveraendert_text(_as_text(r2024.get("right")))
                 and _right_is_empty_or_unveraendert(r2026)
             )
         ):
@@ -534,11 +586,9 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     return result
 
 
-def generate_latex(data: dict[str, object]) -> str:
-    """Generate the full LaTeX document."""
+def _generate_preamble(metadata: dict[str, object]) -> list[str]:
+    """Generate document preamble: packages, colors, page layout, header."""
     lines: list[str] = []
-
-    # Preamble
     lines.append(r"\documentclass[10pt,a4paper,landscape]{article}")
     lines.append(r"\usepackage[landscape,margin=1.2cm,headheight=34pt,includehead]{geometry}")
     lines.append(r"\usepackage[ngerman]{babel}")
@@ -566,7 +616,6 @@ def generate_latex(data: dict[str, object]) -> str:
     lines.append("")
     lines.append(r"\pagestyle{fancy}")
     lines.append(r"\fancyhf{}")
-    metadata = _as_dict(data.get("metadata", {}))
     logo_path = _as_text(metadata.get("logo_path", "careleaver_logo_rgb.png"))
     lines.append(build_logo_header(logo_path))
     header_date = _as_text(metadata.get("date", ""))
@@ -579,22 +628,12 @@ def generate_latex(data: dict[str, object]) -> str:
     lines.append(r"\begin{document}")
     lines.append(r"\scriptsize")
     lines.append("")
+    return lines
 
-    # Title
-    title = _as_text(metadata.get("title", "Synopse"))
-    lines.append(r"\begin{center}")
-    lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
-    lines.append(r"\end{center}")
-    lines.append(r"\vspace{0.3cm}")
-    lines.append("")
 
-    # Introductory paragraph
-    metadata = _as_dict(data.get("metadata", {}))
-    if metadata.get("synopse_url"):
-        lines.extend(generate_intro_paragraph(metadata))
-        lines.append("")
-
-    # Legend table for color semantics
+def _generate_legend_table() -> list[str]:
+    """Generate the color legend table."""
+    lines: list[str] = []
     lines.append(r"\begin{center}")
     lines.append(r"\begin{tabular}{|p{2.8cm}|p{6.9cm}|p{13.0cm}|}")
     lines.append(r"\hline")
@@ -618,16 +657,20 @@ def generate_latex(data: dict[str, object]) -> str:
     lines.append(r"\end{center}")
     lines.append(r"\vspace{0.5cm}")
     lines.append("")
+    return lines
 
-    # 3 columns in landscape. Keep widths conservative for longtable stability.
-    col_width = "8.2cm"
 
-    hline = r"\hhline{|---|}"
-
+def _generate_data_rows(
+    rows: list[object],
+    col_width: str,
+    hline: str,
+    highlight_merged_left_red: bool,
+) -> list[str]:
+    """Generate the longtable data rows."""
+    lines: list[str] = []
     _append_longtable_header(lines, col_width, hline)
 
     previous_row = None
-    rows = _as_object_list(data.get("rows", []))
     for row_value in rows:
         row = _as_dict(row_value)
         row_2024 = _as_dict(row.get("synopsis2024")) if row.get("synopsis2024") is not None else None
@@ -641,7 +684,10 @@ def generate_latex(data: dict[str, object]) -> str:
 
         is_header = row.get("is_section_header", False) or is_heading_row(row, previous_row)
 
-        c1 = render_merged_left_cell(row)
+        c1 = render_merged_left_cell(
+            row,
+            highlight_diff_ranges=highlight_merged_left_red,
+        )
         c2 = render_cell(row_2024, "right")
         c3 = render_cell(row_2026, "right")
 
@@ -657,57 +703,88 @@ def generate_latex(data: dict[str, object]) -> str:
 
     lines.append(r"\end{longtable}")
     lines.append("")
+    return lines
+
+
+def generate_latex(
+    data: dict[str, object],
+    highlight_merged_left_red: bool = True,
+) -> str:
+    """Generate the full LaTeX document."""
+    metadata = _as_dict(data.get("metadata", {}))
+
+    lines: list[str] = []
+    lines.extend(_generate_preamble(metadata))
+
+    title = _as_text(metadata.get("title", "Synopse"))
+    lines.append(r"\begin{center}")
+    lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
+    lines.append(r"\end{center}")
+    lines.append(r"\vspace{0.3cm}")
+    lines.append("")
+
+    if metadata.get("synopse_url"):
+        lines.extend(generate_intro_paragraph(metadata))
+        lines.append("")
+
+    lines.extend(_generate_legend_table())
+
+    col_width = "8.2cm"
+    hline = r"\hhline{|---|}"
+    rows = _as_object_list(data.get("rows", []))
+    lines.extend(
+        _generate_data_rows(
+            rows,
+            col_width,
+            hline,
+            highlight_merged_left_red=highlight_merged_left_red,
+        )
+    )
 
     lines.append(r"\end{document}")
     return "\n".join(lines)
 
 
-FULL_PDF_URL = (
-    "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse"
-    "/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf"
-)
-
-MINIFIED_PDF_URL = (
-    "https://raw.githubusercontent.com/tamaro-skaljic/referentenentwurf-synopse"
-    "/refs/heads/main/output/Synopse%20IKJHG%20-%20Vergleich%20nur%20der%20%C3%84nderungen"
-    "%20zwischen%20den%20Referentenentw%C3%BCrfe%202024%20und%202026.pdf"
-)
-
-SUBSCRIBE_URL = (
-    "mailto:tamaro.skaljic@careleaver.de"
-    "?subject=Eintragung%20in%20den%20Verteiler"
-    "&body=Hiermit%20stimme%20ich%20zu%2C%20dass%20Sie%20mich%20per%20E-Mail"
-    "%20%C3%BCber%20neue%20Versionen%20der%20Synopsen"
-    "%0D%0A%0D%0A-%20Vergleich%20der%20Referentenentw%C3%BCrfe%202024%20und%202026"
-    "%0D%0A%0D%0Aund"
-    "%0D%0A%0D%0A-%20Vergleich%20nur%20der%20%C3%84nderungen%20zwischen%20den"
-    "%20Referentenentw%C3%BCrfen%202024%20und%202026"
-    "%0D%0A%0D%0Ainformieren."
-    "%0D%0A%0D%0AIch%20wurde%20dar%C3%BCber%20informiert%2C%20dass%20ich%20mich"
-    "%20jederzeit%20formlos%20per%20E-Mail%20an%20tamaro.skaljic%40careleaver.de"
-    "%20aus%20dem%20Verteiler%20austragen%20kann."
-)
-
-REPORT_PROBLEM_URL_TEMPLATE = (
-    "mailto:tamaro.skaljic@careleaver.de"
-    "?subject=Problem%20melden%20-%20%22{synopse_title}%22%20(Stand%3A%20{synopse_date})"
-    "&body=---%20Hinweis%20---"
-    "%0D%0ABevor%20Sie%20ein%20Problem%20melden%2C%20%C3%BCberpr%C3%BCfen%20Sie%20bitte%2C"
-    "%20ob%20die%20Synopse%2C%20welche%20Sie%20sich%20anschauen"
-    "%20(Stand%3A%20{synopse_date})%2C%20der%20aktuellsten%20Version%20entspricht."
-    "%20Sie%20finden%20einen%20Link%20zur%20aktuellsten%20Version%20ganz%20oben%20in%20der%20Synopse."
-    "%0D%0AVielen%20Dank%20im%20Voraus."
-    "%0D%0A---%20Hinweis%20Ende%20---"
-)
+def _verify_no_double_unveraendert(rows: list[dict[str, object]]) -> None:
+    """Verify no row in the minified output has 'unverändert' in both right columns."""
+    violations = [
+        row for row in rows
+        if _starts_with_unveraendert(_as_text(_as_dict(row.get("synopsis2024")).get("right") or ""))
+        and _starts_with_unveraendert(_as_text(_as_dict(row.get("synopsis2026")).get("right") or ""))
+    ]
+    if violations:
+        print(
+            f"ERROR: {len(violations)} row(s) in minified output still have "
+            "'unverändert' in both columns:",
+            file=sys.stderr,
+        )
+        for violation in violations[:5]:
+            print(f"  row_index={violation.get('row_index')}", file=sys.stderr)
+        sys.exit(1)
+    print("Verification passed: no double-'unverändert' rows in minified output.")
 
 
 def main():
     args = sys.argv[1:]
-    if len(args) != 2:
-        print(f"Usage: {sys.argv[0]} <merged.json> <output.tex>", file=sys.stderr)
+    if len(args) not in (2, 3):
+        print(
+            f"Usage: {sys.argv[0]} <merged.json> <output.tex> [--no-merged-left-red-highlight]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
-    json_path, tex_path = args
+    highlight_merged_left_red = True
+    if len(args) == 3:
+        if args[2] != "--no-merged-left-red-highlight":
+            print(
+                f"Unknown option: {args[2]}\n"
+                f"Usage: {sys.argv[0]} <merged.json> <output.tex> [--no-merged-left-red-highlight]",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        highlight_merged_left_red = False
+
+    json_path, tex_path = args[0], args[1]
 
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -734,7 +811,10 @@ def main():
         "report_problem_url_template": REPORT_PROBLEM_URL_TEMPLATE,
     })
 
-    latex = generate_latex(data)
+    latex = generate_latex(
+        data,
+        highlight_merged_left_red=highlight_merged_left_red,
+    )
 
     with open(tex_path, "w", encoding="utf-8") as f:
         f.write(latex)
@@ -760,7 +840,10 @@ def main():
     ]
     minified_rows = minify_rows(typed_rows)
     minified_data: dict[str, object] = {"metadata": minified_meta, "rows": minified_rows}
-    minified_latex = generate_latex(minified_data)
+    minified_latex = generate_latex(
+        minified_data,
+        highlight_merged_left_red=highlight_merged_left_red,
+    )
 
     with open(minified_tex_path, "w", encoding="utf-8") as f:
         f.write(minified_latex)
@@ -768,22 +851,7 @@ def main():
     print(f"Generated minified LaTeX: {minified_tex_path}")
     print(f"Compile with: xelatex {minified_tex_path}")
 
-    # Verify: no row in the minified output has "unverändert" in both right columns.
-    violations = [
-        r for r in minified_rows
-        if _starts_with_unveraendert(_as_text(_as_dict(r.get("synopsis2024")).get("right") or ""))
-        and _starts_with_unveraendert(_as_text(_as_dict(r.get("synopsis2026")).get("right") or ""))
-    ]
-    if violations:
-        print(
-            f"ERROR: {len(violations)} row(s) in minified output still have "
-            "'unverändert' in both columns:",
-            file=sys.stderr,
-        )
-        for v in violations[:5]:
-            print(f"  row_index={v.get('row_index')}", file=sys.stderr)
-        sys.exit(1)
-    print("Verification passed: no double-'unverändert' rows in minified output.")
+    _verify_no_double_unveraendert(minified_rows)
 
 
 if __name__ == "__main__":

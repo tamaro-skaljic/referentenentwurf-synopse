@@ -9,6 +9,7 @@ from src.generate_latex import (
     is_heading_row,
     minify_rows,
     render_cell,
+    sanitize_cell,
 )
 
 
@@ -285,6 +286,37 @@ def test_generate_latex_renders_diff_colors():
     latex = generate_latex(data)
     assert r"\textcolor{diffred}{old}" in latex
     assert r"\textcolor{diffgreen}{new}" in latex
+
+
+def test_generate_latex_disables_merged_left_red_highlight_when_toggled_off():
+    data = {
+        "metadata": {"title": "Test"},
+        "rows": [
+            {
+                "is_section_header": False,
+                "merged_left": {
+                    "text": "base text",
+                    "bold_ranges": [],
+                    "diff_ranges": [[0, 4, "red"]],
+                },
+                "synopsis2024": {
+                    "right": "old word",
+                    "right_bold_ranges": [],
+                    "right_diff_ranges": [[0, 3, "red"]],
+                },
+                "synopsis2026": {
+                    "right": "new word",
+                    "right_bold_ranges": [],
+                    "right_diff_ranges": [[0, 3, "green"]],
+                },
+            }
+        ],
+    }
+
+    latex = generate_latex(data, highlight_merged_left_red=False)
+
+    assert r"\textcolor{diffred}{base}" not in latex
+    assert r"\textcolor{diffred}{old}" in latex
 
 
 class TestIsHeadingRow:
@@ -677,3 +709,100 @@ class TestMinifyRows:
 
         section_headers = [r for r in result if r.get("is_section_header")]
         assert len(section_headers) == 1
+
+    def test_row_with_only_merged_left_diff_ranges_is_kept(self):
+        merged_left_diff_row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": "geltendes Recht alt",
+                "bold_ranges": [],
+                "diff_ranges": [[0, 9, "red"]],
+            },
+            "synopsis2024": {
+                "right": "ohne Änderung 2024",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+            "synopsis2026": {
+                "right": "ohne Änderung 2026",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+        }
+
+        result = minify_rows([merged_left_diff_row])
+
+        assert result[0] is merged_left_diff_row
+
+    def test_row_with_merged_left_diff_ranges_not_suppressed_by_double_unveraendert(self):
+        merged_left_diff_row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": "geltendes Recht alt",
+                "bold_ranges": [],
+                "diff_ranges": [[0, 9, "red"]],
+            },
+            "synopsis2024": {
+                "right": "(1) unverändert",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+            "synopsis2026": {
+                "right": "(1) unverändert",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+        }
+
+        result = minify_rows([merged_left_diff_row])
+
+        assert result[0] is merged_left_diff_row
+
+
+class TestSanitizeCell:
+    def test_literal_newlines_replaced(self):
+        assert r"\newline" in sanitize_cell("line1\nline2")
+
+    def test_empty_textbf_removed(self):
+        result = sanitize_cell(r"\textbf{}")
+        assert r"\textbf" not in result
+
+    def test_empty_textbf_with_newline_removed(self):
+        result = sanitize_cell(r"\textbf{ \newline }")
+        assert r"\textbf" not in result
+
+    def test_empty_textcolor_removed(self):
+        result = sanitize_cell(r"\textcolor{diffred}{}")
+        assert r"\textcolor" not in result
+
+    def test_empty_textcolor_with_newline_removed(self):
+        result = sanitize_cell(r"\textcolor{diffred}{ \newline }")
+        assert r"\textcolor" not in result
+
+    def test_repeated_newlines_collapsed(self):
+        result = sanitize_cell(r"a \newline \newline b")
+        assert result.count(r"\newline") == 1
+
+    def test_trailing_newline_moved_outside_brace(self):
+        result = sanitize_cell(r"\textbf{hello \newline }")
+        assert r"\textbf{hello}" in result
+
+    def test_leading_newline_removed(self):
+        result = sanitize_cell(r"\newline hello")
+        assert result == "hello"
+
+    def test_trailing_newline_removed(self):
+        result = sanitize_cell(r"hello \newline ")
+        assert result == "hello"
+
+    def test_plain_text_unchanged(self):
+        assert sanitize_cell("hello world") == "hello world"
+
+    def test_whitespace_stripped(self):
+        assert sanitize_cell("  hello  ") == "hello"
+
+    def test_combined_scenario(self):
+        result = sanitize_cell("line1\nline2\nline3")
+        assert r"\newline" in result
+        assert "line1" in result
+        assert "line3" in result

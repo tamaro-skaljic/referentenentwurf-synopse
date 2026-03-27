@@ -7,7 +7,7 @@ from src.align_and_merge import (
     apply_known_ocr_fixes,
     build_merged_left_entry,
     build_normalized_text_with_position_map,
-    column_should_merge,
+    text_indicates_row_continuation,
     compute_character_diff_ranges,
     compute_diff_ranges_for_row,
     is_cell_empty,
@@ -17,25 +17,26 @@ from src.align_and_merge import (
     group_rows_into_law_sections,
     is_page_continuation_header,
     is_structural_marker_with_unveraendert_row,
-    is_unveraendert_text,
     merge_column_text_and_bold_ranges,
     merge_page_break_continuation_rows,
     parse_section_key,
     remove_suspected_struck_duplicate_number_cells,
 )
+from src.text_utils import is_unveraendert_text
+from src.synopsis_types import RawRow
 
 
 def make_row(left="", right="", left_bold_ranges=None, right_bold_ranges=None, page=1):
     """Create a minimal row dict for testing."""
-    return {
-        "left": left,
-        "right": right,
-        "left_bold_ranges": left_bold_ranges or [],
-        "right_bold_ranges": right_bold_ranges or [],
-        "page": page,
-        "table": 1,
-        "row": 1,
-    }
+    return RawRow(
+        left=left,
+        right=right,
+        left_bold_ranges=left_bold_ranges or [],
+        right_bold_ranges=right_bold_ranges or [],
+        page=page,
+        table=1,
+        row=1,
+    ).to_dict()
 
 
 class TestDetectLeadingMarkerType:
@@ -119,55 +120,55 @@ class TestRemoveSuspectedStruckDuplicateNumberCells:
 
 class TestColumnShouldMerge:
     def test_none_should_merge(self):
-        assert column_should_merge(None) is True
+        assert text_indicates_row_continuation(None) is True
 
     def test_empty_string_should_merge(self):
-        assert column_should_merge("") is True
+        assert text_indicates_row_continuation("") is True
 
     def test_whitespace_only_should_merge(self):
-        assert column_should_merge("  ") is True
+        assert text_indicates_row_continuation("  ") is True
 
     def test_lowercase_letter_start_should_merge(self):
-        assert column_should_merge("ihrer individuellen") is True
+        assert text_indicates_row_continuation("ihrer individuellen") is True
 
     def test_uppercase_letter_start_should_merge(self):
-        assert column_should_merge("Die nach Satz") is True
+        assert text_indicates_row_continuation("Die nach Satz") is True
 
     def test_umlaut_start_should_merge(self):
-        assert column_should_merge("übermittelt werden") is True
+        assert text_indicates_row_continuation("übermittelt werden") is True
 
     def test_uppercase_umlaut_start_should_merge(self):
-        assert column_should_merge("Änderungen im Text") is True
+        assert text_indicates_row_continuation("Änderungen im Text") is True
 
     def test_eszett_start_should_merge(self):
-        assert column_should_merge("ßomething else") is True
+        assert text_indicates_row_continuation("ßomething else") is True
 
     def test_digit_start_should_not_merge(self):
-        assert column_should_merge("2. der Betreuung") is False
+        assert text_indicates_row_continuation("2. der Betreuung") is False
 
     def test_section_sign_start_should_not_merge(self):
-        assert column_should_merge("§ 42") is False
+        assert text_indicates_row_continuation("§ 42") is False
 
     def test_opening_paren_start_should_not_merge(self):
-        assert column_should_merge("(3) Hilfe") is False
+        assert text_indicates_row_continuation("(3) Hilfe") is False
 
     def test_dash_start_should_not_merge(self):
-        assert column_should_merge("- Einkommen") is False
+        assert text_indicates_row_continuation("- Einkommen") is False
 
     def test_single_letter_followed_by_paren_should_not_merge(self):
-        assert column_should_merge("a) Geschlecht") is False
+        assert text_indicates_row_continuation("a) Geschlecht") is False
 
     def test_single_character_should_not_merge(self):
-        assert column_should_merge("x") is False
+        assert text_indicates_row_continuation("x") is False
 
     def test_absatz_marker_should_not_merge(self):
-        assert column_should_merge("Absatz 4") is False
+        assert text_indicates_row_continuation("Absatz 4") is False
 
     def test_unterabschnitt_marker_should_not_merge(self):
-        assert column_should_merge("Unterabschnitt 2") is False
+        assert text_indicates_row_continuation("Unterabschnitt 2") is False
 
     def test_abschnitt_marker_should_not_merge(self):
-        assert column_should_merge("Abschnitt 3") is False
+        assert text_indicates_row_continuation("Abschnitt 3") is False
 
 
 class TestUnveraendertDetection:
@@ -1581,3 +1582,103 @@ class TestAlignAndMergeDiffRanges:
         assert "right_diff_ranges" in content_rows[0]["synopsis2026"]
         assert any(r[2] == "red" for r in content_rows[0]["synopsis2024"]["right_diff_ranges"])
         assert any(r[2] == "green" for r in content_rows[0]["synopsis2026"]["right_diff_ranges"])
+
+
+class TestComputeMergedLeftDiffRanges:
+    """Tests for computing diff_ranges on the merged_left column."""
+
+    def test_unlabeled_merged_left_gets_red_ranges(self):
+        """When both left texts are equal and col3 has different right text,
+        merged_left should get red diff_ranges."""
+        from src.align_and_merge import compute_merged_left_diff_ranges
+
+        merged_left = {"text": "same left text", "bold_ranges": []}
+        row_2024 = make_row(left="same left text", right="unverändert")
+        row_2026 = make_row(left="same left text", right="new right content")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, row_2026)
+
+        assert len(result) > 0
+        assert all(entry[2] == "red" for entry in result)
+
+    def test_no_ranges_when_col3_right_is_unveraendert(self):
+        """When synopsis2026 right is 'unverändert', no diff on merged_left."""
+        from src.align_and_merge import compute_merged_left_diff_ranges
+
+        merged_left = {"text": "some text", "bold_ranges": []}
+        row_2024 = make_row(left="some text", right="content")
+        row_2026 = make_row(left="some text", right="unverändert")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, row_2026)
+
+        assert result == []
+
+    def test_no_ranges_when_col3_right_is_empty(self):
+        """When synopsis2026 right is empty, no diff on merged_left."""
+        from src.align_and_merge import compute_merged_left_diff_ranges
+
+        merged_left = {"text": "some text", "bold_ranges": []}
+        row_2024 = make_row(left="some text", right="content")
+        row_2026 = make_row(left="some text", right="")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, row_2026)
+
+        assert result == []
+
+    def test_no_ranges_when_row_2026_is_none(self):
+        """When synopsis2026 is None, no diff on merged_left."""
+        from src.align_and_merge import compute_merged_left_diff_ranges
+
+        merged_left = {"text": "some text", "bold_ranges": []}
+        row_2024 = make_row(left="some text", right="content")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, None)
+
+        assert result == []
+
+    def test_labeled_merged_left_diffs_only_2026_portion(self):
+        """When merged_left has labels (both synopses have different left text),
+        only the 2026 portion should get red ranges with correct offsets."""
+        from src.align_and_merge import compute_merged_left_diff_ranges, MERGED_LEFT_SOURCE_LABEL_2026
+
+        text_2024 = "old law text"
+        text_2026 = "new law text"
+        prefix_2024 = "- Aus Synopsis 2024 -\n\n"
+        separator = "\n\n"
+        prefix_2026 = MERGED_LEFT_SOURCE_LABEL_2026 + "\n\n"
+        merged_text = prefix_2024 + text_2024 + separator + prefix_2026 + text_2026
+        merged_left = {"text": merged_text, "bold_ranges": []}
+
+        row_2024 = make_row(left="old law text", right="unverändert")
+        row_2026 = make_row(left="new law text", right="completely different amendment")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, row_2026)
+
+        portion_2026_start = len(prefix_2024) + len(text_2024) + len(separator) + len(prefix_2026)
+        if result:
+            assert all(entry[2] == "red" for entry in result)
+            assert all(entry[0] >= portion_2026_start for entry in result)
+
+    def test_both_columns_have_content_diffs_against_2026(self):
+        """When both columns have content, merged_left diffs against synopsis2026.right."""
+        from src.align_and_merge import compute_merged_left_diff_ranges
+
+        merged_left = {"text": "the current law", "bold_ranges": []}
+        row_2024 = make_row(left="the current law", right="some 2024 change")
+        row_2026 = make_row(left="the current law", right="some 2026 change")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, row_2026)
+
+        assert all(entry[2] == "red" for entry in result)
+
+    def test_empty_merged_left_returns_no_ranges(self):
+        """When merged_left text is empty, return no ranges."""
+        from src.align_and_merge import compute_merged_left_diff_ranges
+
+        merged_left = {"text": "", "bold_ranges": []}
+        row_2024 = make_row(left="", right="content")
+        row_2026 = make_row(left="", right="other content")
+
+        result = compute_merged_left_diff_ranges(merged_left, row_2024, row_2026)
+
+        assert result == []

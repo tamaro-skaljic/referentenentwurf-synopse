@@ -10,17 +10,14 @@ Usage:
 """
 
 import json
-import re
 import sys
 from collections import defaultdict
-from dataclasses import dataclass, asdict
 from typing import Any
 
 import pdfplumber
 
-
-ARTIKEL_HEADING_PATTERN = re.compile(r"^Artikel\s+\d+\s*$", re.IGNORECASE)
-LINE_Y_TOLERANCE = 2.0
+from src.patterns import ARTIKEL_HEADING_PATTERN, LINE_Y_TOLERANCE
+from src.synopsis_types import RawRow
 
 CellBoundingBox = tuple[float, float, float, float]
 PdfCharacter = dict[str, Any]
@@ -29,82 +26,48 @@ GroupedLine = dict[str, Any]
 HeadingEntry = dict[str, float | str]
 
 
-@dataclass
-class RawRow:
-    """A single row extracted from a two-column table."""
-
-    left: str | None
-    right: str | None
-    left_bold_ranges: list[list[int]]
-    right_bold_ranges: list[list[int]]
-    page: int
-    table: int
-    row: int
-
-
-# --- PDF Extraction ---
-
-def extract_cell_with_bold(
-    page: Any,
-    cell_bbox: CellBoundingBox,
-) -> tuple[str, list[list[int]]]:
-    """Extract text from a cell and identify bold character ranges."""
-    x0, top, x1, bottom = cell_bbox
-    # Small padding to avoid missing chars at boundaries
-    padded: CellBoundingBox = (x0 - 0.5, top - 0.5, x1 + 0.5, bottom + 0.5)
-    # Clamp to page bounds
-    padded = (
-        max(0, padded[0]), max(0, padded[1]),
-        min(page.width, padded[2]), min(page.height, padded[3])
-    )
-
-    try:
-        cropped = page.within_bbox(padded)
-    except Exception:
-        return "", []
-
-    chars: list[PdfCharacter] = cropped.chars
-    if not chars:
-        return "", []
-
-    # Sort chars by y (top), then x
-    chars = sorted(chars, key=lambda c: (round(c["top"], 1), c["x0"]))
-
-    # Group chars into lines by y-coordinate
+def _group_characters_into_lines(
+    characters: list[PdfCharacter],
+    y_tolerance: float = LINE_Y_TOLERANCE,
+) -> list[list[PdfCharacter]]:
+    """Group sorted characters into lines by y-coordinate proximity."""
     lines: list[list[PdfCharacter]] = []
     current_line: list[PdfCharacter] = []
     current_y: float | None = None
-    Y_TOLERANCE = 2.0
 
-    for c in chars:
-        y = float(c["top"])
-        if current_y is None or abs(y - current_y) <= Y_TOLERANCE:
-            current_line.append(c)
+    for character in characters:
+        y = float(character["top"])
+        if current_y is None or abs(y - current_y) <= y_tolerance:
+            current_line.append(character)
             if current_y is None:
                 current_y = y
         else:
             if current_line:
                 lines.append(current_line)
-            current_line = [c]
+            current_line = [character]
             current_y = y
     if current_line:
         lines.append(current_line)
+    return lines
 
-    # Build text and bold ranges
+
+def _assemble_bold_text(
+    character_lines: list[list[PdfCharacter]],
+) -> tuple[str, list[list[int]]]:
+    """Assemble text and bold ranges from grouped character lines."""
     full_text = ""
     bold_ranges: list[list[int]] = []
     bold_start: int | None = None
 
-    for li, line_chars in enumerate(lines):
-        if li > 0:
+    for line_index, line_chars in enumerate(character_lines):
+        if line_index > 0:
             full_text += "\n"
 
-        # Sort chars in line by x position
-        line_chars = sorted(line_chars, key=lambda c: float(c["x0"]))
+        line_chars = sorted(line_chars, key=lambda character: float(character["x0"]))
 
-        for c in line_chars:
-            char = str(c["text"])
-            is_bold = "Bold" in c.get("fontname", "")
+        for character in line_chars:
+            char = str(character["text"])
+            is_bold = "Bold" in character.get("fontname", "")
             pos = len(full_text)
             full_text += char
 
@@ -118,6 +81,33 @@ def extract_cell_with_bold(
         bold_ranges.append([bold_start, len(full_text)])
 
     return full_text, bold_ranges
+
+
+def extract_cell_with_bold(
+    page: Any,
+    cell_bbox: CellBoundingBox,
+) -> tuple[str, list[list[int]]]:
+    """Extract text from a cell and identify bold character ranges."""
+    x0, top, x1, bottom = cell_bbox
+    padded: CellBoundingBox = (x0 - 0.5, top - 0.5, x1 + 0.5, bottom + 0.5)
+    padded = (
+        max(0, padded[0]), max(0, padded[1]),
+        min(page.width, padded[2]), min(page.height, padded[3])
+    )
+
+    try:
+        cropped = page.within_bbox(padded)
+    except Exception as error:
+        print(f"Warning: failed to crop bbox {padded}: {error}", file=sys.stderr)
+        return "", []
+
+    chars: list[PdfCharacter] = cropped.chars
+    if not chars:
+        return "", []
+
+    chars = sorted(chars, key=lambda character: (round(character["top"], 1), character["x0"]))
+    character_lines = _group_characters_into_lines(chars)
+    return _assemble_bold_text(character_lines)
 
 
 def _group_words_into_lines(words: list[PdfWord]) -> list[GroupedLine]:
@@ -203,7 +193,11 @@ def detect_standalone_artikel_headings_from_words(
 
 def extract_pages(pdf_path: str) -> list[RawRow]:
     """Extract all table rows from the synopsis PDF, preserving source order."""
-    pdf = pdfplumber.open(pdf_path)
+    with pdfplumber.open(pdf_path) as pdf:
+        return _extract_pages_from_pdf(pdf)
+
+
+def _extract_pages_from_pdf(pdf: Any) -> list[RawRow]:
     all_rows: list[RawRow] = []
 
     for page_idx, page in enumerate(pdf.pages):
@@ -233,7 +227,7 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
             sequence_number += 1
 
         if not tables:
-            all_rows.extend(row for _, __, row in sorted(page_rows_with_position, key=lambda entry: (entry[0], entry[1])))
+            all_rows.extend(row for _, _, row in sorted(page_rows_with_position, key=lambda entry: (entry[0], entry[1])))
             continue
 
         for table_idx, table in enumerate(tables):
@@ -273,10 +267,9 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
 
         all_rows.extend(
             row
-            for _, __, row in sorted(page_rows_with_position, key=lambda entry: (entry[0], entry[1]))
+            for _, _, row in sorted(page_rows_with_position, key=lambda entry: (entry[0], entry[1]))
         )
 
-    pdf.close()
     return all_rows
 
 
@@ -295,7 +288,7 @@ def main():
     # Raw output only. Cleanup is handled by cleanup_synopsis.py.
     raw_output: dict[str, Any] = {
         "source_file": pdf_path,
-        "rows": [asdict(r) for r in rows],
+        "rows": [r.to_dict() for r in rows],
     }
     with open(raw_output_path, "w", encoding="utf-8") as f:
         json.dump(raw_output, f, ensure_ascii=False, indent=2)
