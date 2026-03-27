@@ -319,6 +319,35 @@ def test_generate_latex_disables_merged_left_red_highlight_when_toggled_off():
     assert r"\textcolor{diffred}{old}" in latex
 
 
+def test_generate_latex_highlights_merged_left_red_when_both_right_columns_are_empty():
+    data = {
+        "metadata": {"title": "Test"},
+        "rows": [
+            {
+                "is_section_header": False,
+                "merged_left": {
+                    "text": "(1) Bei der Aufstellung und Überprüfung des Hilfeplans",
+                    "bold_ranges": [],
+                },
+                "synopsis2024": {
+                    "right": "",
+                    "right_bold_ranges": [],
+                    "right_diff_ranges": [],
+                },
+                "synopsis2026": {
+                    "right": "",
+                    "right_bold_ranges": [],
+                    "right_diff_ranges": [],
+                },
+            }
+        ],
+    }
+
+    latex = generate_latex(data)
+
+    assert r"\textcolor{diffred}{(1) Bei der Aufstellung und Überprüfung des Hilfeplans}" in latex
+
+
 class TestIsHeadingRow:
     """Test is_heading_row detects law-citation and heading patterns."""
 
@@ -710,7 +739,7 @@ class TestMinifyRows:
         section_headers = [r for r in result if r.get("is_section_header")]
         assert len(section_headers) == 1
 
-    def test_row_with_only_merged_left_diff_ranges_is_kept(self):
+    def test_row_with_only_merged_left_diff_ranges_is_replaced_with_placeholder(self):
         merged_left_diff_row = {
             "is_section_header": False,
             "merged_left": {
@@ -732,9 +761,10 @@ class TestMinifyRows:
 
         result = minify_rows([merged_left_diff_row])
 
-        assert result[0] is merged_left_diff_row
+        assert result[0] is not merged_left_diff_row
+        assert (result[0].get("merged_left") or {}).get("text") == "..."
 
-    def test_row_with_merged_left_diff_ranges_not_suppressed_by_double_unveraendert(self):
+    def test_row_with_merged_left_diff_ranges_and_double_unveraendert_is_replaced_with_placeholder(self):
         merged_left_diff_row = {
             "is_section_header": False,
             "merged_left": {
@@ -756,7 +786,8 @@ class TestMinifyRows:
 
         result = minify_rows([merged_left_diff_row])
 
-        assert result[0] is merged_left_diff_row
+        assert result[0] is not merged_left_diff_row
+        assert (result[0].get("merged_left") or {}).get("text") == "..."
 
 
 class TestSanitizeCell:

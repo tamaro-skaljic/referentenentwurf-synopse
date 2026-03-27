@@ -387,6 +387,24 @@ def render_merged_left_cell(
     return sanitize_cell(format_text_entry(merged_left_entry))
 
 
+def render_merged_left_cell_all_red(aligned_row: dict[str, object]) -> str:
+    """Render merged left with a full-text red diff range."""
+    merged_left_entry = _as_dict(aligned_row.get("merged_left", {}))
+    merged_left_text = _as_text(merged_left_entry.get("text", ""))
+    full_red_range: list[list[int | str]] = (
+        [[0, len(merged_left_text), "red"]] if merged_left_text.strip() else []
+    )
+    return sanitize_cell(
+        format_text_entry(
+            {
+                "text": merged_left_text,
+                "bold_ranges": merged_left_entry.get("bold_ranges", []),
+                "diff_ranges": full_red_range,
+            }
+        )
+    )
+
+
 
 
 def _is_artikel_heading_text(text: str | None) -> bool:
@@ -515,8 +533,7 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     Keeps:
     - Structural rows: any row whose merged_left column contains bold text
       (covers §-section headers, law-name headers, paragraph/subsection headers)
-    - Changed rows: any row where the 2024 or 2026 right column has diff ranges,
-            or where the merged left column has diff ranges,
+        - Changed rows: any row where the 2024 or 2026 right column has diff ranges,
       or where one side is entirely absent (whole section added/removed),
       UNLESS col3 (2026 right) says 'unverändert' and col2 (2024 right) is
       empty or also 'unverändert' — those carry no meaningful change.
@@ -537,11 +554,9 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
         col2_text = _as_text(r2024.get("right") or "")
         col3_text = _as_text(r2026.get("right") or "")
         merged_left = _as_dict(row.get("merged_left"))
-        has_left_side_changes = bool(_as_object_list(merged_left.get("diff_ranges")))
         if (
             _starts_with_unveraendert(col2_text)
             and _starts_with_unveraendert(col3_text)
-            and not has_left_side_changes
         ):
             if not last_was_placeholder:
                 result.append(_PLACEHOLDER_ROW)
@@ -561,11 +576,11 @@ def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
             or raw_r2024 is None
             or raw_r2026 is None
         )
-        has_changes = has_left_side_changes or has_right_side_changes
+        has_changes = has_right_side_changes
         # Override: if neither column carries a meaningful change, suppress.
         # Case 1: col3 says "unverändert" and col2 is empty or also "unverändert".
         # Case 2: col2 says "unverändert" and col3 is empty.
-        if has_right_side_changes and not has_left_side_changes and (
+        if has_right_side_changes and (
             (
                 is_unveraendert_text(_as_text(r2026.get("right")))
                 and _right_is_empty_or_unveraendert(r2024)
@@ -684,9 +699,19 @@ def _generate_data_rows(
 
         is_header = row.get("is_section_header", False) or is_heading_row(row, previous_row)
 
-        c1 = render_merged_left_cell(
-            row,
-            highlight_diff_ranges=highlight_merged_left_red,
+        is_col2_empty = not _as_text(_as_dict(row.get("synopsis2024")).get("right", "")).strip()
+        is_col3_empty = not _as_text(_as_dict(row.get("synopsis2026")).get("right", "")).strip()
+        should_force_full_left_red = (
+            highlight_merged_left_red and is_col2_empty and is_col3_empty
+        )
+
+        c1 = (
+            render_merged_left_cell_all_red(row)
+            if should_force_full_left_red
+            else render_merged_left_cell(
+                row,
+                highlight_diff_ranges=highlight_merged_left_red,
+            )
         )
         c2 = render_cell(row_2024, "right")
         c3 = render_cell(row_2026, "right")
