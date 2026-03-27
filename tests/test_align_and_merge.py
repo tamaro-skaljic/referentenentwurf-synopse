@@ -170,6 +170,12 @@ class TestColumnShouldMerge:
     def test_abschnitt_marker_should_not_merge(self):
         assert text_indicates_row_continuation("Abschnitt 3") is False
 
+    def test_structural_word_followed_by_sentence_should_merge(self):
+        assert text_indicates_row_continuation("Absatz 2 Satz 1 zuständigen Jugendamts.") is True
+
+    def test_compound_structural_heading_should_not_merge(self):
+        assert text_indicates_row_continuation("Absatz 2 Satz 1") is False
+
     def test_bare_number_followed_by_text_should_merge(self):
         assert text_indicates_row_continuation("33 zu übermitteln") is True
 

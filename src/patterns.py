@@ -20,6 +20,20 @@ STRUCTURAL_MARKER_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+_STRUCTURAL_KEYWORDS = (
+    r"Absatz|Absätze|Unterabschnitt|Abschnitt|Untertitel|Titel|Kapitel|Teil|Satz|Buchstabe|Anlage"
+)
+# Matches a structural reference that is ONLY a heading (keyword + number/connector chain)
+# with no trailing sentence text.  Examples: "Absatz 4", "Absatz 2 Satz 1", "Absatz 4 und 5".
+# Does NOT match "Absatz 2 Satz 1 zuständigen Jugendamts." because "zuständigen" is not in
+# the allowed token set.
+STANDALONE_STRUCTURAL_HEADING_PATTERN = re.compile(
+    r"^(?:" + _STRUCTURAL_KEYWORDS + r")"
+    r"(?:\s+(?:und|bis|oder|\d+|" + _STRUCTURAL_KEYWORDS + r"))*"
+    r"\s*$",
+    re.IGNORECASE,
+)
+
 NUMBER_DOT_MARKER_PATTERN = re.compile(r"^\d+\s*\.(?!\d)")
 LETTER_BRACKET_MARKER_PATTERN = re.compile(r"^[A-Za-zÄÖÜäöüß]\s*\)")
 PARENTHESIZED_NUMBER_MARKER_PATTERN = re.compile(r"^\(\s*\d+\s*\)")

@@ -30,6 +30,22 @@ from src.patterns import (
     SECTION_SIGN_START_PATTERN,
     STRUCTURAL_MARKER_PATTERN,
 )
+from src.patterns import (
+    ARTIKEL_HEADING_PATTERN,
+    LEADING_LIST_NUMBER_PATTERN,
+    LEADING_LIST_NUMBER_REWRITE_PATTERN,
+    LAW_IDENTIFIER_CITATION_PATTERN,
+    LAW_NAME_STANDALONE_PATTERN,
+    LETTER_BRACKET_MARKER_PATTERN,
+    NUMBER_DOT_MARKER_PATTERN,
+    NUMBERED_SGB_LAW_NAME_PATTERN,
+    PAGE_HEADER_RIGHT_PATTERN,
+    PARENTHESIZED_NUMBER_MARKER_PATTERN,
+    SECTION_HEADER_PATTERN,
+    SECTION_SIGN_START_PATTERN,
+    STANDALONE_STRUCTURAL_HEADING_PATTERN,
+    STRUCTURAL_MARKER_PATTERN,
+)
 from src.text_utils import is_empty_text, is_unveraendert_text, normalize_bold_ranges
 from src.synopsis_types import AlignedRow, MergedLeftEntry, SynopsisCell
 
@@ -369,6 +385,34 @@ def text_indicates_row_continuation(text: str | None) -> bool:
     if len(stripped) < 2:
         return False
     if detect_leading_marker_type(stripped) is not None:
+        return False
+    if stripped[0].isdigit():
+        if re.match(r"^\d+\s*\)", stripped):
+            return False
+        return True
+    return stripped[0].isalpha() and stripped[1].isalpha()
+def text_indicates_row_continuation(text: str | None) -> bool:
+    """Determine if a continuation column should merge into the previous row.
+
+    Returns True if text is None/empty/whitespace (null column = no-op merge),
+    if the first two characters are both letters, or if the text starts with a
+    bare number not immediately followed by '.' or ')' (e.g. "33 zu übermitteln"
+    is a mid-sentence article reference, not a new list item).
+    Returns False if text starts with a list/structure marker (N., (N), a), §…),
+    a number followed by ')' (e.g. "33) Buchstabe"), or is a single character.
+    A structural keyword at the start (e.g. "Absatz") only blocks merging when
+    the full text is a standalone heading reference (e.g. "Absatz 4",
+    "Absatz 2 Satz 1"); if it continues into sentence text it still merges.
+    """
+    if text is None or text.strip() == "":
+        return True
+    stripped = text.strip()
+    if len(stripped) < 2:
+        return False
+    marker_type = detect_leading_marker_type(stripped)
+    if marker_type == "structural":
+        return not bool(STANDALONE_STRUCTURAL_HEADING_PATTERN.match(stripped))
+    if marker_type is not None:
         return False
     if stripped[0].isdigit():
         if re.match(r"^\d+\s*\)", stripped):
