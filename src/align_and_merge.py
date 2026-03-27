@@ -13,7 +13,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 
 @dataclass(frozen=True, order=True)
@@ -57,6 +57,24 @@ LEADING_LIST_NUMBER_REWRITE_PATTERN = re.compile(r"^(\s*)\d+(\s*)\.(?!\d)")
 
 MERGED_LEFT_SOURCE_LABEL_2024 = "- Aus Synopsis 2024 -"
 MERGED_LEFT_SOURCE_LABEL_2026 = "- Aus Synopsis 2026 -"
+
+
+def _coerce_bold_ranges(value: Any) -> list[list[int]]:
+    """Normalize unknown bold range payloads to ``list[list[int]]``."""
+    if not isinstance(value, list):
+        return []
+    coerced: list[list[int]] = []
+    for item in cast(list[Any], value):
+        if not isinstance(item, list):
+            continue
+        typed_item = cast(list[Any], item)
+        if (
+            len(typed_item) == 2
+            and isinstance(typed_item[0], int)
+            and isinstance(typed_item[1], int)
+        ):
+            coerced.append([typed_item[0], typed_item[1]])
+    return coerced
 
 
 def is_page_continuation_header(row: dict[str, Any]) -> bool:
@@ -556,6 +574,7 @@ def compute_diff_ranges_for_row(
     if row_2024 is None and row_2026 is None:
         return (None, None)
     if row_2024 is None:
+        assert row_2026 is not None
         if is_cell_empty(row_2026, "right"):
             return (None, [])
         diff_ranges_2026 = _diff_col3_against_fallback(row_2026)
@@ -699,9 +718,7 @@ def _extract_text_and_bold_ranges(
     text = row.get(side)
     text_value = text if isinstance(text, str) else ""
 
-    bold_ranges = row.get(f"{side}_bold_ranges", [])
-    if not isinstance(bold_ranges, list):
-        return text_value, []
+    bold_ranges = _coerce_bold_ranges(row.get(f"{side}_bold_ranges", []))
     return text_value, bold_ranges
 
 
@@ -827,6 +844,9 @@ def cleanup_first_page_bgb_header_rows(
         if not isinstance(current_row_2024, dict) or not isinstance(next_row_2024, dict):
             continue
 
+        current_row_2024 = cast(dict[str, Any], current_row_2024)
+        next_row_2024 = cast(dict[str, Any], next_row_2024)
+
         if current_row_2024.get("page") != 1:
             continue
 
@@ -849,6 +869,7 @@ def cleanup_first_page_bgb_header_rows(
 
         next_row_2026 = next_row.get("synopsis2026")
         if isinstance(next_row_2026, dict):
+            next_row_2026 = cast(dict[str, Any], next_row_2026)
             all_next_2026_cells_empty = all(
                 ((next_row_2026.get(side) or "").strip() == "")
                 for side in columns_to_replace
@@ -856,7 +877,7 @@ def cleanup_first_page_bgb_header_rows(
             if not all_next_2026_cells_empty:
                 continue
 
-        updated_row_2024 = dict(current_row_2024)
+        updated_row_2024: dict[str, Any] = dict(current_row_2024)
         for side in columns_to_replace:
             updated_row_2024[side] = next_row_2024.get(side)
             updated_row_2024[f"{side}_bold_ranges"] = next_row_2024.get(
@@ -1081,9 +1102,7 @@ def remove_suspected_struck_duplicate_number_cells(
                 if current_number_bold_range is None:
                     continue
 
-                bold_ranges = current_row.get(f"{column_name}_bold_ranges", [])
-                if not isinstance(bold_ranges, list):
-                    bold_ranges = []
+                bold_ranges = _coerce_bold_ranges(current_row.get(f"{column_name}_bold_ranges", []))
                 bold_ranges = [*bold_ranges, current_number_bold_range]
                 current_row[f"{column_name}_bold_ranges"] = sorted_bold_ranges(bold_ranges)
 
@@ -1123,8 +1142,8 @@ def collapse_orphan_insert_rows(
             index += 1
             continue
 
-        current_2026_dict: dict[str, Any] = current_2026
-        next_2026_dict: dict[str, Any] = next_2026
+        current_2026_dict = cast(dict[str, Any], current_2026)
+        next_2026_dict = cast(dict[str, Any], next_2026)
 
         current_left_text = current_2026_dict.get("left")
         current_left_text = current_left_text if isinstance(current_left_text, str) else ""
@@ -1136,13 +1155,13 @@ def collapse_orphan_insert_rows(
         next_right_text = next_2026_dict.get("right")
         next_right_text = next_right_text if isinstance(next_right_text, str) else ""
 
-        current_right_bold_ranges = current_2026_dict.get("right_bold_ranges", [])
-        if not isinstance(current_right_bold_ranges, list):
-            current_right_bold_ranges = []
+        current_right_bold_ranges = _coerce_bold_ranges(
+            current_2026_dict.get("right_bold_ranges", []),
+        )
 
-        next_right_bold_ranges = next_2026_dict.get("right_bold_ranges", [])
-        if not isinstance(next_right_bold_ranges, list):
-            next_right_bold_ranges = []
+        next_right_bold_ranges = _coerce_bold_ranges(
+            next_2026_dict.get("right_bold_ranges", []),
+        )
 
         can_collapse_orphan = (
             current_row.get("synopsis2024") is None

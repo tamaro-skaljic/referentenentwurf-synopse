@@ -22,6 +22,12 @@ import pdfplumber
 ARTIKEL_HEADING_PATTERN = re.compile(r"^Artikel\s+\d+\s*$", re.IGNORECASE)
 LINE_Y_TOLERANCE = 2.0
 
+CellBoundingBox = tuple[float, float, float, float]
+PdfCharacter = dict[str, Any]
+PdfWord = dict[str, Any]
+GroupedLine = dict[str, Any]
+HeadingEntry = dict[str, float | str]
+
 
 @dataclass
 class RawRow:
@@ -38,11 +44,14 @@ class RawRow:
 
 # --- PDF Extraction ---
 
-def extract_cell_with_bold(page, cell_bbox) -> tuple[str, list[list[int]]]:
+def extract_cell_with_bold(
+    page: Any,
+    cell_bbox: CellBoundingBox,
+) -> tuple[str, list[list[int]]]:
     """Extract text from a cell and identify bold character ranges."""
     x0, top, x1, bottom = cell_bbox
     # Small padding to avoid missing chars at boundaries
-    padded = (x0 - 0.5, top - 0.5, x1 + 0.5, bottom + 0.5)
+    padded: CellBoundingBox = (x0 - 0.5, top - 0.5, x1 + 0.5, bottom + 0.5)
     # Clamp to page bounds
     padded = (
         max(0, padded[0]), max(0, padded[1]),
@@ -54,7 +63,7 @@ def extract_cell_with_bold(page, cell_bbox) -> tuple[str, list[list[int]]]:
     except Exception:
         return "", []
 
-    chars = cropped.chars
+    chars: list[PdfCharacter] = cropped.chars
     if not chars:
         return "", []
 
@@ -62,13 +71,13 @@ def extract_cell_with_bold(page, cell_bbox) -> tuple[str, list[list[int]]]:
     chars = sorted(chars, key=lambda c: (round(c["top"], 1), c["x0"]))
 
     # Group chars into lines by y-coordinate
-    lines: list[list[dict]] = []
-    current_line: list[dict] = []
-    current_y = None
+    lines: list[list[PdfCharacter]] = []
+    current_line: list[PdfCharacter] = []
+    current_y: float | None = None
     Y_TOLERANCE = 2.0
 
     for c in chars:
-        y = c["top"]
+        y = float(c["top"])
         if current_y is None or abs(y - current_y) <= Y_TOLERANCE:
             current_line.append(c)
             if current_y is None:
@@ -83,18 +92,18 @@ def extract_cell_with_bold(page, cell_bbox) -> tuple[str, list[list[int]]]:
 
     # Build text and bold ranges
     full_text = ""
-    bold_ranges = []
-    bold_start = None
+    bold_ranges: list[list[int]] = []
+    bold_start: int | None = None
 
     for li, line_chars in enumerate(lines):
         if li > 0:
             full_text += "\n"
 
         # Sort chars in line by x position
-        line_chars = sorted(line_chars, key=lambda c: c["x0"])
+        line_chars = sorted(line_chars, key=lambda c: float(c["x0"]))
 
-        for ci, c in enumerate(line_chars):
-            char = c["text"]
+        for c in line_chars:
+            char = str(c["text"])
             is_bold = "Bold" in c.get("fontname", "")
             pos = len(full_text)
             full_text += char
@@ -111,13 +120,13 @@ def extract_cell_with_bold(page, cell_bbox) -> tuple[str, list[list[int]]]:
     return full_text, bold_ranges
 
 
-def _group_words_into_lines(words: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _group_words_into_lines(words: list[PdfWord]) -> list[GroupedLine]:
     if not words:
         return []
 
     sorted_words = sorted(words, key=lambda word: (round(float(word["top"]), 1), float(word["x0"])))
-    lines: list[dict[str, Any]] = []
-    current_words: list[dict[str, Any]] = []
+    lines: list[GroupedLine] = []
+    current_words: list[PdfWord] = []
     current_top: float | None = None
 
     for word in sorted_words:
@@ -154,8 +163,8 @@ def _group_words_into_lines(words: list[dict[str, Any]]) -> list[dict[str, Any]]
 
 
 def _bbox_intersects_table(
-    bbox: tuple[float, float, float, float],
-    table_bbox: tuple[float, float, float, float],
+    bbox: CellBoundingBox,
+    table_bbox: CellBoundingBox,
 ) -> bool:
     x0, top, x1, bottom = bbox
     tx0, ttop, tx1, tbottom = table_bbox
@@ -165,11 +174,11 @@ def _bbox_intersects_table(
 
 
 def detect_standalone_artikel_headings_from_words(
-    words: list[dict[str, Any]],
-    table_bboxes: list[tuple[float, float, float, float]],
-) -> list[dict[str, Any]]:
+    words: list[PdfWord],
+    table_bboxes: list[CellBoundingBox],
+) -> list[HeadingEntry]:
     """Detect standalone 'Artikel <number>' lines that are outside table areas."""
-    headings: list[dict[str, Any]] = []
+    headings: list[HeadingEntry] = []
     for line in _group_words_into_lines(words):
         line_text = line["text"]
         if not ARTIKEL_HEADING_PATTERN.match(line_text):
@@ -203,7 +212,7 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
         page_rows_with_position: list[tuple[float, int, RawRow]] = []
         sequence_number = 0
 
-        page_words = page.extract_words() or []
+        page_words: list[PdfWord] = page.extract_words() or []
         table_bboxes = [table.bbox for table in tables if hasattr(table, "bbox")]
         standalone_artikel_headings = detect_standalone_artikel_headings_from_words(
             page_words,
@@ -212,7 +221,7 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
 
         for heading_index, heading in enumerate(standalone_artikel_headings):
             heading_row = RawRow(
-                left=heading["text"],
+                left=str(heading["text"]),
                 right=None,
                 left_bold_ranges=[],
                 right_bold_ranges=[],
@@ -233,9 +242,9 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
                 continue
 
             # Group cells into rows by y-coordinate
-            rows_by_y: dict[float, list[tuple]] = defaultdict(list)
+            rows_by_y: dict[float, list[CellBoundingBox]] = defaultdict(list)
             for cell in cells:
-                x0, top, x1, bottom = cell
+                _, top, _, _ = cell
                 rows_by_y[round(top, 1)].append(cell)
 
             for row_idx, y in enumerate(sorted(rows_by_y.keys())):
@@ -284,7 +293,7 @@ def main():
     print(f"Extracted {len(rows)} raw rows")
 
     # Raw output only. Cleanup is handled by cleanup_synopsis.py.
-    raw_output = {
+    raw_output: dict[str, Any] = {
         "source_file": pdf_path,
         "rows": [asdict(r) for r in rows],
     }

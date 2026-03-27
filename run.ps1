@@ -37,11 +37,13 @@ function Get-SourceHash {
 function Should-RunExtract {
     param(
         [Parameter(Mandatory = $true)][string]$CurrentHash,
-        [Parameter(Mandatory = $true)][string]$OutputPath
+        [Parameter(Mandatory = $true)][string[]]$OutputPaths
     )
 
-    if (-not (Test-Path $OutputPath)) {
-        return $true
+    foreach ($outputPath in $OutputPaths) {
+        if (-not (Test-Path $outputPath)) {
+            return $true
+        }
     }
 
     if (-not $state.ContainsKey("extract")) {
@@ -59,14 +61,18 @@ if (Test-Path $stateFile) {
     }
 }
 
+$extractHash = Get-SourceHash "src/extract_synopsis.py"
+$shouldRunExtract = Should-RunExtract -CurrentHash $extractHash -OutputPaths @(
+    "output/synopsis_2024_raw.json",
+    "output/synopsis_2026_raw.json"
+)
+
 Write-Host "=== Step 1: Extract 2024 synopsis ===" -ForegroundColor Cyan
 Measure-Step "Extract 2024" {
-    $extractHash = Get-SourceHash "src/extract_synopsis.py"
-    if (Should-RunExtract -CurrentHash $extractHash -OutputPath "output/synopsis_2024_raw.json") {
+    if ($shouldRunExtract) {
         uv run python src/extract_synopsis.py `
             "input/2024-09_Referentenentwurf_Synopse.pdf" `
             "output/synopsis_2024_raw.json"
-        $state["extract"] = $extractHash
     }
     else {
         Write-Host "Skipping (cached)." -ForegroundColor DarkGray
@@ -76,8 +82,7 @@ Measure-Step "Extract 2024" {
 Write-Host ""
 Write-Host "=== Step 2: Extract 2026 synopsis ===" -ForegroundColor Cyan
 Measure-Step "Extract 2026" {
-    $extractHash = Get-SourceHash "src/extract_synopsis.py"
-    if (Should-RunExtract -CurrentHash $extractHash -OutputPath "output/synopsis_2026_raw.json") {
+    if ($shouldRunExtract) {
         uv run python src/extract_synopsis.py `
             "input/2026-03_Referentenentwurf_Synopse.pdf" `
             "output/synopsis_2026_raw.json"

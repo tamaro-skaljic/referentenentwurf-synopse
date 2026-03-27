@@ -12,7 +12,62 @@ import os
 import re
 import sys
 from datetime import datetime
+from typing import TypeGuard
 from urllib.parse import quote as url_quote
+
+
+def _is_object_dict(value: object) -> TypeGuard[dict[str, object]]:
+    return isinstance(value, dict)
+
+
+def _is_object_list(value: object) -> TypeGuard[list[object]]:
+    return isinstance(value, list)
+
+
+def _as_dict(value: object) -> dict[str, object]:
+    return value if _is_object_dict(value) else {}
+
+
+def _as_object_list(value: object) -> list[object]:
+    if not _is_object_list(value):
+        return []
+    return value
+
+
+def _as_text(value: object) -> str:
+    return value if isinstance(value, str) else ""
+
+
+def _as_bold_ranges(value: object) -> list[list[int]]:
+    typed_value = _as_object_list(value)
+    result: list[list[int]] = []
+    for item in typed_value:
+        if not _is_object_list(item):
+            continue
+        typed_item = item
+        if (
+            len(typed_item) == 2
+            and isinstance(typed_item[0], int)
+            and isinstance(typed_item[1], int)
+        ):
+            result.append([typed_item[0], typed_item[1]])
+    return result
+
+
+def _as_diff_ranges(value: object) -> list[list[int | str]]:
+    typed_value = _as_object_list(value)
+    result: list[list[int | str]] = []
+    for item in typed_value:
+        if not _is_object_list(item):
+            continue
+        typed_item = item
+        if (
+            len(typed_item) == 3
+            and isinstance(typed_item[0], int)
+            and isinstance(typed_item[1], int)
+        ):
+            result.append([typed_item[0], typed_item[1], str(typed_item[2])])
+    return result
 
 
 def escape_latex(text: str) -> str:
@@ -63,14 +118,14 @@ def build_logo_header(logo_path: str) -> str:
     )
 
 
-def generate_intro_paragraph(metadata: dict) -> list[str]:
+def generate_intro_paragraph(metadata: dict[str, object]) -> list[str]:
     """Generate the introductory paragraph LaTeX lines between title and legend."""
-    synopse_url = metadata["synopse_url"]
-    other_synopse_url = metadata["other_synopse_url"]
-    synopse_title = metadata["synopse_title"]
-    date = metadata["date"]
-    subscribe_url = metadata["subscribe_url"]
-    report_problem_url_template = metadata["report_problem_url_template"]
+    synopse_url = str(metadata["synopse_url"])
+    other_synopse_url = str(metadata["other_synopse_url"])
+    synopse_title = str(metadata["synopse_title"])
+    date = str(metadata["date"])
+    subscribe_url = str(metadata["subscribe_url"])
+    report_problem_url_template = str(metadata["report_problem_url_template"])
 
     encoded_title = url_quote(synopse_title, safe="")
     encoded_date = url_quote(date, safe="")
@@ -119,7 +174,7 @@ def generate_intro_paragraph(metadata: dict) -> list[str]:
         ),
     ]
 
-    lines = []
+    lines: list[str] = []
     lines.append(r"\begin{center}")
     lines.append(r"\begin{minipage}{25cm}")
     lines.append(r"\small")
@@ -201,14 +256,14 @@ def apply_formatting_ranges(
 
 
 
-def format_text_entry(entry: dict | None) -> str:
+def format_text_entry(entry: dict[str, object] | None) -> str:
     """Format a {text, bold_ranges, diff_ranges} entry for LaTeX."""
     if entry is None:
         return ""
 
-    text = entry.get("text", "")
-    bold_ranges = entry.get("bold_ranges", [])
-    diff_ranges = entry.get("diff_ranges", [])
+    text = _as_text(entry.get("text", ""))
+    bold_ranges = _as_bold_ranges(entry.get("bold_ranges", []))
+    diff_ranges = _as_diff_ranges(entry.get("diff_ranges", []))
 
     if not text.strip():
         return ""
@@ -236,7 +291,7 @@ def sanitize_cell(text: str) -> str:
     return text.strip()
 
 
-def render_cell(row: dict | None, side: str) -> str:
+def render_cell(row: dict[str, object] | None, side: str) -> str:
     """Render a single raw cell from a row on the requested side."""
     if not row:
         return ""
@@ -260,9 +315,9 @@ def render_cell(row: dict | None, side: str) -> str:
     )
 
 
-def render_merged_left_cell(aligned_row: dict) -> str:
+def render_merged_left_cell(aligned_row: dict[str, object]) -> str:
     """Render the merged left column from precomputed alignment output."""
-    return sanitize_cell(format_text_entry(aligned_row.get("merged_left")))
+    return sanitize_cell(format_text_entry(_as_dict(aligned_row.get("merged_left"))))
 
 
 _LAW_CITATION_PATTERN = re.compile(r"\(\s*-\s*[A-Za-zÄÖÜäöüß0-9 ]+\s*\)")
@@ -287,10 +342,10 @@ def _is_standalone_law_name_text(text: str | None) -> bool:
     return bool(_LAW_NAME_STANDALONE_PATTERN.match(text.strip()))
 
 
-def is_artikel_heading_row(row: dict) -> bool:
+def is_artikel_heading_row(row: dict[str, object]) -> bool:
     if row.get("is_section_header"):
         return False
-    merged_left_text = (row.get("merged_left") or {}).get("text", "")
+    merged_left_text = _as_text(_as_dict(row.get("merged_left")).get("text", ""))
     return _is_artikel_heading_text(merged_left_text)
 
 
@@ -315,7 +370,7 @@ def _append_longtable_header(lines: list[str], col_width: str, hline: str) -> No
     lines.append("")
 
 
-def is_heading_row(row: dict, previous_row: dict | None) -> bool:
+def is_heading_row(row: dict[str, object], previous_row: dict[str, object] | None) -> bool:
     """Return True if row should be treated as a heading row.
 
     Matches:
@@ -324,14 +379,14 @@ def is_heading_row(row: dict, previous_row: dict | None) -> bool:
     """
     if row.get("is_section_header"):
         return False
-    merged_left_text = (row.get("merged_left") or {}).get("text", "")
+    merged_left_text = _as_text(_as_dict(row.get("merged_left")).get("text", ""))
     if _LAW_CITATION_PATTERN.search(merged_left_text):
         return True
     if _is_standalone_law_name_text(merged_left_text):
         return True
 
-    left_2024 = (row.get("synopsis2024") or {}).get("left")
-    left_2026 = (row.get("synopsis2026") or {}).get("left")
+    left_2024 = _as_text(_as_dict(row.get("synopsis2024")).get("left"))
+    left_2026 = _as_text(_as_dict(row.get("synopsis2026")).get("left"))
     if _is_standalone_law_name_text(left_2024) or _is_standalone_law_name_text(left_2026):
         return True
 
@@ -350,7 +405,7 @@ def _wrap_in_bold(cell_text: str) -> str:
     return r"\textbf{" + cell_text + "}"
 
 
-_PLACEHOLDER_ROW: dict = {
+_PLACEHOLDER_ROW: dict[str, object] = {
     "synopsis2024": {
         "left": "...",
         "right": "...",
@@ -383,11 +438,11 @@ def _is_unveraendert(text: str | None) -> bool:
     return len(stripped) < 20 and "unverändert" in normalized
 
 
-def _right_is_empty_or_unveraendert(row: dict | None) -> bool:
+def _right_is_empty_or_unveraendert(row: dict[str, object] | None) -> bool:
     """Return True when the right cell is absent, blank, or 'unverändert'."""
     if row is None:
         return True
-    text = (row.get("right") or "").strip()
+    text = _as_text(row.get("right", "")).strip()
     return not text or _is_unveraendert(text)
 
 
@@ -409,7 +464,7 @@ def _starts_with_unveraendert(text: str | None) -> bool:
     return bool(_UNVERAENDERT_PREFIX_RE.match(text.strip()))
 
 
-def minify_rows(rows: list[dict]) -> list[dict]:
+def minify_rows(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     """Return a filtered row list for the minified Synopse.
 
     Keeps:
@@ -423,23 +478,25 @@ def minify_rows(rows: list[dict]) -> list[dict]:
     All other rows are replaced by a single placeholder row (three "..." cells).
     Consecutive placeholder rows are deduplicated to one.
     """
-    result: list[dict] = []
+    result: list[dict[str, object]] = []
     last_was_placeholder = False
     previous_row = None
     for row in rows:
-        r2024 = row.get("synopsis2024")
-        r2026 = row.get("synopsis2026")
+        raw_r2024 = row.get("synopsis2024")
+        raw_r2026 = row.get("synopsis2026")
+        r2024 = _as_dict(raw_r2024)
+        r2026 = _as_dict(raw_r2026)
         # Both right columns say "unverändert" (plain or prefixed, possibly
         # followed by a structural heading) → nothing to show, suppress unconditionally.
-        col2_text = (r2024 or {}).get("right") or ""
-        col3_text = (r2026 or {}).get("right") or ""
+        col2_text = _as_text(r2024.get("right") or "")
+        col3_text = _as_text(r2026.get("right") or "")
         if _starts_with_unveraendert(col2_text) and _starts_with_unveraendert(col3_text):
             if not last_was_placeholder:
                 result.append(_PLACEHOLDER_ROW)
                 last_was_placeholder = True
             previous_row = row
             continue
-        merged_left = row.get("merged_left") or {}
+        merged_left = _as_dict(row.get("merged_left"))
         is_structural = (
             row.get("starts_new_table", False)
             or
@@ -448,21 +505,21 @@ def minify_rows(rows: list[dict]) -> list[dict]:
             or is_heading_row(row, previous_row)
         )
         has_changes = (
-            (r2024 is not None and bool(r2024.get("right_diff_ranges")))
-            or (r2026 is not None and bool(r2026.get("right_diff_ranges")))
-            or r2024 is None
-            or r2026 is None
+            bool(r2024.get("right_diff_ranges"))
+            or bool(r2026.get("right_diff_ranges"))
+            or raw_r2024 is None
+            or raw_r2026 is None
         )
         # Override: if neither column carries a meaningful change, suppress.
         # Case 1: col3 says "unverändert" and col2 is empty or also "unverändert".
         # Case 2: col2 says "unverändert" and col3 is empty.
         if has_changes and (
             (
-                _is_unveraendert((r2026 or {}).get("right"))
+                _is_unveraendert(_as_text(r2026.get("right")))
                 and _right_is_empty_or_unveraendert(r2024)
             )
             or (
-                _is_unveraendert((r2024 or {}).get("right"))
+                _is_unveraendert(_as_text(r2024.get("right")))
                 and _right_is_empty_or_unveraendert(r2026)
             )
         ):
@@ -477,9 +534,9 @@ def minify_rows(rows: list[dict]) -> list[dict]:
     return result
 
 
-def generate_latex(data: dict) -> str:
+def generate_latex(data: dict[str, object]) -> str:
     """Generate the full LaTeX document."""
-    lines = []
+    lines: list[str] = []
 
     # Preamble
     lines.append(r"\documentclass[10pt,a4paper,landscape]{article}")
@@ -497,18 +554,22 @@ def generate_latex(data: dict) -> str:
     lines.append("")
     lines.append(r"\definecolor{diffred}{RGB}{180, 0, 0}")
     lines.append(r"\definecolor{diffgreen}{RGB}{0, 130, 0}")
+    lines.append(r"\definecolor{tableborder}{RGB}{0, 0, 0}")
     lines.append(r"\setlength{\LTpre}{0pt}")
     lines.append(r"\setlength{\LTpost}{0pt}")
     lines.append(r"\setlength{\tabcolsep}{3pt}")
+    lines.append(r"\setlength{\arrayrulewidth}{0.4pt}")
+    lines.append(r"\arrayrulecolor{tableborder}")
     lines.append(r"\renewcommand{\arraystretch}{1.1}")
     lines.append("")
     lines.append(r"\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}")
     lines.append("")
     lines.append(r"\pagestyle{fancy}")
     lines.append(r"\fancyhf{}")
-    logo_path = data.get("metadata", {}).get("logo_path", "careleaver_logo_rgb.png")
+    metadata = _as_dict(data.get("metadata", {}))
+    logo_path = _as_text(metadata.get("logo_path", "careleaver_logo_rgb.png"))
     lines.append(build_logo_header(logo_path))
-    header_date = data.get("metadata", {}).get("date", "")
+    header_date = _as_text(metadata.get("date", ""))
     if header_date:
         lines.append(r"\fancyhead[R]{\scriptsize " + escape_latex(header_date) + "}")
     else:
@@ -520,7 +581,7 @@ def generate_latex(data: dict) -> str:
     lines.append("")
 
     # Title
-    title = data.get("metadata", {}).get("title", "Synopse")
+    title = _as_text(metadata.get("title", "Synopse"))
     lines.append(r"\begin{center}")
     lines.append(r"{\Large\bfseries " + escape_latex(title) + r"}")
     lines.append(r"\end{center}")
@@ -528,7 +589,7 @@ def generate_latex(data: dict) -> str:
     lines.append("")
 
     # Introductory paragraph
-    metadata = data.get("metadata", {})
+    metadata = _as_dict(data.get("metadata", {}))
     if metadata.get("synopse_url"):
         lines.extend(generate_intro_paragraph(metadata))
         lines.append("")
@@ -566,9 +627,11 @@ def generate_latex(data: dict) -> str:
     _append_longtable_header(lines, col_width, hline)
 
     previous_row = None
-    for row in data.get("rows", []):
-        row_2024 = row.get("synopsis2024")
-        row_2026 = row.get("synopsis2026")
+    rows = _as_object_list(data.get("rows", []))
+    for row_value in rows:
+        row = _as_dict(row_value)
+        row_2024 = _as_dict(row.get("synopsis2024")) if row.get("synopsis2024") is not None else None
+        row_2026 = _as_dict(row.get("synopsis2026")) if row.get("synopsis2026") is not None else None
 
         if previous_row is not None and row.get("starts_new_table", False):
             lines.append(r"\end{longtable}")
@@ -657,8 +720,10 @@ def main():
     tex_directory = os.path.dirname(os.path.abspath(tex_path))
     logo_path_for_tex = os.path.relpath(repository_logo_path, start=tex_directory)
 
-    full_title = data.get("metadata", {}).get("title", "Synopse")
-    metadata = data.setdefault("metadata", {})
+    metadata_object = data.setdefault("metadata", {})
+    metadata = _as_dict(metadata_object)
+    data["metadata"] = metadata
+    full_title = _as_text(metadata.get("title", "Synopse"))
     metadata.setdefault("logo_path", logo_path_for_tex)
     metadata.update({
         "date": formatted_date,
@@ -679,7 +744,7 @@ def main():
 
     # Also generate minified version alongside the full output
     minified_tex_path = tex_path.replace(".tex", "_minified.tex")
-    minified_meta = dict(data.get("metadata", {}))
+    minified_meta = dict(_as_dict(data.get("metadata", {})))
     minified_meta["title"] = (
         "Synopse IKJHG - Vergleich nur der Änderungen zwischen "
         "den Referentenentwürfe 2024 und 2026"
@@ -687,8 +752,14 @@ def main():
     minified_meta["synopse_url"] = MINIFIED_PDF_URL
     minified_meta["other_synopse_url"] = FULL_PDF_URL
     minified_meta["synopse_title"] = minified_meta["title"]
-    minified_rows = minify_rows(data.get("rows", []))
-    minified_data = {"metadata": minified_meta, "rows": minified_rows}
+    rows_value = _as_object_list(data.get("rows", []))
+    typed_rows = [
+        row_value
+        for row_value in rows_value
+        if _is_object_dict(row_value)
+    ]
+    minified_rows = minify_rows(typed_rows)
+    minified_data: dict[str, object] = {"metadata": minified_meta, "rows": minified_rows}
     minified_latex = generate_latex(minified_data)
 
     with open(minified_tex_path, "w", encoding="utf-8") as f:
@@ -700,8 +771,8 @@ def main():
     # Verify: no row in the minified output has "unverändert" in both right columns.
     violations = [
         r for r in minified_rows
-        if _starts_with_unveraendert((r.get("synopsis2024") or {}).get("right") or "")
-        and _starts_with_unveraendert((r.get("synopsis2026") or {}).get("right") or "")
+        if _starts_with_unveraendert(_as_text(_as_dict(r.get("synopsis2024")).get("right") or ""))
+        and _starts_with_unveraendert(_as_text(_as_dict(r.get("synopsis2026")).get("right") or ""))
     ]
     if violations:
         print(
