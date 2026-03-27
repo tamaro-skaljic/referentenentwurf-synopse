@@ -527,6 +527,7 @@ def compute_character_diff_ranges(
 def compute_diff_ranges_for_row(
     row_2024: dict[str, Any] | None,
     row_2026: dict[str, Any] | None,
+    is_heading: bool = False,
 ) -> tuple[list[list[int | str]] | None, list[list[int | str]] | None]:
     """Compute diff ranges for a single aligned row.
 
@@ -536,7 +537,8 @@ def compute_diff_ranges_for_row(
     Rules (asymmetric):
     - col2 'unverändert': no coloring on col2; col3 diffs against synopsis2026.left
     - col3 'unverändert': no coloring on col3; col2 becomes all red
-    - col3 empty (null/blank): col2 becomes all red
+    - col3 empty (null/blank): heading rows get no coloring; normal rows
+      mark only bold text as red
     - col2 empty (null/blank): col3 diffs against synopsis2026.left
     - Otherwise: character diff between col2 and col3
     """
@@ -551,7 +553,9 @@ def compute_diff_ranges_for_row(
     if row_2026 is None:
         if is_cell_empty(row_2024, "right"):
             return ([], None)
-        diff_ranges_2024 = _mark_all_red(row_2024)
+        if is_heading:
+            return ([], None)
+        diff_ranges_2024 = _mark_bold_red(row_2024)
         return (diff_ranges_2024, None)
 
     col2_text = (row_2024.get("right") or "")
@@ -568,7 +572,9 @@ def compute_diff_ranges_for_row(
         return ([], _diff_col3_against_fallback(row_2026))
 
     if col3_is_unveraendert or col3_empty:
-        return (_mark_all_red(row_2024), [])
+        if is_heading:
+            return ([], [])
+        return (_mark_bold_red(row_2024), [])
 
     if col2_empty:
         return ([], _diff_col3_against_fallback(row_2026))
@@ -586,6 +592,17 @@ def _mark_all_red(row: dict[str, Any]) -> list[list[int | str]]:
     if not text.strip():
         return []
     return [[0, len(text), "red"]]
+
+
+def _mark_bold_red(row: dict[str, Any]) -> list[list[int | str]]:
+    """Return red ranges covering only the bold portions of the right-column text."""
+    text = (row.get("right") or "")
+    if not text.strip():
+        return []
+    bold_ranges = row.get("right_bold_ranges", [])
+    if not bold_ranges:
+        return []
+    return [[start, end, "red"] for start, end in bold_ranges if end <= len(text)]
 
 
 def _diff_col3_against_fallback(
@@ -1620,6 +1637,7 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
         diff_ranges_2024, diff_ranges_2026 = compute_diff_ranges_for_row(
             row.get("synopsis2024"),
             row.get("synopsis2026"),
+            is_heading=bool(row.get("is_section_header")),
         )
         if row.get("synopsis2024") is not None:
             row["synopsis2024"]["right_diff_ranges"] = diff_ranges_2024 or []

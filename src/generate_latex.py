@@ -718,6 +718,10 @@ def _generate_data_rows(
             highlight_merged_left_red and is_col2_empty and is_col3_empty
         )
 
+        # For heading rows with empty col3: clear diff ranges so they are not red
+        if is_header and is_col3_empty and not is_col2_empty and row_2024 is not None:
+            row_2024["right_diff_ranges"] = []
+
         c1 = (
             render_merged_left_cell_all_red(row)
             if should_force_full_left_red

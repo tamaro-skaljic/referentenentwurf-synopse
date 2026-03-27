@@ -2577,8 +2577,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            106,
+            15,
+            105,
             "red"
           ]
         ]
@@ -2610,7 +2610,7 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
+            17,
             81,
             "red"
           ]
@@ -29453,13 +29453,7 @@
         "row": 3,
         "left_strike_ranges": [],
         "right_strike_ranges": [],
-        "right_diff_ranges": [
-          [
-            0,
-            5,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": true,
@@ -29707,8 +29701,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            106,
+            57,
+            104,
             "red"
           ]
         ]
@@ -29953,13 +29947,7 @@
         "row": 6,
         "left_strike_ranges": [],
         "right_strike_ranges": [],
-        "right_diff_ranges": [
-          [
-            0,
-            5,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": true,
@@ -30039,8 +30027,18 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            272,
+            83,
+            96,
+            "red"
+          ],
+          [
+            154,
+            201,
+            "red"
+          ],
+          [
+            214,
+            223,
             "red"
           ]
         ]
@@ -30072,8 +30070,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            43,
+            29,
+            42,
             "red"
           ]
         ]
@@ -30117,8 +30115,23 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            216,
+            25,
+            28,
+            "red"
+          ],
+          [
+            35,
+            53,
+            "red"
+          ],
+          [
+            88,
+            91,
+            "red"
+          ],
+          [
+            98,
+            115,
             "red"
           ]
         ]
@@ -30150,8 +30163,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            34,
+            19,
+            32,
             "red"
           ]
         ]
@@ -30183,8 +30196,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            52,
+            36,
+            50,
             "red"
           ]
         ]
@@ -30216,8 +30229,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            84,
+            69,
+            82,
             "red"
           ]
         ]
@@ -30249,8 +30262,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            77,
+            62,
+            75,
             "red"
           ]
         ]
@@ -30282,8 +30295,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            41,
+            26,
+            39,
             "red"
           ]
         ]
@@ -30315,8 +30328,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            65,
+            11,
+            24,
             "red"
           ]
         ]
@@ -30348,8 +30361,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            53,
+            27,
+            42,
             "red"
           ]
         ]
@@ -30381,8 +30394,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            56,
+            40,
+            54,
             "red"
           ]
         ]
@@ -30458,8 +30471,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            147,
+            106,
+            118,
             "red"
           ]
         ]
@@ -30645,8 +30658,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            39,
+            24,
+            37,
             "red"
           ]
         ]
@@ -30752,8 +30765,18 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            248,
+            16,
+            31,
+            "red"
+          ],
+          [
+            65,
+            66,
+            "red"
+          ],
+          [
+            71,
+            74,
             "red"
           ]
         ]
@@ -31475,8 +31498,18 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            525,
+            245,
+            257,
+            "red"
+          ],
+          [
+            464,
+            467,
+            "red"
+          ],
+          [
+            474,
+            475,
             "red"
           ]
         ]
@@ -32968,8 +33001,18 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            180,
+            49,
+            84,
+            "red"
+          ],
+          [
+            121,
+            127,
+            "red"
+          ],
+          [
+            128,
+            137,
             "red"
           ]
         ]
@@ -33038,13 +33081,7 @@
         "row": 4,
         "left_strike_ranges": [],
         "right_strike_ranges": [],
-        "right_diff_ranges": [
-          [
-            0,
-            6,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": true,
@@ -33079,7 +33116,7 @@
         "right_diff_ranges": [
           [
             0,
-            34,
+            33,
             "red"
           ]
         ]
@@ -33116,8 +33153,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            819,
+            604,
+            818,
             "red"
           ]
         ]
@@ -33384,13 +33421,7 @@
         "row": 10,
         "left_strike_ranges": [],
         "right_strike_ranges": [],
-        "right_diff_ranges": [
-          [
-            0,
-            6,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": true,
@@ -33528,8 +33559,8 @@
         "right_strike_ranges": [],
         "right_diff_ranges": [
           [
-            0,
-            168,
+            83,
+            85,
             "red"
           ]
         ]
@@ -36992,13 +37023,7 @@
         "row": 4,
         "left_strike_ranges": [],
         "right_strike_ranges": [],
-        "right_diff_ranges": [
-          [
-            0,
-            5,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": null,
       "is_section_header": true,
@@ -37247,7 +37272,7 @@
         "right_diff_ranges": [
           [
             0,
-            113,
+            112,
             "red"
           ]
         ]
