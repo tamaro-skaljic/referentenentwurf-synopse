@@ -170,6 +170,12 @@ class TestColumnShouldMerge:
     def test_abschnitt_marker_should_not_merge(self):
         assert text_indicates_row_continuation("Abschnitt 3") is False
 
+    def test_bare_number_followed_by_text_should_merge(self):
+        assert text_indicates_row_continuation("33 zu übermitteln") is True
+
+    def test_bare_number_followed_by_paren_should_not_merge(self):
+        assert text_indicates_row_continuation("33) Buchstabe") is False
+
 
 class TestUnveraendertDetection:
     def test_matches_plain_unveraendert(self):

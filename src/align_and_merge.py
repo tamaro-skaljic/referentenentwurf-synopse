@@ -356,10 +356,12 @@ def align_rows_by_marker_type(
 def text_indicates_row_continuation(text: str | None) -> bool:
     """Determine if a continuation column should merge into the previous row.
 
-    Returns True if text is None/empty/whitespace (null column = no-op merge)
-    or if the first two characters are both letters.
-    Returns False if text starts with a digit, special character, or is a
-    single character (cannot verify two-letter rule).
+    Returns True if text is None/empty/whitespace (null column = no-op merge),
+    if the first two characters are both letters, or if the text starts with a
+    bare number not immediately followed by '.' or ')' (e.g. "33 zu übermitteln"
+    is a mid-sentence article reference, not a new list item).
+    Returns False if text starts with a list/structure marker (N., (N), a), §…),
+    a number followed by ')' (e.g. "33) Buchstabe"), or is a single character.
     """
     if text is None or text.strip() == "":
         return True
@@ -368,6 +370,10 @@ def text_indicates_row_continuation(text: str | None) -> bool:
         return False
     if detect_leading_marker_type(stripped) is not None:
         return False
+    if stripped[0].isdigit():
+        if re.match(r"^\d+\s*\)", stripped):
+            return False
+        return True
     return stripped[0].isalpha() and stripped[1].isalpha()
 
 
