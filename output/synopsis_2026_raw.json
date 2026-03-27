@@ -2,6 +2,15 @@
   "source_file": "input/2026-03_Referentenentwurf_Synopse.pdf",
   "rows": [
     {
+      "left": "Artikel 1",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 1,
+      "table": 0,
+      "row": 1
+    },
+    {
       "left": "Geltendes Recht ",
       "right": "Änderungen durch den \nReferentenentwurf ",
       "left_bold_ranges": [
@@ -11447,6 +11456,15 @@
       "row": 4
     },
     {
+      "left": "Artikel 2",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 116,
+      "table": 0,
+      "row": 1
+    },
+    {
       "left": "Geltendes Recht ",
       "right": "Änderungen durch den \nReferentenentwurf ",
       "left_bold_ranges": [
@@ -12280,6 +12298,15 @@
       "row": 3
     },
     {
+      "left": "Artikel 3",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 129,
+      "table": 0,
+      "row": 1
+    },
+    {
       "left": "Geltendes Recht ",
       "right": "Änderungen durch den \nReferentenentwurf ",
       "left_bold_ranges": [
@@ -12417,6 +12444,15 @@
       "page": 129,
       "table": 1,
       "row": 11
+    },
+    {
+      "left": "Artikel 4",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 130,
+      "table": 0,
+      "row": 1
     },
     {
       "left": "Zweites Buch Sozialgesetzbuch ",
@@ -12687,6 +12723,15 @@
       "row": 8
     },
     {
+      "left": "Artikel 5",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 133,
+      "table": 0,
+      "row": 1
+    },
+    {
       "left": "Geltendes Recht ",
       "right": "Änderungen durch den \nReferentenentwurf ",
       "left_bold_ranges": [
@@ -12940,6 +12985,15 @@
       "row": 2
     },
     {
+      "left": "Artikel 6",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 136,
+      "table": 0,
+      "row": 1
+    },
+    {
       "left": "Geltendes Recht ",
       "right": "Änderungen durch den \nReferentenentwurf ",
       "left_bold_ranges": [
@@ -13165,6 +13219,15 @@
       "page": 138,
       "table": 1,
       "row": 3
+    },
+    {
+      "left": "Artikel 7",
+      "right": null,
+      "left_bold_ranges": [],
+      "right_bold_ranges": [],
+      "page": 138,
+      "table": 0,
+      "row": 1
     },
     {
       "left": "Geltendes Recht ",

@@ -10,11 +10,17 @@ Usage:
 """
 
 import json
+import re
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, asdict
+from typing import Any
 
 import pdfplumber
+
+
+ARTIKEL_HEADING_PATTERN = re.compile(r"^Artikel\s+\d+\s*$", re.IGNORECASE)
+LINE_Y_TOLERANCE = 2.0
 
 
 @dataclass
@@ -105,6 +111,87 @@ def extract_cell_with_bold(page, cell_bbox) -> tuple[str, list[list[int]]]:
     return full_text, bold_ranges
 
 
+def _group_words_into_lines(words: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if not words:
+        return []
+
+    sorted_words = sorted(words, key=lambda word: (round(float(word["top"]), 1), float(word["x0"])))
+    lines: list[dict[str, Any]] = []
+    current_words: list[dict[str, Any]] = []
+    current_top: float | None = None
+
+    for word in sorted_words:
+        word_top = float(word["top"])
+        if current_top is None or abs(word_top - current_top) <= LINE_Y_TOLERANCE:
+            current_words.append(word)
+            if current_top is None:
+                current_top = word_top
+            continue
+
+        line_words = sorted(current_words, key=lambda item: float(item["x0"]))
+        lines.append({
+            "text": " ".join(str(item["text"]) for item in line_words).strip(),
+            "x0": min(float(item["x0"]) for item in line_words),
+            "top": min(float(item["top"]) for item in line_words),
+            "x1": max(float(item["x1"]) for item in line_words),
+            "bottom": max(float(item["bottom"]) for item in line_words),
+        })
+
+        current_words = [word]
+        current_top = word_top
+
+    if current_words:
+        line_words = sorted(current_words, key=lambda item: float(item["x0"]))
+        lines.append({
+            "text": " ".join(str(item["text"]) for item in line_words).strip(),
+            "x0": min(float(item["x0"]) for item in line_words),
+            "top": min(float(item["top"]) for item in line_words),
+            "x1": max(float(item["x1"]) for item in line_words),
+            "bottom": max(float(item["bottom"]) for item in line_words),
+        })
+
+    return lines
+
+
+def _bbox_intersects_table(
+    bbox: tuple[float, float, float, float],
+    table_bbox: tuple[float, float, float, float],
+) -> bool:
+    x0, top, x1, bottom = bbox
+    tx0, ttop, tx1, tbottom = table_bbox
+    horizontal_overlap = x0 < tx1 and x1 > tx0
+    vertical_overlap = top < tbottom and bottom > ttop
+    return horizontal_overlap and vertical_overlap
+
+
+def detect_standalone_artikel_headings_from_words(
+    words: list[dict[str, Any]],
+    table_bboxes: list[tuple[float, float, float, float]],
+) -> list[dict[str, Any]]:
+    """Detect standalone 'Artikel <number>' lines that are outside table areas."""
+    headings: list[dict[str, Any]] = []
+    for line in _group_words_into_lines(words):
+        line_text = line["text"]
+        if not ARTIKEL_HEADING_PATTERN.match(line_text):
+            continue
+
+        line_bbox = (
+            float(line["x0"]),
+            float(line["top"]),
+            float(line["x1"]),
+            float(line["bottom"]),
+        )
+        if any(_bbox_intersects_table(line_bbox, table_bbox) for table_bbox in table_bboxes):
+            continue
+
+        headings.append({
+            "text": line_text,
+            "top": float(line["top"]),
+        })
+
+    return headings
+
+
 def extract_pages(pdf_path: str) -> list[RawRow]:
     """Extract all table rows from the synopsis PDF, preserving source order."""
     pdf = pdfplumber.open(pdf_path)
@@ -112,7 +199,32 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
 
     for page_idx, page in enumerate(pdf.pages):
         tables = page.find_tables()
+
+        page_rows_with_position: list[tuple[float, int, RawRow]] = []
+        sequence_number = 0
+
+        page_words = page.extract_words() or []
+        table_bboxes = [table.bbox for table in tables if hasattr(table, "bbox")]
+        standalone_artikel_headings = detect_standalone_artikel_headings_from_words(
+            page_words,
+            table_bboxes,
+        )
+
+        for heading_index, heading in enumerate(standalone_artikel_headings):
+            heading_row = RawRow(
+                left=heading["text"],
+                right=None,
+                left_bold_ranges=[],
+                right_bold_ranges=[],
+                page=page_idx + 1,
+                table=0,
+                row=heading_index + 1,
+            )
+            page_rows_with_position.append((float(heading["top"]), sequence_number, heading_row))
+            sequence_number += 1
+
         if not tables:
+            all_rows.extend(row for _, __, row in sorted(page_rows_with_position, key=lambda entry: (entry[0], entry[1])))
             continue
 
         for table_idx, table in enumerate(tables):
@@ -147,7 +259,13 @@ def extract_pages(pdf_path: str) -> list[RawRow]:
                     table=table_idx + 1,
                     row=row_idx + 1,
                 )
-                all_rows.append(row)
+                page_rows_with_position.append((float(y), sequence_number, row))
+                sequence_number += 1
+
+        all_rows.extend(
+            row
+            for _, __, row in sorted(page_rows_with_position, key=lambda entry: (entry[0], entry[1]))
+        )
 
     pdf.close()
     return all_rows

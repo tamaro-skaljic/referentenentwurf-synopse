@@ -265,7 +265,54 @@ def render_merged_left_cell(aligned_row: dict) -> str:
     return sanitize_cell(format_text_entry(aligned_row.get("merged_left")))
 
 
-_SGB_PATTERN = re.compile(r"\( - SGB")
+_LAW_CITATION_PATTERN = re.compile(r"\(\s*-\s*[A-Za-zÄÖÜäöüß0-9 ]+\s*\)")
+_ARTIKEL_HEADING_PATTERN = re.compile(r"^\s*Artikel\s+\d+\b", re.IGNORECASE)
+_LAW_NAME_STANDALONE_PATTERN = re.compile(
+    r"^(Bürgerliches Gesetzbuch"
+    r"|(\w+\s+)?Buch Sozialgesetzbuch"
+    r"|Sozialgerichtsgesetz"
+    r"|Jugendschutzgesetz)\s*$"
+)
+
+
+def _is_artikel_heading_text(text: str | None) -> bool:
+    if not isinstance(text, str):
+        return False
+    return bool(_ARTIKEL_HEADING_PATTERN.match(text.strip()))
+
+
+def _is_standalone_law_name_text(text: str | None) -> bool:
+    if not isinstance(text, str):
+        return False
+    return bool(_LAW_NAME_STANDALONE_PATTERN.match(text.strip()))
+
+
+def is_artikel_heading_row(row: dict) -> bool:
+    if row.get("is_section_header"):
+        return False
+    merged_left_text = (row.get("merged_left") or {}).get("text", "")
+    return _is_artikel_heading_text(merged_left_text)
+
+
+def _append_longtable_header(lines: list[str], col_width: str, hline: str) -> None:
+    lines.append(
+        r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
+    )
+    lines.append(hline)
+    lines.append(
+        r"\multicolumn{1}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht (kombiniert)}} & "
+        r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Änderungen durch den Referentenentwurf}} \\"
+    )
+    lines.append(hline)
+    lines.append(r"\rowcolor{gray!25}")
+    lines.append(
+        r"\textbf{Synopsis 2024/2026} & "
+        r"\textbf{Synopsis 2024} & "
+        r"\textbf{Synopsis 2026} \\"
+    )
+    lines.append(hline)
+    lines.append(r"\endhead")
+    lines.append("")
 
 
 def is_heading_row(row: dict, previous_row: dict | None) -> bool:
@@ -278,8 +325,16 @@ def is_heading_row(row: dict, previous_row: dict | None) -> bool:
     if row.get("is_section_header"):
         return False
     merged_left_text = (row.get("merged_left") or {}).get("text", "")
-    if _SGB_PATTERN.search(merged_left_text):
+    if _LAW_CITATION_PATTERN.search(merged_left_text):
         return True
+    if _is_standalone_law_name_text(merged_left_text):
+        return True
+
+    left_2024 = (row.get("synopsis2024") or {}).get("left")
+    left_2026 = (row.get("synopsis2026") or {}).get("left")
+    if _is_standalone_law_name_text(left_2024) or _is_standalone_law_name_text(left_2026):
+        return True
+
     if previous_row is not None and previous_row.get("is_section_header"):
         return True
     return False
@@ -386,6 +441,8 @@ def minify_rows(rows: list[dict]) -> list[dict]:
             continue
         merged_left = row.get("merged_left") or {}
         is_structural = (
+            row.get("starts_new_table", False)
+            or
             bool(merged_left.get("bold_ranges"))
             or row.get("is_section_header", False)
             or is_heading_row(row, previous_row)
@@ -506,29 +563,19 @@ def generate_latex(data: dict) -> str:
 
     hline = r"\hhline{|---|}"
 
-    lines.append(
-        r"\begin{longtable}{|L{" + col_width + r"}|L{" + col_width + r"}|L{" + col_width + r"}|}"
-    )
-    lines.append(hline)
-    lines.append(
-        r"\multicolumn{1}{|c|}{\cellcolor{gray!15}\textbf{Geltendes Recht (kombiniert)}} & "
-        r"\multicolumn{2}{c|}{\cellcolor{gray!15}\textbf{Änderungen durch den Referentenentwurf}} \\"
-    )
-    lines.append(hline)
-    lines.append(r"\rowcolor{gray!25}")
-    lines.append(
-        r"\textbf{Synopsis 2024/2026} & "
-        r"\textbf{Synopsis 2024} & "
-        r"\textbf{Synopsis 2026} \\"
-    )
-    lines.append(hline)
-    lines.append(r"\endhead")
-    lines.append("")
+    _append_longtable_header(lines, col_width, hline)
 
     previous_row = None
     for row in data.get("rows", []):
         row_2024 = row.get("synopsis2024")
         row_2026 = row.get("synopsis2026")
+
+        if previous_row is not None and row.get("starts_new_table", False):
+            lines.append(r"\end{longtable}")
+            lines.append(r"\newpage")
+            lines.append("")
+            _append_longtable_header(lines, col_width, hline)
+
         is_header = row.get("is_section_header", False) or is_heading_row(row, previous_row)
 
         c1 = render_merged_left_cell(row)

@@ -288,7 +288,7 @@ def test_generate_latex_renders_diff_colors():
 
 
 class TestIsHeadingRow:
-    """Test is_heading_row detects the three new heading patterns."""
+    """Test is_heading_row detects law-citation and heading patterns."""
 
     def test_row_with_cell_starting_with_sgb_is_heading(self):
         """A row where merged_left contains '( - SGB' should be a heading."""
@@ -300,6 +300,18 @@ class TestIsHeadingRow:
             },
             "synopsis2024": {"right": "( - SGB VIII)", "right_bold_ranges": [], "right_diff_ranges": []},
             "synopsis2026": {"right": "( - SGB VIII)", "right_bold_ranges": [], "right_diff_ranges": []},
+        }
+        assert is_heading_row(row, previous_row=None) is True
+
+    def test_row_with_cell_starting_with_sgg_is_heading(self):
+        row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": "( - SGG) \nvom: 23.09.1975",
+                "bold_ranges": [],
+            },
+            "synopsis2024": {"right": "( - SGG)", "right_bold_ranges": [], "right_diff_ranges": []},
+            "synopsis2026": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
         }
         assert is_heading_row(row, previous_row=None) is True
 
@@ -357,6 +369,85 @@ class TestIsHeadingRow:
             "synopsis2026": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
         }
         assert is_heading_row(row, previous_row=None) is True
+
+    def test_standalone_law_name_row_is_heading(self):
+        row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": "Sozialgerichtsgesetz",
+                "bold_ranges": [],
+            },
+            "synopsis2024": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
+            "synopsis2026": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
+        }
+        assert is_heading_row(row, previous_row=None) is True
+
+    def test_standalone_law_name_in_side_cells_is_heading_even_with_source_labeled_merged_left(self):
+        row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": "- Aus Synopsis 2024 -\n\nNeunten Buch Sozialgesetzbuch\n\n- Aus Synopsis 2026 -\n\nNeuntes Buch Sozialgesetzbuch",
+                "bold_ranges": [],
+            },
+            "synopsis2024": {
+                "left": "Neunten Buch Sozialgesetzbuch",
+                "right": "",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+            "synopsis2026": {
+                "left": "Neuntes Buch Sozialgesetzbuch",
+                "right": "",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+        }
+
+        assert is_heading_row(row, previous_row=None) is True
+
+
+class TestArtikelBoundaryTableSplit:
+    def test_starts_new_table_flag_starts_new_table_with_page_break(self):
+        data = {
+            "metadata": {"title": "Test"},
+            "rows": [
+                {
+                    "is_section_header": False,
+                    "merged_left": {"text": "(5) unverändert", "bold_ranges": []},
+                    "synopsis2024": {
+                        "right": "(5) unverändert",
+                        "right_bold_ranges": [],
+                        "right_diff_ranges": [],
+                    },
+                    "synopsis2026": {
+                        "right": "(5) unverändert",
+                        "right_bold_ranges": [],
+                        "right_diff_ranges": [],
+                    },
+                },
+                {
+                    "is_section_header": False,
+                    "starts_new_table": True,
+                    "merged_left": {"text": "Sozialgerichtsgesetz", "bold_ranges": []},
+                    "synopsis2024": {
+                        "right": "",
+                        "right_bold_ranges": [],
+                        "right_diff_ranges": [],
+                    },
+                    "synopsis2026": {
+                        "right": "",
+                        "right_bold_ranges": [],
+                        "right_diff_ranges": [],
+                    },
+                },
+            ],
+        }
+
+        latex = generate_latex(data)
+
+        assert latex.count(r"\begin{longtable}") == 2
+        assert latex.count(r"\end{longtable}") == 2
+        assert r"\newpage" in latex
 
 
 class TestSynopsisSubHeaderIsGrey:
@@ -490,6 +581,20 @@ class TestHeadingRowsInMinify:
         rows = [paragraph_row, title_row, self._make_unchanged_row("content"), self._make_changed_row("changed")]
         result = minify_rows(rows)
         assert any("Aufgaben" in (r.get("merged_left") or {}).get("text", "") for r in result)
+
+    def test_starts_new_table_row_kept_in_minified(self):
+        boundary_row = {
+            "is_section_header": False,
+            "starts_new_table": True,
+            "merged_left": {"text": "Sozialgerichtsgesetz", "bold_ranges": []},
+            "synopsis2024": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
+            "synopsis2026": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
+        }
+
+        rows = [boundary_row, self._make_unchanged_row("content"), self._make_changed_row("changed")]
+        result = minify_rows(rows)
+
+        assert any((r.get("merged_left") or {}).get("text", "") == "Sozialgerichtsgesetz" for r in result)
 
 
 class TestMinifyRows:

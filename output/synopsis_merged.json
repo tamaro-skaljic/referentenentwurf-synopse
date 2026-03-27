@@ -9,9 +9,9 @@
         "file": "input/2026-03_Referentenentwurf_Synopse.pdf"
       }
     },
-    "row_count_2024": 887,
-    "row_count_2026": 847,
-    "row_count_aligned": 1047
+    "row_count_2024": 900,
+    "row_count_2026": 859,
+    "row_count_aligned": 1053
   },
   "rows": [
     {
@@ -29277,7 +29277,27 @@
       "row_index": 895
     },
     {
-      "synopsis2024": null,
+      "synopsis2024": {
+        "left": "",
+        "right": "2.  \nWurde bisher von keinem Elternteil der \nEinsatz des Einkommens nach § 136 \ndes Neunten Buches oder die \nAufbringung der Mittel für die Kosten \ndes Lebensunter-halts nach § 142 des \nNeunten Buches gefordert und wird die \nbis zum 31. Dezember 2027 erbrachte \nLeistung nach § 99 des Neunten Buchs \nauf der Grundlage des § 27 Absatz 3 \nfortgesetzt oder neu bewilligt, so wird \nfür diese Leistung kein Kostenbeitrag \nnach den §§ 91 bis 94 erhoben. ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [
+          [
+            0,
+            448
+          ]
+        ],
+        "page": 125,
+        "table": 1,
+        "row": 1,
+        "right_diff_ranges": [
+          [
+            163,
+            164,
+            "red"
+          ]
+        ]
+      },
       "synopsis2026": {
         "left": "",
         "right": "2.  \nWurde bisher von keinem Elternteil der \nEinsatz des Einkommens nach § 136 \ndes Neunten Buches oder die \nAufbringung der Mittel für die Kosten \ndes Lebensunterhalts nach § 142 des \nNeunten Buches gefordert und wird die \nbis zum 31. Dezember 2027 erbrachte \nLeistung nach § 99 des Neunten Buchs \nauf der Grundlage des § 27 Absatz 3 \nfortgesetzt oder neu bewilligt, so wird \nfür diese Leistung kein Kostenbeitrag \nnach den §§ 91 bis 94 erhoben. ",
@@ -29291,13 +29311,7 @@
         "page": 115,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            446,
-            "green"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "is_section_header": false,
       "merged_left": {
@@ -29307,83 +29321,15 @@
       "row_index": 896
     },
     {
-      "synopsis2024": {
-        "left": " Neunten Buch Sozialgesetzbuch  ",
-        "right": "2.  \nWurde bisher von keinem Elternteil der \nEinsatz des Einkommens nach § 136 \ndes Neunten Buches oder die \nAufbringung der Mittel für die Kosten \ndes Lebensunter-halts nach § 142 des \nNeunten Buches gefordert und wird die \nbis zum 31. Dezember 2027 erbrachte \nLeistung nach § 99 des Neunten Buchs \nauf der Grundlage des § 27 Absatz 3 \nfortgesetzt oder neu bewilligt, so wird \nfür diese Leistung kein Kostenbeitrag \nnach den §§ 91 bis 94 erhoben.  Neuntes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            1,
-            32
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            0,
-            448
-          ],
-          [
-            449,
-            479
-          ]
-        ],
-        "page": 125,
-        "table": 1,
-        "row": 1,
-        "right_diff_ranges": [
-          [
-            0,
-            17,
-            "red"
-          ],
-          [
-            22,
-            39,
-            "red"
-          ],
-          [
-            45,
-            67,
-            "red"
-          ],
-          [
-            73,
-            120,
-            "red"
-          ],
-          [
-            125,
-            223,
-            "red"
-          ],
-          [
-            251,
-            431,
-            "red"
-          ],
-          [
-            436,
-            447,
-            "red"
-          ]
-        ]
-      },
+      "synopsis2024": null,
       "synopsis2026": {
-        "left": " Neuntes Buch Sozialgesetzbuch  ",
-        "right": "(7) Für Leistungen auf der Grundlage \nvon Bescheiden nach Absatz 3 richtet \nsich die örtliche Zuständigkeit nach §§ \n86, 86c, 86d und 88. Spätestens bis zum \n31. Oktober 2028 ist die örtliche \nZuständigkeit für Leistungen nach Satz \n1 zu prüfen. Fand die Übergabe eines \nFalles der Gewährung von Leistungen \nnach Satz 1 an den nach Satz 1 \nzuständigen Träger der Jugendhilfe \nnicht zum 1. Januar 2028 statt, sind dem \nTräger, der bis zum 31. Dezember 2027 \nzuständig war, die Kosten bis zur \ntatsächlichen Übergabe zu erstatten.  Neuntes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            1,
-            32
-          ]
-        ],
+        "left": "",
+        "right": "(7) Für Leistungen auf der Grundlage \nvon Bescheiden nach Absatz 3 richtet \nsich die örtliche Zuständigkeit nach §§ \n86, 86c, 86d und 88. Spätestens bis zum \n31. Oktober 2028 ist die örtliche \nZuständigkeit für Leistungen nach Satz \n1 zu prüfen. Fand die Übergabe eines \nFalles der Gewährung von Leistungen \nnach Satz 1 an den nach Satz 1 \nzuständigen Träger der Jugendhilfe \nnicht zum 1. Januar 2028 statt, sind dem \nTräger, der bis zum 31. Dezember 2027 \nzuständig war, die Kosten bis zur \ntatsächlichen Übergabe zu erstatten. ",
+        "left_bold_ranges": [],
         "right_bold_ranges": [
           [
             0,
             529
-          ],
-          [
-            530,
-            560
           ]
         ],
         "page": 115,
@@ -29392,36 +29338,6 @@
         "right_diff_ranges": [
           [
             0,
-            36,
-            "green"
-          ],
-          [
-            42,
-            277,
-            "green"
-          ],
-          [
-            282,
-            306,
-            "green"
-          ],
-          [
-            313,
-            358,
-            "green"
-          ],
-          [
-            363,
-            429,
-            "green"
-          ],
-          [
-            457,
-            482,
-            "green"
-          ],
-          [
-            487,
             528,
             "green"
           ]
@@ -29429,19 +29345,64 @@
       },
       "is_section_header": false,
       "merged_left": {
-        "text": "- Aus Synopsis 2024 -\n\n Neunten Buch Sozialgesetzbuch  \n\n- Aus Synopsis 2026 -\n\n Neuntes Buch Sozialgesetzbuch  ",
+        "text": "",
+        "bold_ranges": []
+      },
+      "row_index": 897
+    },
+    {
+      "synopsis2024": {
+        "left": "Neunten Buch Sozialgesetzbuch  ",
+        "right": "Neuntes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            31
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "page": 126,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": {
+        "left": "Neuntes Buch Sozialgesetzbuch  ",
+        "right": "Neuntes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            31
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "page": 116,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "starts_new_table": true,
+      "merged_left": {
+        "text": "Neuntes Buch Sozialgesetzbuch  ",
         "bold_ranges": [
           [
-            24,
-            55
-          ],
-          [
-            81,
-            112
+            0,
+            31
           ]
         ]
       },
-      "row_index": 897
+      "row_index": 898
     },
     {
       "synopsis2024": {
@@ -29545,7 +29506,7 @@
           ]
         ]
       },
-      "row_index": 898
+      "row_index": 899
     },
     {
       "synopsis2024": {
@@ -29573,7 +29534,7 @@
         "text": "§ 21 ",
         "bold_ranges": []
       },
-      "row_index": 899
+      "row_index": 900
     },
     {
       "synopsis2024": {
@@ -29601,7 +29562,7 @@
         "text": "Besondere Anforderungen an das \nTeilhabeplanverfahren ",
         "bold_ranges": []
       },
-      "row_index": 900
+      "row_index": 901
     },
     {
       "synopsis2024": {
@@ -29639,399 +29600,7 @@
         "text": "Ist der Träger der Eingliederungshilfe der \nfür die Durchführung des \nTeilhabeplanverfahrens verantwortliche \nRehabilitationsträger, gelten für ihn die \nVorschriften für die Gesamtplanung \nergänzend; dabei ist das \nGesamtplanverfahren ein Gegenstand des \nTeilhabeplanverfahrens. Ist der Träger der \nöffentlichen Jugendhilfe der für die \nDurchführung des Teilhabeplans \nverantwortliche Rehabilitationsträger, \ngelten für ihn die Vorschriften für den \nHilfeplan nach den §§ 36, 36b und 37c des \nAchten Buches ergänzend. Ist der Träger \nder Sozialen Entschädigung der für die \nDurchführung des Teilhabeplanverfahrens \nverantwortliche Rehabilitationsträger, \ngelten für ihn die Vorschriften für das \nFallmanagement nach § 30 des \nVierzehnten Buches ergänzend. ",
         "bold_ranges": []
       },
-      "row_index": 901
-    },
-    {
-      "synopsis2024": {
-        "left": "§ 51 ",
-        "right": "§ 51 ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 131,
-        "table": 1,
-        "row": 4,
-        "right_diff_ranges": [
-          [
-            0,
-            5,
-            "red"
-          ]
-        ]
-      },
-      "synopsis2026": null,
-      "is_section_header": true,
-      "merged_left": {
-        "text": "§ 51 ",
-        "bold_ranges": []
-      },
       "row_index": 902
-    },
-    {
-      "synopsis2024": {
-        "left": "Rechtsweg und Zuständigkeit ",
-        "right": "Rechtsweg und Zuständigkeit ",
-        "left_bold_ranges": [
-          [
-            0,
-            28
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            0,
-            28
-          ]
-        ],
-        "page": 131,
-        "table": 1,
-        "row": 5,
-        "right_diff_ranges": [
-          [
-            0,
-            28,
-            "red"
-          ]
-        ]
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Rechtsweg und Zuständigkeit ",
-        "bold_ranges": [
-          [
-            0,
-            28
-          ]
-        ]
-      },
-      "row_index": 903
-    },
-    {
-      "synopsis2024": {
-        "left": "(1) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden über öffentlich-rechtliche \nStreitigkeiten ",
-        "right": "(1) unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 131,
-        "table": 1,
-        "row": 6,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(1) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden über öffentlich-rechtliche \nStreitigkeiten ",
-        "bold_ranges": []
-      },
-      "row_index": 904
-    },
-    {
-      "synopsis2024": {
-        "left": "1.  \nin Angelegenheiten der gesetzlichen \nRentenversicherung einschließlich der \nAlterssicherung der Landwirte, ",
-        "right": "1. unverändert \n ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 131,
-        "table": 1,
-        "row": 7,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "1.  \nin Angelegenheiten der gesetzlichen \nRentenversicherung einschließlich der \nAlterssicherung der Landwirte, ",
-        "bold_ranges": []
-      },
-      "row_index": 905
-    },
-    {
-      "synopsis2024": {
-        "left": "2. \nin Angelegenheiten der gesetzlichen \nKrankenversicherung, der sozialen \nPflegeversicherung und der privaten \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch), auch soweit durch \ndiese Angelegenheiten Dritte betroffen \nwerden; dies gilt nicht für Streitigkeiten in \nAngelegenheiten nach § 110 des Fünften \nBuches Sozialgesetzbuch aufgrund einer \nKündigung von Versorgungsverträgen, die \nfür Hochschulkliniken oder \nPlankrankenhäuser (§ 108 Nr. 1 und 2 des \nFünften Buches Sozialgesetzbuch) gelten, ",
-        "right": "2. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 131,
-        "table": 1,
-        "row": 8,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "2. \nin Angelegenheiten der gesetzlichen \nKrankenversicherung, der sozialen \nPflegeversicherung und der privaten \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch), auch soweit durch \ndiese Angelegenheiten Dritte betroffen \nwerden; dies gilt nicht für Streitigkeiten in \nAngelegenheiten nach § 110 des Fünften \nBuches Sozialgesetzbuch aufgrund einer \nKündigung von Versorgungsverträgen, die \nfür Hochschulkliniken oder \nPlankrankenhäuser (§ 108 Nr. 1 und 2 des \nFünften Buches Sozialgesetzbuch) gelten, ",
-        "bold_ranges": []
-      },
-      "row_index": 906
-    },
-    {
-      "synopsis2024": {
-        "left": "3. \nin Angelegenheiten der gesetzlichen \nUnfallversicherung mit Ausnahme der \nStreitigkeiten aufgrund der Überwachung \nder Maßnahmen zur Prävention durch die \nTräger der gesetzlichen \nUnfallversicherung, ",
-        "right": "3. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 131,
-        "table": 1,
-        "row": 9,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "3. \nin Angelegenheiten der gesetzlichen \nUnfallversicherung mit Ausnahme der \nStreitigkeiten aufgrund der Überwachung \nder Maßnahmen zur Prävention durch die \nTräger der gesetzlichen \nUnfallversicherung, ",
-        "bold_ranges": []
-      },
-      "row_index": 907
-    },
-    {
-      "synopsis2024": {
-        "left": "4. \nin Angelegenheiten der Arbeitsförderung \neinschließlich der übrigen Aufgaben der \nBundesagentur für Arbeit, ",
-        "right": "4. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 2,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "4. \nin Angelegenheiten der Arbeitsförderung \neinschließlich der übrigen Aufgaben der \nBundesagentur für Arbeit, ",
-        "bold_ranges": []
-      },
-      "row_index": 908
-    },
-    {
-      "synopsis2024": {
-        "left": "5. \nin sonstigen Angelegenheiten der \nSozialversicherung, ",
-        "right": "5. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 3,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "5. \nin sonstigen Angelegenheiten der \nSozialversicherung, ",
-        "bold_ranges": []
-      },
-      "row_index": 909
-    },
-    {
-      "synopsis2024": {
-        "left": "6. \nin Angelegenheiten des Sozialen \nEntschädigungsrechts, ",
-        "right": "6. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 4,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "6. \nin Angelegenheiten des Sozialen \nEntschädigungsrechts, ",
-        "bold_ranges": []
-      },
-      "row_index": 910
-    },
-    {
-      "synopsis2024": {
-        "left": "6a. \nin Angelegenheiten der Sozialhilfe \neinschließlich der Angelegenheiten nach \nTeil 2 des Neunten Buches \nSozialgesetzbuch und des \nAsylbewerberleistungsgesetzes, ",
-        "right": "6a. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 5,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "6a. \nin Angelegenheiten der Sozialhilfe \neinschließlich der Angelegenheiten nach \nTeil 2 des Neunten Buches \nSozialgesetzbuch und des \nAsylbewerberleistungsgesetzes, ",
-        "bold_ranges": []
-      },
-      "row_index": 911
-    },
-    {
-      "synopsis2024": {
-        "left": "",
-        "right": "6b. \nIn Angelegenheiten der Kinder- und \nJugendhilfe, soweit sie Leistungen der \nEingliederungshilfe betreffen,  ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [
-          [
-            0,
-            112
-          ]
-        ],
-        "page": 132,
-        "table": 1,
-        "row": 6,
-        "right_diff_ranges": [
-          [
-            0,
-            113,
-            "red"
-          ]
-        ]
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "",
-        "bold_ranges": []
-      },
-      "row_index": 912
-    },
-    {
-      "synopsis2024": {
-        "left": "7. \nbei der Feststellung von Behinderungen \nund ihrem Grad sowie weiterer \ngesundheitlicher Merkmale, ferner der \nAusstellung, Verlängerung, Berichtigung \nund Einziehung von Ausweisen nach § 152 \ndes Neunten Buches Sozialgesetzbuch, ",
-        "right": "7. unverändert ",
-        "left_bold_ranges": [
-          [
-            232,
-            233
-          ]
-        ],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 7,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "7. \nbei der Feststellung von Behinderungen \nund ihrem Grad sowie weiterer \ngesundheitlicher Merkmale, ferner der \nAusstellung, Verlängerung, Berichtigung \nund Einziehung von Ausweisen nach § 152 \ndes Neunten Buches Sozialgesetzbuch, ",
-        "bold_ranges": [
-          [
-            232,
-            233
-          ]
-        ]
-      },
-      "row_index": 913
-    },
-    {
-      "synopsis2024": {
-        "left": "8. \ndie aufgrund des \nAufwendungsausgleichsgesetzes \nentstehen, ",
-        "right": "8. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 8,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "8. \ndie aufgrund des \nAufwendungsausgleichsgesetzes \nentstehen, ",
-        "bold_ranges": []
-      },
-      "row_index": 914
-    },
-    {
-      "synopsis2024": {
-        "left": "9. \n(weggefallen) ",
-        "right": "9. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 9,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "9. \n(weggefallen) ",
-        "bold_ranges": []
-      },
-      "row_index": 915
-    },
-    {
-      "synopsis2024": {
-        "left": "10. \nfür die durch Gesetz der Rechtsweg vor \ndiesen Gerichten eröffnet wird. ",
-        "right": "10. unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 132,
-        "table": 1,
-        "row": 10,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "10. \nfür die durch Gesetz der Rechtsweg vor \ndiesen Gerichten eröffnet wird. ",
-        "bold_ranges": []
-      },
-      "row_index": 916
-    },
-    {
-      "synopsis2024": {
-        "left": "(2) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden auch über privatrechtliche \nStreitigkeiten in Angelegenheiten der \nZulassung von Trägern und Maßnahmen \ndurch fachkundige Stellen nach dem \nFünften Kapitel des Dritten Buches \nSozialgesetzbuch und in Angelegenheiten \nder gesetzlichen Krankenversicherung, \nauch soweit durch diese Angelegenheiten \nDritte betroffen werden. Satz 1 gilt für die \nsoziale Pflegeversicherung und die private \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch) entsprechend. ",
-        "right": "(2) unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 133,
-        "table": 1,
-        "row": 2,
-        "right_diff_ranges": []
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(2) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden auch über privatrechtliche \nStreitigkeiten in Angelegenheiten der \nZulassung von Trägern und Maßnahmen \ndurch fachkundige Stellen nach dem \nFünften Kapitel des Dritten Buches \nSozialgesetzbuch und in Angelegenheiten \nder gesetzlichen Krankenversicherung, \nauch soweit durch diese Angelegenheiten \nDritte betroffen werden. Satz 1 gilt für die \nsoziale Pflegeversicherung und die private \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch) entsprechend. ",
-        "bold_ranges": []
-      },
-      "row_index": 917
-    },
-    {
-      "synopsis2024": {
-        "left": "(3) Von der Zuständigkeit der Gerichte der \nSozialgerichtsbarkeit nach den Absätzen 1 \nund 2 ausgenommen sind Streitigkeiten in \nVerfahren nach dem Gesetz gegen \nWettbewerbsbeschränkungen, die \nRechtsbeziehungen nach § 69 des Fünften \nBuches Sozialgesetzbuch betreffen  Erstes Buch Sozialgesetzbuch ",
-        "right": "(3) unverändert \n \n \n \n   Erstes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            270,
-            299
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            26,
-            55
-          ]
-        ],
-        "page": 133,
-        "table": 1,
-        "row": 3,
-        "right_diff_ranges": [
-          [
-            0,
-            55,
-            "red"
-          ]
-        ]
-      },
-      "synopsis2026": null,
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(3) Von der Zuständigkeit der Gerichte der \nSozialgerichtsbarkeit nach den Absätzen 1 \nund 2 ausgenommen sind Streitigkeiten in \nVerfahren nach dem Gesetz gegen \nWettbewerbsbeschränkungen, die \nRechtsbeziehungen nach § 69 des Fünften \nBuches Sozialgesetzbuch betreffen  Erstes Buch Sozialgesetzbuch ",
-        "bold_ranges": [
-          [
-            270,
-            299
-          ]
-        ]
-      },
-      "row_index": 918
     },
     {
       "synopsis2024": {
@@ -30059,7 +29628,7 @@
         "text": "§ 63 ",
         "bold_ranges": []
       },
-      "row_index": 919
+      "row_index": 903
     },
     {
       "synopsis2024": {
@@ -30087,7 +29656,7 @@
         "text": "Zuständigkeit nach den Leistungsgesetzen ",
         "bold_ranges": []
       },
-      "row_index": 920
+      "row_index": 904
     },
     {
       "synopsis2024": {
@@ -30115,7 +29684,7 @@
         "text": "(1) Die Leistungen im Eingangsverfahren \nund im Berufsbildungsbereich einer \nanerkannten Werkstatt für behinderte \nMenschen erbringen ",
         "bold_ranges": []
       },
-      "row_index": 921
+      "row_index": 905
     },
     {
       "synopsis2024": {
@@ -30143,7 +29712,7 @@
         "text": "1. \ndie Bundesagentur für Arbeit, soweit nicht \neiner der in den Nummern 2 bis 4 \ngenannten Träger zuständig ist, ",
         "bold_ranges": []
       },
-      "row_index": 922
+      "row_index": 906
     },
     {
       "synopsis2024": {
@@ -30171,7 +29740,7 @@
         "text": "2.  \ndie Träger der Unfallversicherung im \nRahmen ihrer Zuständigkeit für durch \nArbeitsunfälle Verletzte und von \nBerufskrankheiten Betroffene, ",
         "bold_ranges": []
       },
-      "row_index": 923
+      "row_index": 907
     },
     {
       "synopsis2024": {
@@ -30199,7 +29768,7 @@
         "text": "3. \ndie Träger der Rentenversicherung unter \nden Voraussetzungen der §§ 11 bis 13 des \nSechsten Buches und ",
         "bold_ranges": []
       },
-      "row_index": 924
+      "row_index": 908
     },
     {
       "synopsis2024": {
@@ -30227,7 +29796,7 @@
         "text": "4. \ndie Träger der Sozialen Entschädigung \nunter den Voraussetzungen der §§ 63 und \n64 des Vierzehnten Buches. ",
         "bold_ranges": []
       },
-      "row_index": 925
+      "row_index": 909
     },
     {
       "synopsis2024": {
@@ -30265,7 +29834,7 @@
         "text": "(2) Die Leistungen im Arbeitsbereich einer \nanerkannten Werkstatt für behinderte \nMenschen erbringen ",
         "bold_ranges": []
       },
-      "row_index": 926
+      "row_index": 910
     },
     {
       "synopsis2024": {
@@ -30293,7 +29862,7 @@
         "text": "1. \ndie Träger der Unfallversicherung im \nRahmen ihrer Zuständigkeit für durch \nArbeitsunfälle Verletzte und von \nBerufskrankheiten Betroffene, ",
         "bold_ranges": []
       },
-      "row_index": 927
+      "row_index": 911
     },
     {
       "synopsis2024": {
@@ -30321,7 +29890,7 @@
         "text": "2. \ndie Träger der Sozialen Entschädigung \nunter den Voraussetzungen des § 63 des \nVierzehnten Buches, ",
         "bold_ranges": []
       },
-      "row_index": 928
+      "row_index": 912
     },
     {
       "synopsis2024": {
@@ -30359,7 +29928,7 @@
         "text": "3. \ndie Träger der öffentlichen Jugendhilfe \nunter den Voraussetzungen des § 35a des \nAchten Buches und ",
         "bold_ranges": []
       },
-      "row_index": 929
+      "row_index": 913
     },
     {
       "synopsis2024": {
@@ -30387,7 +29956,7 @@
         "text": "4. \nim Übrigen die Träger der \nEingliederungshilfe unter den \nVoraussetzungen des § 99. ",
         "bold_ranges": []
       },
-      "row_index": 930
+      "row_index": 914
     },
     {
       "synopsis2024": {
@@ -30415,7 +29984,7 @@
         "text": "(3) Absatz 1 gilt auch für die Leistungen zur \nberuflichen Bildung bei einem anderen \nLeistungsanbieter sowie für die Leistung \ndes Budgets für Ausbildung an Menschen \nmit Behinderungen, die Anspruch auf \nLeistungen nach § 57 haben. Absatz 2 gilt \nauch für die Leistungen zur Beschäftigung \nbei einem anderen Leistungsanbieter, für \ndie Leistung des Budgets für Ausbildung an \nMenschen mit Behinderungen, die \nAnspruch auf Leistungen nach § 58 haben \nund die keinen Anspruch auf Leistungen \nnach § 57 haben, sowie für die Leistung \ndes Budgets für Arbeit. ",
         "bold_ranges": []
       },
-      "row_index": 931
+      "row_index": 915
     },
     {
       "synopsis2024": null,
@@ -30434,7 +30003,7 @@
         "text": "§ 85 ",
         "bold_ranges": []
       },
-      "row_index": 932
+      "row_index": 916
     },
     {
       "synopsis2024": null,
@@ -30453,7 +30022,7 @@
         "text": "Klagerecht der Verbände ",
         "bold_ranges": []
       },
-      "row_index": 933
+      "row_index": 917
     },
     {
       "synopsis2024": null,
@@ -30483,7 +30052,7 @@
         "text": "Werden Menschen mit Behinderungen in \nihren Rechten nach diesem Buch verletzt, \nkönnen an ihrer Stelle und mit ihrem \nEinverständnis Verbände klagen, die nach \nihrer Satzung Menschen mit \nBehinderungen auf Bundes- oder \nLandesebene vertreten und nicht selbst am \nProzess beteiligt sind. In diesem Fall \nmüssen alle Verfahrensvoraussetzungen \nwie bei einem Rechtsschutzersuchen durch \nden Menschen mit Behinderungen selbst \nvorliegen. ",
         "bold_ranges": []
       },
-      "row_index": 934
+      "row_index": 918
     },
     {
       "synopsis2024": {
@@ -30511,7 +30080,7 @@
         "text": "§ 98 ",
         "bold_ranges": []
       },
-      "row_index": 935
+      "row_index": 919
     },
     {
       "synopsis2024": {
@@ -30539,7 +30108,7 @@
         "text": "Örtliche Zuständigkeit ",
         "bold_ranges": []
       },
-      "row_index": 936
+      "row_index": 920
     },
     {
       "synopsis2024": {
@@ -30567,7 +30136,7 @@
         "text": "(1) Für die Eingliederungshilfe örtlich \nzuständig ist der Träger der \nEingliederungshilfe, in dessen Bereich die \nleistungsberechtigte Person ihren \ngewöhnlichen Aufenthalt zum Zeitpunkt der \nersten Antragstellung nach § 108 Absatz 1 \nhat oder in den zwei Monaten vor den \nLeistungen einer Betreuung über Tag und \nNacht zuletzt gehabt hatte. Bedarf es nach \n§ 108 Absatz 2 keines Antrags, ist der \nBeginn des Verfahrens nach Kapitel 7 \nmaßgeblich. Diese Zuständigkeit bleibt bis \nzur Beendigung des Leistungsbezuges \nbestehen. Sie ist neu festzustellen, wenn \nfür einen zusammenhängenden Zeitraum \nvon mindestens sechs Monaten keine \nLeistungen bezogen wurden. Eine \nUnterbrechung des Leistungsbezuges \nwegen stationärer \nKrankenhausbehandlung oder \nmedizinischer Rehabilitation gilt nicht als \nBeendigung des Leistungsbezuges. ",
         "bold_ranges": []
       },
-      "row_index": 937
+      "row_index": 921
     },
     {
       "synopsis2024": {
@@ -30595,7 +30164,7 @@
         "text": "(2) Steht innerhalb von vier Wochen nicht \nfest, ob und wo der gewöhnliche Aufenthalt \nbegründet worden ist, oder ist ein \ngewöhnlicher Aufenthalt nicht vorhanden \noder nicht zu ermitteln, hat der für den \ntatsächlichen Aufenthalt zuständige Träger \nder Eingliederungshilfe über die Leistung \nunverzüglich zu entscheiden und sie \nvorläufig zu erbringen. Steht der \ngewöhnliche Aufenthalt in den Fällen des \nSatzes 1 fest, wird der Träger der \nEingliederungshilfe nach Absatz 1 örtlich \nzuständig und hat dem nach Satz 1 \nleistenden Träger die Kosten zu erstatten. \nIst ein gewöhnlicher Aufenthalt im \nBundesgebiet nicht vorhanden oder nicht \nzu ermitteln, ist der Träger der \nEingliederungshilfe örtlich zuständig, in \ndessen Bereich sich die \nleistungsberechtigte Person tatsächlich \naufhält. ",
         "bold_ranges": []
       },
-      "row_index": 938
+      "row_index": 922
     },
     {
       "synopsis2024": {
@@ -30623,7 +30192,7 @@
         "text": "(3) Werden für ein Kind vom Zeitpunkt der \nGeburt an Leistungen nach diesem Teil \ndes Buches über Tag und Nacht beantragt, \ntritt an die Stelle seines gewöhnlichen \nAufenthalts der gewöhnliche Aufenthalt der \nMutter. ",
         "bold_ranges": []
       },
-      "row_index": 939
+      "row_index": 923
     },
     {
       "synopsis2024": {
@@ -30651,34 +30220,18 @@
         "text": "(4) Als gewöhnlicher Aufenthalt im Sinne \ndieser Vorschrift gilt nicht der stationäre \nAufenthalt oder der auf richterlich \nangeordneter Freiheitsentziehung \nberuhende Aufenthalt in einer \nVollzugsanstalt. In diesen Fällen ist der \nTräger der Eingliederungshilfe örtlich \nzuständig, in dessen Bereich die \nleistungsberechtigte Person ihren \ngewöhnlichen Aufenthalt in den letzten \nzwei Monaten vor der Aufnahme zuletzt \nhatte. ",
         "bold_ranges": []
       },
-      "row_index": 940
+      "row_index": 924
     },
     {
       "synopsis2024": {
-        "left": "(5) Bei Personen, die am 31. Dezember \n2019 Leistungen nach dem Sechsten \nKapitel des Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung \nbezogen haben und auch ab dem 1. \nJanuar 2020 Leistungen nach Teil 2 dieses \nBuches erhalten, ist der Träger der \nEingliederungshilfe örtlich zuständig, \ndessen örtliche Zuständigkeit sich am 1. \nJanuar 2020 im Einzelfall in \nentsprechender Anwendung von § 98 \nAbsatz 1 Satz 1 oder Absatz 5 des \nZwölften Buches oder in entsprechender \nAnwendung von § 98 Absatz 2 Satz 1 und \n2 in Verbindung mit § 107 des Zwölften \nBuches ergeben würde. Absatz 1 Satz 3 \nbis 5 gilt entsprechend. Im Übrigen bleiben \ndie Absätze 2 bis 4 unberührt.  Sozialgerichtsgesetz ",
-        "right": "(5) unverändert  Sozialgerichtsgesetz ",
-        "left_bold_ranges": [
-          [
-            682,
-            703
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            38
-          ]
-        ],
+        "left": "(5) Bei Personen, die am 31. Dezember \n2019 Leistungen nach dem Sechsten \nKapitel des Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung \nbezogen haben und auch ab dem 1. \nJanuar 2020 Leistungen nach Teil 2 dieses \nBuches erhalten, ist der Träger der \nEingliederungshilfe örtlich zuständig, \ndessen örtliche Zuständigkeit sich am 1. \nJanuar 2020 im Einzelfall in \nentsprechender Anwendung von § 98 \nAbsatz 1 Satz 1 oder Absatz 5 des \nZwölften Buches oder in entsprechender \nAnwendung von § 98 Absatz 2 Satz 1 und \n2 in Verbindung mit § 107 des Zwölften \nBuches ergeben würde. Absatz 1 Satz 3 \nbis 5 gilt entsprechend. Im Übrigen bleiben \ndie Absätze 2 bis 4 unberührt. ",
+        "right": "(5) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 130,
         "table": 1,
         "row": 2,
-        "right_diff_ranges": [
-          [
-            0,
-            38,
-            "red"
-          ]
-        ]
+        "right_diff_ranges": []
       },
       "synopsis2026": {
         "left": "(5) Bei Personen, die am 31. Dezember \n2019 Leistungen nach dem Sechsten \nKapitel des Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung \nbezogen haben und auch ab dem 1. \nJanuar 2020 Leistungen nach Teil 2 dieses \nBuches erhalten, ist der Träger der \nEingliederungshilfe örtlich zuständig, \ndessen örtliche Zuständigkeit sich am 1. \nJanuar 2020 im Einzelfall in \nentsprechender Anwendung von § 98 \nAbsatz 1 Satz 1 oder Absatz 5 des \nZwölften Buches oder in entsprechender \nAnwendung von § 98 Absatz 2 Satz 1 und \n2 in Verbindung mit § 107 des Zwölften \nBuches ergeben würde. Absatz 1 Satz 3 \nbis 5 gilt entsprechend. Im Übrigen bleiben \ndie Absätze 2 bis 4 unberührt. ",
@@ -30692,15 +30245,727 @@
       },
       "is_section_header": false,
       "merged_left": {
-        "text": "- Aus Synopsis 2024 -\n\n(5) Bei Personen, die am 31. Dezember \n2019 Leistungen nach dem Sechsten \nKapitel des Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung \nbezogen haben und auch ab dem 1. \nJanuar 2020 Leistungen nach Teil 2 dieses \nBuches erhalten, ist der Träger der \nEingliederungshilfe örtlich zuständig, \ndessen örtliche Zuständigkeit sich am 1. \nJanuar 2020 im Einzelfall in \nentsprechender Anwendung von § 98 \nAbsatz 1 Satz 1 oder Absatz 5 des \nZwölften Buches oder in entsprechender \nAnwendung von § 98 Absatz 2 Satz 1 und \n2 in Verbindung mit § 107 des Zwölften \nBuches ergeben würde. Absatz 1 Satz 3 \nbis 5 gilt entsprechend. Im Übrigen bleiben \ndie Absätze 2 bis 4 unberührt.  Sozialgerichtsgesetz \n\n- Aus Synopsis 2026 -\n\n(5) Bei Personen, die am 31. Dezember \n2019 Leistungen nach dem Sechsten \nKapitel des Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung \nbezogen haben und auch ab dem 1. \nJanuar 2020 Leistungen nach Teil 2 dieses \nBuches erhalten, ist der Träger der \nEingliederungshilfe örtlich zuständig, \ndessen örtliche Zuständigkeit sich am 1. \nJanuar 2020 im Einzelfall in \nentsprechender Anwendung von § 98 \nAbsatz 1 Satz 1 oder Absatz 5 des \nZwölften Buches oder in entsprechender \nAnwendung von § 98 Absatz 2 Satz 1 und \n2 in Verbindung mit § 107 des Zwölften \nBuches ergeben würde. Absatz 1 Satz 3 \nbis 5 gilt entsprechend. Im Übrigen bleiben \ndie Absätze 2 bis 4 unberührt. ",
-        "bold_ranges": [
+        "text": "(5) Bei Personen, die am 31. Dezember \n2019 Leistungen nach dem Sechsten \nKapitel des Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung \nbezogen haben und auch ab dem 1. \nJanuar 2020 Leistungen nach Teil 2 dieses \nBuches erhalten, ist der Träger der \nEingliederungshilfe örtlich zuständig, \ndessen örtliche Zuständigkeit sich am 1. \nJanuar 2020 im Einzelfall in \nentsprechender Anwendung von § 98 \nAbsatz 1 Satz 1 oder Absatz 5 des \nZwölften Buches oder in entsprechender \nAnwendung von § 98 Absatz 2 Satz 1 und \n2 in Verbindung mit § 107 des Zwölften \nBuches ergeben würde. Absatz 1 Satz 3 \nbis 5 gilt entsprechend. Im Übrigen bleiben \ndie Absätze 2 bis 4 unberührt. ",
+        "bold_ranges": []
+      },
+      "row_index": 925
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 117 ",
+        "right": "§ 117 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 120,
+        "table": 1,
+        "row": 4,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "starts_new_table": true,
+      "merged_left": {
+        "text": "§ 117 ",
+        "bold_ranges": []
+      },
+      "row_index": 926
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Gesamtplanverfahren ",
+        "right": "Gesamtplanverfahren ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 120,
+        "table": 1,
+        "row": 5,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Gesamtplanverfahren ",
+        "bold_ranges": []
+      },
+      "row_index": 927
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Absätze 1 bis 5 ",
+        "right": "unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 120,
+        "table": 1,
+        "row": 6,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Absätze 1 bis 5 ",
+        "bold_ranges": []
+      },
+      "row_index": 928
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(6) Bei minderjährigen \nLeistungsberechtigten wird der nach § 86 \ndes Achten Buches zuständige örtliche \nTräger der öffentlichen Jugendhilfe vom \nTräger der Eingliederungshilfe mit \nZustimmung des \nPersonensorgeberechtigten informiert und \nnimmt am Gesamtplanverfahren beratend \nteil, soweit dies zur Feststellung der \nLeistungen der Eingliederungshilfe nach \nden Kapiteln 3 bis 6 erforderlich ist. \nHiervon kann in begründeten \nAusnahmefällen abgesehen werden, \ninsbesondere, wenn durch die Teilnahme \ndes zuständigen örtlichen Trägers der \nöffentlichen Jugendhilfe das \nGesamtplanverfahren verzögert würde. ",
+        "right": "(6) entfällt  ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 121,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": [
           [
-            705,
-            726
+            4,
+            12,
+            "green"
           ]
         ]
       },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(6) Bei minderjährigen \nLeistungsberechtigten wird der nach § 86 \ndes Achten Buches zuständige örtliche \nTräger der öffentlichen Jugendhilfe vom \nTräger der Eingliederungshilfe mit \nZustimmung des \nPersonensorgeberechtigten informiert und \nnimmt am Gesamtplanverfahren beratend \nteil, soweit dies zur Feststellung der \nLeistungen der Eingliederungshilfe nach \nden Kapiteln 3 bis 6 erforderlich ist. \nHiervon kann in begründeten \nAusnahmefällen abgesehen werden, \ninsbesondere, wenn durch die Teilnahme \ndes zuständigen örtlichen Trägers der \nöffentlichen Jugendhilfe das \nGesamtplanverfahren verzögert würde. ",
+        "bold_ranges": []
+      },
+      "row_index": 929
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 119 ",
+        "right": "§ 119 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 121,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "merged_left": {
+        "text": "§ 119 ",
+        "bold_ranges": []
+      },
+      "row_index": 930
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Gesamtplankonferenz ",
+        "right": "Gesamtplankonferenz  ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 121,
+        "table": 1,
+        "row": 4,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Gesamtplankonferenz ",
+        "bold_ranges": []
+      },
+      "row_index": 931
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(1) Mit Zustimmung des \nLeistungsberechtigten kann der Träger der \nEingliederungshilfe eine \nGesamtplankonferenz durchführen, um die \nLeistungen für den Leistungsberechtigten \nnach den Kapiteln 3 bis 6 sicherzustellen. \nDie Leistungsberechtigten, die beteiligten \nRehabilitationsträger und bei \nminderjährigen Leistungsberechtigten der \nnach § 86 des Achten Buches zuständige \nörtliche Träger der öffentlichen Jugendhilfe \nkönnen dem nach § 15 verantwortlichen \nTräger der Eingliederungshilfe die \nDurchführung einer Gesamtplankonferenz \nvorschlagen. Den Vorschlag auf \nDurchführung einer Gesamtplankonferenz \nkann der Träger der Eingliederungshilfe \nablehnen, wenn der maßgebliche \nSachverhalt schriftlich ermittelt werden \nkann oder der Aufwand zur Durchführung \nnicht in einem angemessenen Verhältnis \nzum Umfang der beantragten Leistung \nsteht. ",
+        "right": "(1) Mit Zustimmung des \nLeistungsberechtigten kann der Träger der \nEingliederungshilfe eine \nGesamtplankonferenz durchführen, um die \nLeistungen für den Leistungsberechtigten \nnach den Kapiteln 3 bis 6 sicherzustellen. \nDie Leistungsberechtigten und die \nbeteiligten Rehabilitationsträger können \ndem nach § 15 verantwortlichen Träger \nder Eingliederungshilfe die \nDurchführung einer \nGesamtplankonferenz vorschlagen. Den \nVorschlag auf Durchführung einer \nGesamtplankonferenz kann der Träger der \nEingliederungshilfe ablehnen, wenn der \nmaßgebliche Sachverhalt schriftlich \nermittelt werden kann oder der Aufwand \nzur Durchführung nicht in einem \nangemessenen Verhältnis zum Umfang der \nbeantragten Leistung steht. ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [
+          [
+            246,
+            418
+          ]
+        ],
+        "page": 121,
+        "table": 1,
+        "row": 5,
+        "right_diff_ranges": [
+          [
+            224,
+            249,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(1) Mit Zustimmung des \nLeistungsberechtigten kann der Träger der \nEingliederungshilfe eine \nGesamtplankonferenz durchführen, um die \nLeistungen für den Leistungsberechtigten \nnach den Kapiteln 3 bis 6 sicherzustellen. \nDie Leistungsberechtigten, die beteiligten \nRehabilitationsträger und bei \nminderjährigen Leistungsberechtigten der \nnach § 86 des Achten Buches zuständige \nörtliche Träger der öffentlichen Jugendhilfe \nkönnen dem nach § 15 verantwortlichen \nTräger der Eingliederungshilfe die \nDurchführung einer Gesamtplankonferenz \nvorschlagen. Den Vorschlag auf \nDurchführung einer Gesamtplankonferenz \nkann der Träger der Eingliederungshilfe \nablehnen, wenn der maßgebliche \nSachverhalt schriftlich ermittelt werden \nkann oder der Aufwand zur Durchführung \nnicht in einem angemessenen Verhältnis \nzum Umfang der beantragten Leistung \nsteht. ",
+        "bold_ranges": []
+      },
+      "row_index": 932
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Absätze 2 bis 4 ",
+        "right": "unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 121,
+        "table": 1,
+        "row": 6,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Absätze 2 bis 4 ",
+        "bold_ranges": []
+      },
+      "row_index": 933
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 134 ",
+        "right": "§ 134 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 121,
+        "table": 1,
+        "row": 7,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "merged_left": {
+        "text": "§ 134 ",
+        "bold_ranges": []
+      },
+      "row_index": 934
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Sonderregelung zum Inhalt der \nVereinbarungen zur Erbringung von \nLeistungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
+        "right": "Sonderregelung zum Inhalt der \nVereinbarungen zur Erbringung von \nLeistungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 122,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Sonderregelung zum Inhalt der \nVereinbarungen zur Erbringung von \nLeistungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
+        "bold_ranges": []
+      },
+      "row_index": 935
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(1) In der schriftlichen Vereinbarung zur \nErbringung von Leistungen für \nminderjährige Leistungsberechtigte \nzwischen dem Träger der \nEingliederungshilfe und dem \nLeistungserbringer sind zu regeln: \n1. \nInhalt, Umfang und Qualität einschließlich \nder Wirksamkeit der Leistungen \n(Leistungsvereinbarung) sowie \n2. \ndie Vergütung der Leistung \n(Vergütungsvereinbarung). ",
+        "right": "(1) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 122,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(1) In der schriftlichen Vereinbarung zur \nErbringung von Leistungen für \nminderjährige Leistungsberechtigte \nzwischen dem Träger der \nEingliederungshilfe und dem \nLeistungserbringer sind zu regeln: \n1. \nInhalt, Umfang und Qualität einschließlich \nder Wirksamkeit der Leistungen \n(Leistungsvereinbarung) sowie \n2. \ndie Vergütung der Leistung \n(Vergütungsvereinbarung). ",
+        "bold_ranges": []
+      },
+      "row_index": 936
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(2) In die Leistungsvereinbarung sind als \nwesentliche Leistungsmerkmale \ninsbesondere aufzunehmen: \n1. \ndie betriebsnotwendigen Anlagen des \nLeistungserbringers, \n2. \nder zu betreuende Personenkreis, \n3. \nArt, Ziel und Qualität der Leistung, \n4. \ndie Festlegung der personellen \nAusstattung, \n5. \ndie Qualifikation des Personals sowie \n6. \ndie erforderliche sächliche Ausstattung. \n ",
+        "right": "(2) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 122,
+        "table": 1,
+        "row": 4,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(2) In die Leistungsvereinbarung sind als \nwesentliche Leistungsmerkmale \ninsbesondere aufzunehmen: \n1. \ndie betriebsnotwendigen Anlagen des \nLeistungserbringers, \n2. \nder zu betreuende Personenkreis, \n3. \nArt, Ziel und Qualität der Leistung, \n4. \ndie Festlegung der personellen \nAusstattung, \n5. \ndie Qualifikation des Personals sowie \n6. \ndie erforderliche sächliche Ausstattung. \n ",
+        "bold_ranges": []
+      },
+      "row_index": 937
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(3) Die Vergütungsvereinbarung besteht \nmindestens aus \n1. \nder Grundpauschale für Unterkunft und \nVerpflegung, \n2. \nder Maßnahmepauschale sowie \n3. \neinem Betrag für betriebsnotwendige \nAnlagen einschließlich ihrer Ausstattung \n(Investitionsbetrag). \nFörderungen aus öffentlichen Mitteln sind \nanzurechnen. Die Maßnahmepauschale ist \nnach Gruppen für Leistungsberechtigte mit \nvergleichbarem Bedarf zu kalkulieren. ",
+        "right": "(3) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 123,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(3) Die Vergütungsvereinbarung besteht \nmindestens aus \n1. \nder Grundpauschale für Unterkunft und \nVerpflegung, \n2. \nder Maßnahmepauschale sowie \n3. \neinem Betrag für betriebsnotwendige \nAnlagen einschließlich ihrer Ausstattung \n(Investitionsbetrag). \nFörderungen aus öffentlichen Mitteln sind \nanzurechnen. Die Maßnahmepauschale ist \nnach Gruppen für Leistungsberechtigte mit \nvergleichbarem Bedarf zu kalkulieren. ",
+        "bold_ranges": []
+      },
+      "row_index": 938
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(4) Die Absätze 1 bis 3 finden auch \nAnwendung, wenn volljährige \nLeistungsberechtigte Leistungen zur \nSchulbildung nach § 112 Absatz 1 Nummer \n1 sowie Leistungen zur schulischen \nAusbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2 erhalten, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden. Entsprechendes gilt bei anderen \nvolljährigen Leistungsberechtigten, wenn \n1. \ndas Konzept des Leistungserbringers auf \nMinderjährige als zu betreuenden \nPersonenkreis ausgerichtet ist, \n2. \nder Leistungsberechtigte von diesem \nLeistungserbringer bereits Leistungen über \nTag und Nacht auf Grundlage von \nVereinbarungen nach den Absätzen 1 bis \n3, § 78b des Achten Buches, § 75 Absatz 3 \ndes Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung oder \nnach Maßgabe des § 75 Absatz 4 des \nZwölften Buches in der am 31. Dezember \n2019 geltenden Fassung erhalten hat und \n3. \nder Leistungsberechtigte nach Erreichen \nder Volljährigkeit für eine kurze Zeit, in der \nRegel nicht länger als bis zur Vollendung \ndes 21. Lebensjahres, Leistungen von \ndiesem Leistungserbringer weitererhält, mit \ndenen insbesondere vor dem Erreichen der \nVolljährigkeit definierte Teilhabeziele \nerreicht werden sollen. ",
+        "right": "(4) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 124,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(4) Die Absätze 1 bis 3 finden auch \nAnwendung, wenn volljährige \nLeistungsberechtigte Leistungen zur \nSchulbildung nach § 112 Absatz 1 Nummer \n1 sowie Leistungen zur schulischen \nAusbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2 erhalten, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden. Entsprechendes gilt bei anderen \nvolljährigen Leistungsberechtigten, wenn \n1. \ndas Konzept des Leistungserbringers auf \nMinderjährige als zu betreuenden \nPersonenkreis ausgerichtet ist, \n2. \nder Leistungsberechtigte von diesem \nLeistungserbringer bereits Leistungen über \nTag und Nacht auf Grundlage von \nVereinbarungen nach den Absätzen 1 bis \n3, § 78b des Achten Buches, § 75 Absatz 3 \ndes Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung oder \nnach Maßgabe des § 75 Absatz 4 des \nZwölften Buches in der am 31. Dezember \n2019 geltenden Fassung erhalten hat und \n3. \nder Leistungsberechtigte nach Erreichen \nder Volljährigkeit für eine kurze Zeit, in der \nRegel nicht länger als bis zur Vollendung \ndes 21. Lebensjahres, Leistungen von \ndiesem Leistungserbringer weitererhält, mit \ndenen insbesondere vor dem Erreichen der \nVolljährigkeit definierte Teilhabeziele \nerreicht werden sollen. ",
+        "bold_ranges": []
+      },
+      "row_index": 939
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 136 ",
+        "right": "§ 136 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 124,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "merged_left": {
+        "text": "§ 136 ",
+        "bold_ranges": []
+      },
+      "row_index": 940
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Beitrag aus Einkommen zu den \nAufwendungen ",
+        "right": "Beitrag aus Einkommen zu den \nAufwendungen ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 124,
+        "table": 1,
+        "row": 4,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Beitrag aus Einkommen zu den \nAufwendungen ",
+        "bold_ranges": []
+      },
       "row_index": 941
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(1) Bei den Leistungen nach diesem Teil ist \nein Beitrag zu den Aufwendungen \naufzubringen, wenn das Einkommen im \nSinne des § 135 der antragstellenden \nPerson sowie bei minderjährigen Personen \nder im Haushalt lebenden Eltern oder des \nim Haushalt lebenden Elternteils die \nBeträge nach Absatz 2 übersteigt. ",
+        "right": "(1) Bei den Leistungen nach diesem Teil ist \nein Beitrag zu den Aufwendungen \naufzubringen, wenn das Einkommen im \nSinne des § 135 der antragstellenden \nPerson sowie bei minderjährigen Personen \nder im Haushalt lebenden Eltern oder des \nim Haushalt lebenden Elternteils die \nBeträge nach Absatz 2 übersteigt. ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 125,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(1) Bei den Leistungen nach diesem Teil ist \nein Beitrag zu den Aufwendungen \naufzubringen, wenn das Einkommen im \nSinne des § 135 der antragstellenden \nPerson sowie bei minderjährigen Personen \nder im Haushalt lebenden Eltern oder des \nim Haushalt lebenden Elternteils die \nBeträge nach Absatz 2 übersteigt. ",
+        "bold_ranges": []
+      },
+      "row_index": 942
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Absätze 2 bis 5 ",
+        "right": "unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 125,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Absätze 2 bis 5 ",
+        "bold_ranges": []
+      },
+      "row_index": 943
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 138 ",
+        "right": "§ 138 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 125,
+        "table": 1,
+        "row": 4,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "merged_left": {
+        "text": "§ 138 ",
+        "bold_ranges": []
+      },
+      "row_index": 944
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Besondere Höhe des Beitrages zu den \nAufwendungen ",
+        "right": "Besondere Höhe des Beitrages zu den \nAufwendungen ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 125,
+        "table": 1,
+        "row": 5,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Besondere Höhe des Beitrages zu den \nAufwendungen ",
+        "bold_ranges": []
+      },
+      "row_index": 945
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(1) Ein Beitrag ist nicht aufzubringen bei \n1. \nheilpädagogischen Leistungen nach § 113 \nAbsatz 2 Nummer 3, \n2. \nLeistungen zur medizinischen \nRehabilitation nach § 109, \n3. \nLeistungen zur Teilhabe am Arbeitsleben \nnach § 111 Absatz 1, \n4. \nLeistungen zur Teilhabe an Bildung nach § \n112 Absatz 1 Nummer 1, \n5. \nLeistungen zur schulischen oder \nhochschulischen Ausbildung oder \nWeiterbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden, \n6. \nLeistungen zum Erwerb und Erhalt \npraktischer Kenntnisse und Fähigkeiten \nnach § 113 Absatz 2 Nummer 5, soweit \ndiese der Vorbereitung auf die Teilhabe am \nArbeitsleben nach § 111 Absatz 1 dienen, \n7. \nLeistungen nach § 113 Absatz 1, die noch \nnicht eingeschulten leistungsberechtigten \nPersonen die für sie erreichbare Teilnahme \nam Leben in der Gemeinschaft \nermöglichen sollen, \n8. \ngleichzeitiger Gewährung von Leistungen \nzum Lebensunterhalt nach dem Zweiten \noder Zwölften Buch oder nach § 27a des \nBundesversorgungsgesetzes. ",
+        "right": "(1) Ein Beitrag ist nicht aufzubringen bei \n1. \nheilpädagogischen Leistungen nach § 113 \nAbsatz 2 Nummer 3, \n2. \nLeistungen zur medizinischen \nRehabilitation nach § 109, \n3. \nLeistungen zur Teilhabe am Arbeitsleben \nnach § 111 Absatz 1, \n4. \nLeistungen zur Teilhabe an Bildung nach § \n112 Absatz 1 Nummer 1, \n5. \nLeistungen zur schulischen oder \nhochschulischen Ausbildung oder \nWeiterbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden, \n6. \nLeistungen zum Erwerb und Erhalt \npraktischer Kenntnisse und Fähigkeiten \nnach § 113 Absatz 2 Nummer 5, soweit \ndiese der Vorbereitung auf die Teilhabe am \nArbeitsleben nach § 111 Absatz 1 dienen, \n7. \nLeistungen nach § 113 Absatz 1, die noch \nnicht eingeschulten leistungsberechtigten \nPersonen die für sie erreichbare Teilnahme \nam Leben in der Gemeinschaft \nermöglichen sollen, \n7. \ngleichzeitiger Gewährung von Leistungen \nzum Lebensunterhalt nach dem Zweiten \noder Zwölften Buch oder nach § 27a des \nBundesversorgungsgesetzes. ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [
+          [
+            955,
+            956
+          ]
+        ],
+        "page": 126,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": [
+          [
+            955,
+            956,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(1) Ein Beitrag ist nicht aufzubringen bei \n1. \nheilpädagogischen Leistungen nach § 113 \nAbsatz 2 Nummer 3, \n2. \nLeistungen zur medizinischen \nRehabilitation nach § 109, \n3. \nLeistungen zur Teilhabe am Arbeitsleben \nnach § 111 Absatz 1, \n4. \nLeistungen zur Teilhabe an Bildung nach § \n112 Absatz 1 Nummer 1, \n5. \nLeistungen zur schulischen oder \nhochschulischen Ausbildung oder \nWeiterbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden, \n6. \nLeistungen zum Erwerb und Erhalt \npraktischer Kenntnisse und Fähigkeiten \nnach § 113 Absatz 2 Nummer 5, soweit \ndiese der Vorbereitung auf die Teilhabe am \nArbeitsleben nach § 111 Absatz 1 dienen, \n7. \nLeistungen nach § 113 Absatz 1, die noch \nnicht eingeschulten leistungsberechtigten \nPersonen die für sie erreichbare Teilnahme \nam Leben in der Gemeinschaft \nermöglichen sollen, \n8. \ngleichzeitiger Gewährung von Leistungen \nzum Lebensunterhalt nach dem Zweiten \noder Zwölften Buch oder nach § 27a des \nBundesversorgungsgesetzes. ",
+        "bold_ranges": []
+      },
+      "row_index": 946
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(2) Wenn ein Beitrag nach § 137 \naufzubringen ist, ist für weitere Leistungen \nim gleichen Zeitraum oder weitere \nLeistungen an minderjährige Kinder im \ngleichen Haushalt nach diesem Teil kein \nweiterer Beitrag aufzubringen. ",
+        "right": "(2) Wenn ein Beitrag nach § 137 \naufzubringen ist, ist für weitere Leistungen \nim gleichen Zeitraum oder weitere \nLeistungen an minderjährige Kinder im \ngleichen Haushalt nach diesem Teil kein \nweiterer Beitrag aufzubringen. ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(2) Wenn ein Beitrag nach § 137 \naufzubringen ist, ist für weitere Leistungen \nim gleichen Zeitraum oder weitere \nLeistungen an minderjährige Kinder im \ngleichen Haushalt nach diesem Teil kein \nweiterer Beitrag aufzubringen. ",
+        "bold_ranges": []
+      },
+      "row_index": 947
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 140 ",
+        "right": "§ 140 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "merged_left": {
+        "text": "§ 140 ",
+        "bold_ranges": []
+      },
+      "row_index": 948
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Einsatz des Vermögens ",
+        "right": "Einsatz des Vermögens ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 4,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Einsatz des Vermögens ",
+        "bold_ranges": []
+      },
+      "row_index": 949
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(1) Die antragstellende Person sowie bei \nminderjährigen Personen die im Haushalt \nlebenden Eltern oder ein Elternteil haben \nvor der Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen Mittel \naus ihrem Vermögen aufzubringen. ",
+        "right": "(1) Die antragsstellende Person hat vor \nder Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen \nMittel aus ihrem Vermögen \naufzubringen. ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [
+          [
+            0,
+            155
+          ]
+        ],
+        "page": 127,
+        "table": 1,
+        "row": 5,
+        "right_diff_ranges": [
+          [
+            14,
+            15,
+            "green"
+          ],
+          [
+            32,
+            35,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(1) Die antragstellende Person sowie bei \nminderjährigen Personen die im Haushalt \nlebenden Eltern oder ein Elternteil haben \nvor der Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen Mittel \naus ihrem Vermögen aufzubringen. ",
+        "bold_ranges": []
+      },
+      "row_index": 950
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Absätze 2 und 3 ",
+        "right": "unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 6,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Absätze 2 und 3 ",
+        "bold_ranges": []
+      },
+      "row_index": 951
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "§ 142 ",
+        "right": "§ 142 ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 7,
+        "right_diff_ranges": []
+      },
+      "is_section_header": true,
+      "merged_left": {
+        "text": "§ 142 ",
+        "bold_ranges": []
+      },
+      "row_index": 952
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "Sonderregelungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
+        "right": "Sonderregelungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 8,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "Sonderregelungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
+        "bold_ranges": []
+      },
+      "row_index": 953
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(1) Minderjährigen Leistungsberechtigten \nund ihren Eltern oder einem Elternteil ist \nbei Leistungen im Sinne des § 138 Absatz \n1 Nummer 1, 2, 4, 5 und 7 die Aufbringung \nder Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für den \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten, soweit \nLeistungen über Tag und Nacht oder über \nTag erbracht werden. ",
+        "right": "(1) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 127,
+        "table": 1,
+        "row": 9,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(1) Minderjährigen Leistungsberechtigten \nund ihren Eltern oder einem Elternteil ist \nbei Leistungen im Sinne des § 138 Absatz \n1 Nummer 1, 2, 4, 5 und 7 die Aufbringung \nder Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für den \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten, soweit \nLeistungen über Tag und Nacht oder über \nTag erbracht werden. ",
+        "bold_ranges": []
+      },
+      "row_index": 954
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(2) Sind Leistungen von einem oder \nmehreren Anbietern über Tag und Nacht \noder über Tag oder für ärztliche oder \närztlich verordnete Maßnahmen \nerforderlich, sind die Leistungen, die der \nVereinbarung nach § 134 Absatz 3 \nzugrunde liegen, durch den Träger der \nEingliederungshilfe auch dann in vollem \nUmfang zu erbringen, wenn den \nminderjährigen Leistungsberechtigten und \nihren Eltern oder einem Elternteil die \nAufbringung der Mittel nach Absatz 1 zu \neinem Teil zuzumuten ist. In Höhe dieses \nTeils haben sie zu den Kosten der \nerbrachten Leistungen beizutragen; \nmehrere Verpflichtete haften als \nGesamtschuldner. ",
+        "right": "(2) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 128,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(2) Sind Leistungen von einem oder \nmehreren Anbietern über Tag und Nacht \noder über Tag oder für ärztliche oder \närztlich verordnete Maßnahmen \nerforderlich, sind die Leistungen, die der \nVereinbarung nach § 134 Absatz 3 \nzugrunde liegen, durch den Träger der \nEingliederungshilfe auch dann in vollem \nUmfang zu erbringen, wenn den \nminderjährigen Leistungsberechtigten und \nihren Eltern oder einem Elternteil die \nAufbringung der Mittel nach Absatz 1 zu \neinem Teil zuzumuten ist. In Höhe dieses \nTeils haben sie zu den Kosten der \nerbrachten Leistungen beizutragen; \nmehrere Verpflichtete haften als \nGesamtschuldner. ",
+        "bold_ranges": []
+      },
+      "row_index": 955
+    },
+    {
+      "synopsis2024": null,
+      "synopsis2026": {
+        "left": "(3) Die Absätze 1 und 2 gelten \nentsprechend für volljährige \nLeistungsberechtigte, wenn diese \nLeistungen erhalten, denen \nVereinbarungen nach § 134 Absatz 4 \nzugrunde liegen. In diesem Fall ist den \nvolljährigen Leistungsberechtigten die \nAufbringung der Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für ihren \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten. ",
+        "right": "(3) entfällt ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 128,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": [
+          [
+            4,
+            12,
+            "green"
+          ]
+        ]
+      },
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(3) Die Absätze 1 und 2 gelten \nentsprechend für volljährige \nLeistungsberechtigte, wenn diese \nLeistungen erhalten, denen \nVereinbarungen nach § 134 Absatz 4 \nzugrunde liegen. In diesem Fall ist den \nvolljährigen Leistungsberechtigten die \nAufbringung der Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für ihren \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten. ",
+        "bold_ranges": []
+      },
+      "row_index": 956
+    },
+    {
+      "synopsis2024": {
+        "left": "Sozialgerichtsgesetz ",
+        "right": "Sozialgerichtsgesetz ",
+        "left_bold_ranges": [
+          [
+            0,
+            21
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            21
+          ]
+        ],
+        "page": 131,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": [
+          [
+            0,
+            21,
+            "red"
+          ]
+        ]
+      },
+      "synopsis2026": null,
+      "is_section_header": false,
+      "starts_new_table": true,
+      "merged_left": {
+        "text": "Sozialgerichtsgesetz ",
+        "bold_ranges": [
+          [
+            0,
+            21
+          ]
+        ]
+      },
+      "row_index": 957
     },
     {
       "synopsis2024": {
@@ -30740,697 +31005,432 @@
           ]
         ]
       },
-      "row_index": 942
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 117 ",
-        "right": "§ 117 ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 120,
-        "table": 1,
-        "row": 4,
-        "right_diff_ranges": []
-      },
-      "is_section_header": true,
-      "merged_left": {
-        "text": "§ 117 ",
-        "bold_ranges": []
-      },
-      "row_index": 943
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Gesamtplanverfahren ",
-        "right": "Gesamtplanverfahren ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 120,
-        "table": 1,
-        "row": 5,
-        "right_diff_ranges": []
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Gesamtplanverfahren ",
-        "bold_ranges": []
-      },
-      "row_index": 944
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Absätze 1 bis 5 ",
-        "right": "unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 120,
-        "table": 1,
-        "row": 6,
-        "right_diff_ranges": []
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Absätze 1 bis 5 ",
-        "bold_ranges": []
-      },
-      "row_index": 945
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(6) Bei minderjährigen \nLeistungsberechtigten wird der nach § 86 \ndes Achten Buches zuständige örtliche \nTräger der öffentlichen Jugendhilfe vom \nTräger der Eingliederungshilfe mit \nZustimmung des \nPersonensorgeberechtigten informiert und \nnimmt am Gesamtplanverfahren beratend \nteil, soweit dies zur Feststellung der \nLeistungen der Eingliederungshilfe nach \nden Kapiteln 3 bis 6 erforderlich ist. \nHiervon kann in begründeten \nAusnahmefällen abgesehen werden, \ninsbesondere, wenn durch die Teilnahme \ndes zuständigen örtlichen Trägers der \nöffentlichen Jugendhilfe das \nGesamtplanverfahren verzögert würde. ",
-        "right": "(6) entfällt  ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 121,
-        "table": 1,
-        "row": 2,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(6) Bei minderjährigen \nLeistungsberechtigten wird der nach § 86 \ndes Achten Buches zuständige örtliche \nTräger der öffentlichen Jugendhilfe vom \nTräger der Eingliederungshilfe mit \nZustimmung des \nPersonensorgeberechtigten informiert und \nnimmt am Gesamtplanverfahren beratend \nteil, soweit dies zur Feststellung der \nLeistungen der Eingliederungshilfe nach \nden Kapiteln 3 bis 6 erforderlich ist. \nHiervon kann in begründeten \nAusnahmefällen abgesehen werden, \ninsbesondere, wenn durch die Teilnahme \ndes zuständigen örtlichen Trägers der \nöffentlichen Jugendhilfe das \nGesamtplanverfahren verzögert würde. ",
-        "bold_ranges": []
-      },
-      "row_index": 946
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 119 ",
-        "right": "§ 119 ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 121,
-        "table": 1,
-        "row": 3,
-        "right_diff_ranges": []
-      },
-      "is_section_header": true,
-      "merged_left": {
-        "text": "§ 119 ",
-        "bold_ranges": []
-      },
-      "row_index": 947
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Gesamtplankonferenz ",
-        "right": "Gesamtplankonferenz  ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 121,
-        "table": 1,
-        "row": 4,
-        "right_diff_ranges": []
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Gesamtplankonferenz ",
-        "bold_ranges": []
-      },
-      "row_index": 948
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(1) Mit Zustimmung des \nLeistungsberechtigten kann der Träger der \nEingliederungshilfe eine \nGesamtplankonferenz durchführen, um die \nLeistungen für den Leistungsberechtigten \nnach den Kapiteln 3 bis 6 sicherzustellen. \nDie Leistungsberechtigten, die beteiligten \nRehabilitationsträger und bei \nminderjährigen Leistungsberechtigten der \nnach § 86 des Achten Buches zuständige \nörtliche Träger der öffentlichen Jugendhilfe \nkönnen dem nach § 15 verantwortlichen \nTräger der Eingliederungshilfe die \nDurchführung einer Gesamtplankonferenz \nvorschlagen. Den Vorschlag auf \nDurchführung einer Gesamtplankonferenz \nkann der Träger der Eingliederungshilfe \nablehnen, wenn der maßgebliche \nSachverhalt schriftlich ermittelt werden \nkann oder der Aufwand zur Durchführung \nnicht in einem angemessenen Verhältnis \nzum Umfang der beantragten Leistung \nsteht. ",
-        "right": "(1) Mit Zustimmung des \nLeistungsberechtigten kann der Träger der \nEingliederungshilfe eine \nGesamtplankonferenz durchführen, um die \nLeistungen für den Leistungsberechtigten \nnach den Kapiteln 3 bis 6 sicherzustellen. \nDie Leistungsberechtigten und die \nbeteiligten Rehabilitationsträger können \ndem nach § 15 verantwortlichen Träger \nder Eingliederungshilfe die \nDurchführung einer \nGesamtplankonferenz vorschlagen. Den \nVorschlag auf Durchführung einer \nGesamtplankonferenz kann der Träger der \nEingliederungshilfe ablehnen, wenn der \nmaßgebliche Sachverhalt schriftlich \nermittelt werden kann oder der Aufwand \nzur Durchführung nicht in einem \nangemessenen Verhältnis zum Umfang der \nbeantragten Leistung steht. ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [
-          [
-            246,
-            418
-          ]
-        ],
-        "page": 121,
-        "table": 1,
-        "row": 5,
-        "right_diff_ranges": [
-          [
-            224,
-            249,
-            "green"
-          ]
-        ]
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(1) Mit Zustimmung des \nLeistungsberechtigten kann der Träger der \nEingliederungshilfe eine \nGesamtplankonferenz durchführen, um die \nLeistungen für den Leistungsberechtigten \nnach den Kapiteln 3 bis 6 sicherzustellen. \nDie Leistungsberechtigten, die beteiligten \nRehabilitationsträger und bei \nminderjährigen Leistungsberechtigten der \nnach § 86 des Achten Buches zuständige \nörtliche Träger der öffentlichen Jugendhilfe \nkönnen dem nach § 15 verantwortlichen \nTräger der Eingliederungshilfe die \nDurchführung einer Gesamtplankonferenz \nvorschlagen. Den Vorschlag auf \nDurchführung einer Gesamtplankonferenz \nkann der Träger der Eingliederungshilfe \nablehnen, wenn der maßgebliche \nSachverhalt schriftlich ermittelt werden \nkann oder der Aufwand zur Durchführung \nnicht in einem angemessenen Verhältnis \nzum Umfang der beantragten Leistung \nsteht. ",
-        "bold_ranges": []
-      },
-      "row_index": 949
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Absätze 2 bis 4 ",
-        "right": "unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 121,
-        "table": 1,
-        "row": 6,
-        "right_diff_ranges": []
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Absätze 2 bis 4 ",
-        "bold_ranges": []
-      },
-      "row_index": 950
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 134 ",
-        "right": "§ 134 ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 121,
-        "table": 1,
-        "row": 7,
-        "right_diff_ranges": []
-      },
-      "is_section_header": true,
-      "merged_left": {
-        "text": "§ 134 ",
-        "bold_ranges": []
-      },
-      "row_index": 951
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Sonderregelung zum Inhalt der \nVereinbarungen zur Erbringung von \nLeistungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
-        "right": "Sonderregelung zum Inhalt der \nVereinbarungen zur Erbringung von \nLeistungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 122,
-        "table": 1,
-        "row": 2,
-        "right_diff_ranges": []
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Sonderregelung zum Inhalt der \nVereinbarungen zur Erbringung von \nLeistungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
-        "bold_ranges": []
-      },
-      "row_index": 952
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(1) In der schriftlichen Vereinbarung zur \nErbringung von Leistungen für \nminderjährige Leistungsberechtigte \nzwischen dem Träger der \nEingliederungshilfe und dem \nLeistungserbringer sind zu regeln: \n1. \nInhalt, Umfang und Qualität einschließlich \nder Wirksamkeit der Leistungen \n(Leistungsvereinbarung) sowie \n2. \ndie Vergütung der Leistung \n(Vergütungsvereinbarung). ",
-        "right": "(1) entfällt ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 122,
-        "table": 1,
-        "row": 3,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(1) In der schriftlichen Vereinbarung zur \nErbringung von Leistungen für \nminderjährige Leistungsberechtigte \nzwischen dem Träger der \nEingliederungshilfe und dem \nLeistungserbringer sind zu regeln: \n1. \nInhalt, Umfang und Qualität einschließlich \nder Wirksamkeit der Leistungen \n(Leistungsvereinbarung) sowie \n2. \ndie Vergütung der Leistung \n(Vergütungsvereinbarung). ",
-        "bold_ranges": []
-      },
-      "row_index": 953
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(2) In die Leistungsvereinbarung sind als \nwesentliche Leistungsmerkmale \ninsbesondere aufzunehmen: \n1. \ndie betriebsnotwendigen Anlagen des \nLeistungserbringers, \n2. \nder zu betreuende Personenkreis, \n3. \nArt, Ziel und Qualität der Leistung, \n4. \ndie Festlegung der personellen \nAusstattung, \n5. \ndie Qualifikation des Personals sowie \n6. \ndie erforderliche sächliche Ausstattung. \n ",
-        "right": "(2) entfällt ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 122,
-        "table": 1,
-        "row": 4,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(2) In die Leistungsvereinbarung sind als \nwesentliche Leistungsmerkmale \ninsbesondere aufzunehmen: \n1. \ndie betriebsnotwendigen Anlagen des \nLeistungserbringers, \n2. \nder zu betreuende Personenkreis, \n3. \nArt, Ziel und Qualität der Leistung, \n4. \ndie Festlegung der personellen \nAusstattung, \n5. \ndie Qualifikation des Personals sowie \n6. \ndie erforderliche sächliche Ausstattung. \n ",
-        "bold_ranges": []
-      },
-      "row_index": 954
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(3) Die Vergütungsvereinbarung besteht \nmindestens aus \n1. \nder Grundpauschale für Unterkunft und \nVerpflegung, \n2. \nder Maßnahmepauschale sowie \n3. \neinem Betrag für betriebsnotwendige \nAnlagen einschließlich ihrer Ausstattung \n(Investitionsbetrag). \nFörderungen aus öffentlichen Mitteln sind \nanzurechnen. Die Maßnahmepauschale ist \nnach Gruppen für Leistungsberechtigte mit \nvergleichbarem Bedarf zu kalkulieren. ",
-        "right": "(3) entfällt ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 123,
-        "table": 1,
-        "row": 2,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(3) Die Vergütungsvereinbarung besteht \nmindestens aus \n1. \nder Grundpauschale für Unterkunft und \nVerpflegung, \n2. \nder Maßnahmepauschale sowie \n3. \neinem Betrag für betriebsnotwendige \nAnlagen einschließlich ihrer Ausstattung \n(Investitionsbetrag). \nFörderungen aus öffentlichen Mitteln sind \nanzurechnen. Die Maßnahmepauschale ist \nnach Gruppen für Leistungsberechtigte mit \nvergleichbarem Bedarf zu kalkulieren. ",
-        "bold_ranges": []
-      },
-      "row_index": 955
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(4) Die Absätze 1 bis 3 finden auch \nAnwendung, wenn volljährige \nLeistungsberechtigte Leistungen zur \nSchulbildung nach § 112 Absatz 1 Nummer \n1 sowie Leistungen zur schulischen \nAusbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2 erhalten, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden. Entsprechendes gilt bei anderen \nvolljährigen Leistungsberechtigten, wenn \n1. \ndas Konzept des Leistungserbringers auf \nMinderjährige als zu betreuenden \nPersonenkreis ausgerichtet ist, \n2. \nder Leistungsberechtigte von diesem \nLeistungserbringer bereits Leistungen über \nTag und Nacht auf Grundlage von \nVereinbarungen nach den Absätzen 1 bis \n3, § 78b des Achten Buches, § 75 Absatz 3 \ndes Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung oder \nnach Maßgabe des § 75 Absatz 4 des \nZwölften Buches in der am 31. Dezember \n2019 geltenden Fassung erhalten hat und \n3. \nder Leistungsberechtigte nach Erreichen \nder Volljährigkeit für eine kurze Zeit, in der \nRegel nicht länger als bis zur Vollendung \ndes 21. Lebensjahres, Leistungen von \ndiesem Leistungserbringer weitererhält, mit \ndenen insbesondere vor dem Erreichen der \nVolljährigkeit definierte Teilhabeziele \nerreicht werden sollen. ",
-        "right": "(4) entfällt ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 124,
-        "table": 1,
-        "row": 2,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "(4) Die Absätze 1 bis 3 finden auch \nAnwendung, wenn volljährige \nLeistungsberechtigte Leistungen zur \nSchulbildung nach § 112 Absatz 1 Nummer \n1 sowie Leistungen zur schulischen \nAusbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2 erhalten, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden. Entsprechendes gilt bei anderen \nvolljährigen Leistungsberechtigten, wenn \n1. \ndas Konzept des Leistungserbringers auf \nMinderjährige als zu betreuenden \nPersonenkreis ausgerichtet ist, \n2. \nder Leistungsberechtigte von diesem \nLeistungserbringer bereits Leistungen über \nTag und Nacht auf Grundlage von \nVereinbarungen nach den Absätzen 1 bis \n3, § 78b des Achten Buches, § 75 Absatz 3 \ndes Zwölften Buches in der am 31. \nDezember 2019 geltenden Fassung oder \nnach Maßgabe des § 75 Absatz 4 des \nZwölften Buches in der am 31. Dezember \n2019 geltenden Fassung erhalten hat und \n3. \nder Leistungsberechtigte nach Erreichen \nder Volljährigkeit für eine kurze Zeit, in der \nRegel nicht länger als bis zur Vollendung \ndes 21. Lebensjahres, Leistungen von \ndiesem Leistungserbringer weitererhält, mit \ndenen insbesondere vor dem Erreichen der \nVolljährigkeit definierte Teilhabeziele \nerreicht werden sollen. ",
-        "bold_ranges": []
-      },
-      "row_index": 956
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 136 ",
-        "right": "§ 136 ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 124,
-        "table": 1,
-        "row": 3,
-        "right_diff_ranges": []
-      },
-      "is_section_header": true,
-      "merged_left": {
-        "text": "§ 136 ",
-        "bold_ranges": []
-      },
-      "row_index": 957
-    },
-    {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Beitrag aus Einkommen zu den \nAufwendungen ",
-        "right": "Beitrag aus Einkommen zu den \nAufwendungen ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 124,
-        "table": 1,
-        "row": 4,
-        "right_diff_ranges": []
-      },
-      "is_section_header": false,
-      "merged_left": {
-        "text": "Beitrag aus Einkommen zu den \nAufwendungen ",
-        "bold_ranges": []
-      },
       "row_index": 958
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(1) Bei den Leistungen nach diesem Teil ist \nein Beitrag zu den Aufwendungen \naufzubringen, wenn das Einkommen im \nSinne des § 135 der antragstellenden \nPerson sowie bei minderjährigen Personen \nder im Haushalt lebenden Eltern oder des \nim Haushalt lebenden Elternteils die \nBeträge nach Absatz 2 übersteigt. ",
-        "right": "(1) Bei den Leistungen nach diesem Teil ist \nein Beitrag zu den Aufwendungen \naufzubringen, wenn das Einkommen im \nSinne des § 135 der antragstellenden \nPerson sowie bei minderjährigen Personen \nder im Haushalt lebenden Eltern oder des \nim Haushalt lebenden Elternteils die \nBeträge nach Absatz 2 übersteigt. ",
+      "synopsis2024": {
+        "left": "§ 51 ",
+        "right": "§ 51 ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 125,
+        "page": 131,
         "table": 1,
-        "row": 2,
-        "right_diff_ranges": []
+        "row": 4,
+        "right_diff_ranges": [
+          [
+            0,
+            5,
+            "red"
+          ]
+        ]
       },
-      "is_section_header": false,
+      "synopsis2026": null,
+      "is_section_header": true,
       "merged_left": {
-        "text": "(1) Bei den Leistungen nach diesem Teil ist \nein Beitrag zu den Aufwendungen \naufzubringen, wenn das Einkommen im \nSinne des § 135 der antragstellenden \nPerson sowie bei minderjährigen Personen \nder im Haushalt lebenden Eltern oder des \nim Haushalt lebenden Elternteils die \nBeträge nach Absatz 2 übersteigt. ",
+        "text": "§ 51 ",
         "bold_ranges": []
       },
       "row_index": 959
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Absätze 2 bis 5 ",
-        "right": "unverändert ",
-        "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 125,
+      "synopsis2024": {
+        "left": "Rechtsweg und Zuständigkeit ",
+        "right": "Rechtsweg und Zuständigkeit ",
+        "left_bold_ranges": [
+          [
+            0,
+            28
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            28
+          ]
+        ],
+        "page": 131,
         "table": 1,
-        "row": 3,
-        "right_diff_ranges": []
+        "row": 5,
+        "right_diff_ranges": [
+          [
+            0,
+            28,
+            "red"
+          ]
+        ]
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "Absätze 2 bis 5 ",
-        "bold_ranges": []
+        "text": "Rechtsweg und Zuständigkeit ",
+        "bold_ranges": [
+          [
+            0,
+            28
+          ]
+        ]
       },
       "row_index": 960
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 138 ",
-        "right": "§ 138 ",
+      "synopsis2024": {
+        "left": "(1) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden über öffentlich-rechtliche \nStreitigkeiten ",
+        "right": "(1) unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 125,
+        "page": 131,
         "table": 1,
-        "row": 4,
+        "row": 6,
         "right_diff_ranges": []
       },
-      "is_section_header": true,
+      "synopsis2026": null,
+      "is_section_header": false,
       "merged_left": {
-        "text": "§ 138 ",
+        "text": "(1) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden über öffentlich-rechtliche \nStreitigkeiten ",
         "bold_ranges": []
       },
       "row_index": 961
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Besondere Höhe des Beitrages zu den \nAufwendungen ",
-        "right": "Besondere Höhe des Beitrages zu den \nAufwendungen ",
+      "synopsis2024": {
+        "left": "1.  \nin Angelegenheiten der gesetzlichen \nRentenversicherung einschließlich der \nAlterssicherung der Landwirte, ",
+        "right": "1. unverändert \n ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 125,
+        "page": 131,
         "table": 1,
-        "row": 5,
+        "row": 7,
         "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "Besondere Höhe des Beitrages zu den \nAufwendungen ",
+        "text": "1.  \nin Angelegenheiten der gesetzlichen \nRentenversicherung einschließlich der \nAlterssicherung der Landwirte, ",
         "bold_ranges": []
       },
       "row_index": 962
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(1) Ein Beitrag ist nicht aufzubringen bei \n1. \nheilpädagogischen Leistungen nach § 113 \nAbsatz 2 Nummer 3, \n2. \nLeistungen zur medizinischen \nRehabilitation nach § 109, \n3. \nLeistungen zur Teilhabe am Arbeitsleben \nnach § 111 Absatz 1, \n4. \nLeistungen zur Teilhabe an Bildung nach § \n112 Absatz 1 Nummer 1, \n5. \nLeistungen zur schulischen oder \nhochschulischen Ausbildung oder \nWeiterbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden, \n6. \nLeistungen zum Erwerb und Erhalt \npraktischer Kenntnisse und Fähigkeiten \nnach § 113 Absatz 2 Nummer 5, soweit \ndiese der Vorbereitung auf die Teilhabe am \nArbeitsleben nach § 111 Absatz 1 dienen, \n7. \nLeistungen nach § 113 Absatz 1, die noch \nnicht eingeschulten leistungsberechtigten \nPersonen die für sie erreichbare Teilnahme \nam Leben in der Gemeinschaft \nermöglichen sollen, \n8. \ngleichzeitiger Gewährung von Leistungen \nzum Lebensunterhalt nach dem Zweiten \noder Zwölften Buch oder nach § 27a des \nBundesversorgungsgesetzes. ",
-        "right": "(1) Ein Beitrag ist nicht aufzubringen bei \n1. \nheilpädagogischen Leistungen nach § 113 \nAbsatz 2 Nummer 3, \n2. \nLeistungen zur medizinischen \nRehabilitation nach § 109, \n3. \nLeistungen zur Teilhabe am Arbeitsleben \nnach § 111 Absatz 1, \n4. \nLeistungen zur Teilhabe an Bildung nach § \n112 Absatz 1 Nummer 1, \n5. \nLeistungen zur schulischen oder \nhochschulischen Ausbildung oder \nWeiterbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden, \n6. \nLeistungen zum Erwerb und Erhalt \npraktischer Kenntnisse und Fähigkeiten \nnach § 113 Absatz 2 Nummer 5, soweit \ndiese der Vorbereitung auf die Teilhabe am \nArbeitsleben nach § 111 Absatz 1 dienen, \n7. \nLeistungen nach § 113 Absatz 1, die noch \nnicht eingeschulten leistungsberechtigten \nPersonen die für sie erreichbare Teilnahme \nam Leben in der Gemeinschaft \nermöglichen sollen, \n7. \ngleichzeitiger Gewährung von Leistungen \nzum Lebensunterhalt nach dem Zweiten \noder Zwölften Buch oder nach § 27a des \nBundesversorgungsgesetzes. ",
+      "synopsis2024": {
+        "left": "2. \nin Angelegenheiten der gesetzlichen \nKrankenversicherung, der sozialen \nPflegeversicherung und der privaten \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch), auch soweit durch \ndiese Angelegenheiten Dritte betroffen \nwerden; dies gilt nicht für Streitigkeiten in \nAngelegenheiten nach § 110 des Fünften \nBuches Sozialgesetzbuch aufgrund einer \nKündigung von Versorgungsverträgen, die \nfür Hochschulkliniken oder \nPlankrankenhäuser (§ 108 Nr. 1 und 2 des \nFünften Buches Sozialgesetzbuch) gelten, ",
+        "right": "2. unverändert ",
         "left_bold_ranges": [],
-        "right_bold_ranges": [
-          [
-            955,
-            956
-          ]
-        ],
-        "page": 126,
+        "right_bold_ranges": [],
+        "page": 131,
         "table": 1,
-        "row": 2,
-        "right_diff_ranges": [
-          [
-            955,
-            956,
-            "green"
-          ]
-        ]
+        "row": 8,
+        "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "(1) Ein Beitrag ist nicht aufzubringen bei \n1. \nheilpädagogischen Leistungen nach § 113 \nAbsatz 2 Nummer 3, \n2. \nLeistungen zur medizinischen \nRehabilitation nach § 109, \n3. \nLeistungen zur Teilhabe am Arbeitsleben \nnach § 111 Absatz 1, \n4. \nLeistungen zur Teilhabe an Bildung nach § \n112 Absatz 1 Nummer 1, \n5. \nLeistungen zur schulischen oder \nhochschulischen Ausbildung oder \nWeiterbildung für einen Beruf nach § 112 \nAbsatz 1 Nummer 2, soweit diese \nLeistungen in besonderen \nAusbildungsstätten über Tag und Nacht für \nMenschen mit Behinderungen erbracht \nwerden, \n6. \nLeistungen zum Erwerb und Erhalt \npraktischer Kenntnisse und Fähigkeiten \nnach § 113 Absatz 2 Nummer 5, soweit \ndiese der Vorbereitung auf die Teilhabe am \nArbeitsleben nach § 111 Absatz 1 dienen, \n7. \nLeistungen nach § 113 Absatz 1, die noch \nnicht eingeschulten leistungsberechtigten \nPersonen die für sie erreichbare Teilnahme \nam Leben in der Gemeinschaft \nermöglichen sollen, \n8. \ngleichzeitiger Gewährung von Leistungen \nzum Lebensunterhalt nach dem Zweiten \noder Zwölften Buch oder nach § 27a des \nBundesversorgungsgesetzes. ",
+        "text": "2. \nin Angelegenheiten der gesetzlichen \nKrankenversicherung, der sozialen \nPflegeversicherung und der privaten \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch), auch soweit durch \ndiese Angelegenheiten Dritte betroffen \nwerden; dies gilt nicht für Streitigkeiten in \nAngelegenheiten nach § 110 des Fünften \nBuches Sozialgesetzbuch aufgrund einer \nKündigung von Versorgungsverträgen, die \nfür Hochschulkliniken oder \nPlankrankenhäuser (§ 108 Nr. 1 und 2 des \nFünften Buches Sozialgesetzbuch) gelten, ",
         "bold_ranges": []
       },
       "row_index": 963
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(2) Wenn ein Beitrag nach § 137 \naufzubringen ist, ist für weitere Leistungen \nim gleichen Zeitraum oder weitere \nLeistungen an minderjährige Kinder im \ngleichen Haushalt nach diesem Teil kein \nweiterer Beitrag aufzubringen. ",
-        "right": "(2) Wenn ein Beitrag nach § 137 \naufzubringen ist, ist für weitere Leistungen \nim gleichen Zeitraum oder weitere \nLeistungen an minderjährige Kinder im \ngleichen Haushalt nach diesem Teil kein \nweiterer Beitrag aufzubringen. ",
+      "synopsis2024": {
+        "left": "3. \nin Angelegenheiten der gesetzlichen \nUnfallversicherung mit Ausnahme der \nStreitigkeiten aufgrund der Überwachung \nder Maßnahmen zur Prävention durch die \nTräger der gesetzlichen \nUnfallversicherung, ",
+        "right": "3. unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 127,
+        "page": 131,
         "table": 1,
-        "row": 2,
+        "row": 9,
         "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "(2) Wenn ein Beitrag nach § 137 \naufzubringen ist, ist für weitere Leistungen \nim gleichen Zeitraum oder weitere \nLeistungen an minderjährige Kinder im \ngleichen Haushalt nach diesem Teil kein \nweiterer Beitrag aufzubringen. ",
+        "text": "3. \nin Angelegenheiten der gesetzlichen \nUnfallversicherung mit Ausnahme der \nStreitigkeiten aufgrund der Überwachung \nder Maßnahmen zur Prävention durch die \nTräger der gesetzlichen \nUnfallversicherung, ",
         "bold_ranges": []
       },
       "row_index": 964
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 140 ",
-        "right": "§ 140 ",
+      "synopsis2024": {
+        "left": "4. \nin Angelegenheiten der Arbeitsförderung \neinschließlich der übrigen Aufgaben der \nBundesagentur für Arbeit, ",
+        "right": "4. unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 127,
+        "page": 132,
         "table": 1,
-        "row": 3,
+        "row": 2,
         "right_diff_ranges": []
       },
-      "is_section_header": true,
+      "synopsis2026": null,
+      "is_section_header": false,
       "merged_left": {
-        "text": "§ 140 ",
+        "text": "4. \nin Angelegenheiten der Arbeitsförderung \neinschließlich der übrigen Aufgaben der \nBundesagentur für Arbeit, ",
         "bold_ranges": []
       },
       "row_index": 965
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Einsatz des Vermögens ",
-        "right": "Einsatz des Vermögens ",
+      "synopsis2024": {
+        "left": "5. \nin sonstigen Angelegenheiten der \nSozialversicherung, ",
+        "right": "5. unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 127,
+        "page": 132,
         "table": 1,
-        "row": 4,
+        "row": 3,
         "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "Einsatz des Vermögens ",
+        "text": "5. \nin sonstigen Angelegenheiten der \nSozialversicherung, ",
         "bold_ranges": []
       },
       "row_index": 966
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(1) Die antragstellende Person sowie bei \nminderjährigen Personen die im Haushalt \nlebenden Eltern oder ein Elternteil haben \nvor der Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen Mittel \naus ihrem Vermögen aufzubringen. ",
-        "right": "(1) Die antragsstellende Person hat vor \nder Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen \nMittel aus ihrem Vermögen \naufzubringen. ",
+      "synopsis2024": {
+        "left": "6. \nin Angelegenheiten des Sozialen \nEntschädigungsrechts, ",
+        "right": "6. unverändert ",
         "left_bold_ranges": [],
-        "right_bold_ranges": [
-          [
-            0,
-            155
-          ]
-        ],
-        "page": 127,
+        "right_bold_ranges": [],
+        "page": 132,
         "table": 1,
-        "row": 5,
-        "right_diff_ranges": [
-          [
-            14,
-            15,
-            "green"
-          ],
-          [
-            32,
-            35,
-            "green"
-          ]
-        ]
+        "row": 4,
+        "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "(1) Die antragstellende Person sowie bei \nminderjährigen Personen die im Haushalt \nlebenden Eltern oder ein Elternteil haben \nvor der Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen Mittel \naus ihrem Vermögen aufzubringen. ",
+        "text": "6. \nin Angelegenheiten des Sozialen \nEntschädigungsrechts, ",
         "bold_ranges": []
       },
       "row_index": 967
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Absätze 2 und 3 ",
-        "right": "unverändert ",
+      "synopsis2024": {
+        "left": "6a. \nin Angelegenheiten der Sozialhilfe \neinschließlich der Angelegenheiten nach \nTeil 2 des Neunten Buches \nSozialgesetzbuch und des \nAsylbewerberleistungsgesetzes, ",
+        "right": "6a. unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 127,
+        "page": 132,
         "table": 1,
-        "row": 6,
+        "row": 5,
         "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "Absätze 2 und 3 ",
+        "text": "6a. \nin Angelegenheiten der Sozialhilfe \neinschließlich der Angelegenheiten nach \nTeil 2 des Neunten Buches \nSozialgesetzbuch und des \nAsylbewerberleistungsgesetzes, ",
         "bold_ranges": []
       },
       "row_index": 968
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "§ 142 ",
-        "right": "§ 142 ",
+      "synopsis2024": {
+        "left": "",
+        "right": "6b. \nIn Angelegenheiten der Kinder- und \nJugendhilfe, soweit sie Leistungen der \nEingliederungshilfe betreffen,  ",
         "left_bold_ranges": [],
-        "right_bold_ranges": [],
-        "page": 127,
+        "right_bold_ranges": [
+          [
+            0,
+            112
+          ]
+        ],
+        "page": 132,
         "table": 1,
-        "row": 7,
-        "right_diff_ranges": []
+        "row": 6,
+        "right_diff_ranges": [
+          [
+            0,
+            113,
+            "red"
+          ]
+        ]
       },
-      "is_section_header": true,
+      "synopsis2026": null,
+      "is_section_header": false,
       "merged_left": {
-        "text": "§ 142 ",
+        "text": "",
         "bold_ranges": []
       },
       "row_index": 969
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "Sonderregelungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
-        "right": "Sonderregelungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
-        "left_bold_ranges": [],
+      "synopsis2024": {
+        "left": "7. \nbei der Feststellung von Behinderungen \nund ihrem Grad sowie weiterer \ngesundheitlicher Merkmale, ferner der \nAusstellung, Verlängerung, Berichtigung \nund Einziehung von Ausweisen nach § 152 \ndes Neunten Buches Sozialgesetzbuch, ",
+        "right": "7. unverändert ",
+        "left_bold_ranges": [
+          [
+            232,
+            233
+          ]
+        ],
         "right_bold_ranges": [],
-        "page": 127,
+        "page": 132,
         "table": 1,
-        "row": 8,
+        "row": 7,
         "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "Sonderregelungen für minderjährige \nLeistungsberechtigte und in Sonderfällen ",
-        "bold_ranges": []
+        "text": "7. \nbei der Feststellung von Behinderungen \nund ihrem Grad sowie weiterer \ngesundheitlicher Merkmale, ferner der \nAusstellung, Verlängerung, Berichtigung \nund Einziehung von Ausweisen nach § 152 \ndes Neunten Buches Sozialgesetzbuch, ",
+        "bold_ranges": [
+          [
+            232,
+            233
+          ]
+        ]
       },
       "row_index": 970
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(1) Minderjährigen Leistungsberechtigten \nund ihren Eltern oder einem Elternteil ist \nbei Leistungen im Sinne des § 138 Absatz \n1 Nummer 1, 2, 4, 5 und 7 die Aufbringung \nder Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für den \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten, soweit \nLeistungen über Tag und Nacht oder über \nTag erbracht werden. ",
-        "right": "(1) entfällt ",
+      "synopsis2024": {
+        "left": "8. \ndie aufgrund des \nAufwendungsausgleichsgesetzes \nentstehen, ",
+        "right": "8. unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 127,
+        "page": 132,
         "table": 1,
-        "row": 9,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
+        "row": 8,
+        "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "(1) Minderjährigen Leistungsberechtigten \nund ihren Eltern oder einem Elternteil ist \nbei Leistungen im Sinne des § 138 Absatz \n1 Nummer 1, 2, 4, 5 und 7 die Aufbringung \nder Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für den \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten, soweit \nLeistungen über Tag und Nacht oder über \nTag erbracht werden. ",
+        "text": "8. \ndie aufgrund des \nAufwendungsausgleichsgesetzes \nentstehen, ",
         "bold_ranges": []
       },
       "row_index": 971
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(2) Sind Leistungen von einem oder \nmehreren Anbietern über Tag und Nacht \noder über Tag oder für ärztliche oder \närztlich verordnete Maßnahmen \nerforderlich, sind die Leistungen, die der \nVereinbarung nach § 134 Absatz 3 \nzugrunde liegen, durch den Träger der \nEingliederungshilfe auch dann in vollem \nUmfang zu erbringen, wenn den \nminderjährigen Leistungsberechtigten und \nihren Eltern oder einem Elternteil die \nAufbringung der Mittel nach Absatz 1 zu \neinem Teil zuzumuten ist. In Höhe dieses \nTeils haben sie zu den Kosten der \nerbrachten Leistungen beizutragen; \nmehrere Verpflichtete haften als \nGesamtschuldner. ",
-        "right": "(2) entfällt ",
+      "synopsis2024": {
+        "left": "9. \n(weggefallen) ",
+        "right": "9. unverändert ",
         "left_bold_ranges": [],
         "right_bold_ranges": [],
-        "page": 128,
+        "page": 132,
         "table": 1,
-        "row": 2,
-        "right_diff_ranges": [
-          [
-            4,
-            12,
-            "green"
-          ]
-        ]
+        "row": 9,
+        "right_diff_ranges": []
       },
+      "synopsis2026": null,
       "is_section_header": false,
       "merged_left": {
-        "text": "(2) Sind Leistungen von einem oder \nmehreren Anbietern über Tag und Nacht \noder über Tag oder für ärztliche oder \närztlich verordnete Maßnahmen \nerforderlich, sind die Leistungen, die der \nVereinbarung nach § 134 Absatz 3 \nzugrunde liegen, durch den Träger der \nEingliederungshilfe auch dann in vollem \nUmfang zu erbringen, wenn den \nminderjährigen Leistungsberechtigten und \nihren Eltern oder einem Elternteil die \nAufbringung der Mittel nach Absatz 1 zu \neinem Teil zuzumuten ist. In Höhe dieses \nTeils haben sie zu den Kosten der \nerbrachten Leistungen beizutragen; \nmehrere Verpflichtete haften als \nGesamtschuldner. ",
+        "text": "9. \n(weggefallen) ",
         "bold_ranges": []
       },
       "row_index": 972
     },
     {
-      "synopsis2024": null,
-      "synopsis2026": {
-        "left": "(3) Die Absätze 1 und 2 gelten \nentsprechend für volljährige \nLeistungsberechtigte, wenn diese \nLeistungen erhalten, denen \nVereinbarungen nach § 134 Absatz 4 \nzugrunde liegen. In diesem Fall ist den \nvolljährigen Leistungsberechtigten die \nAufbringung der Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für ihren \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten.  Erstes Buch Sozialgesetzbuch ",
-        "right": "(3) entfällt  Erstes Buch Sozialgesetzbuch ",
+      "synopsis2024": {
+        "left": "10. \nfür die durch Gesetz der Rechtsweg vor \ndiesen Gerichten eröffnet wird. ",
+        "right": "10. unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 132,
+        "table": 1,
+        "row": 10,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": null,
+      "is_section_header": false,
+      "merged_left": {
+        "text": "10. \nfür die durch Gesetz der Rechtsweg vor \ndiesen Gerichten eröffnet wird. ",
+        "bold_ranges": []
+      },
+      "row_index": 973
+    },
+    {
+      "synopsis2024": {
+        "left": "(2) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden auch über privatrechtliche \nStreitigkeiten in Angelegenheiten der \nZulassung von Trägern und Maßnahmen \ndurch fachkundige Stellen nach dem \nFünften Kapitel des Dritten Buches \nSozialgesetzbuch und in Angelegenheiten \nder gesetzlichen Krankenversicherung, \nauch soweit durch diese Angelegenheiten \nDritte betroffen werden. Satz 1 gilt für die \nsoziale Pflegeversicherung und die private \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch) entsprechend. ",
+        "right": "(2) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 133,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": null,
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(2) Die Gerichte der Sozialgerichtsbarkeit \nentscheiden auch über privatrechtliche \nStreitigkeiten in Angelegenheiten der \nZulassung von Trägern und Maßnahmen \ndurch fachkundige Stellen nach dem \nFünften Kapitel des Dritten Buches \nSozialgesetzbuch und in Angelegenheiten \nder gesetzlichen Krankenversicherung, \nauch soweit durch diese Angelegenheiten \nDritte betroffen werden. Satz 1 gilt für die \nsoziale Pflegeversicherung und die private \nPflegeversicherung (Elftes Buch \nSozialgesetzbuch) entsprechend. ",
+        "bold_ranges": []
+      },
+      "row_index": 974
+    },
+    {
+      "synopsis2024": {
+        "left": "(3) Von der Zuständigkeit der Gerichte der \nSozialgerichtsbarkeit nach den Absätzen 1 \nund 2 ausgenommen sind Streitigkeiten in \nVerfahren nach dem Gesetz gegen \nWettbewerbsbeschränkungen, die \nRechtsbeziehungen nach § 69 des Fünften \nBuches Sozialgesetzbuch betreffen ",
+        "right": "(3) unverändert \n \n \n \n  ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
+        "page": 133,
+        "table": 1,
+        "row": 3,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": null,
+      "is_section_header": false,
+      "merged_left": {
+        "text": "(3) Von der Zuständigkeit der Gerichte der \nSozialgerichtsbarkeit nach den Absätzen 1 \nund 2 ausgenommen sind Streitigkeiten in \nVerfahren nach dem Gesetz gegen \nWettbewerbsbeschränkungen, die \nRechtsbeziehungen nach § 69 des Fünften \nBuches Sozialgesetzbuch betreffen ",
+        "bold_ranges": []
+      },
+      "row_index": 975
+    },
+    {
+      "synopsis2024": {
+        "left": "Erstes Buch Sozialgesetzbuch ",
+        "right": "Erstes Buch Sozialgesetzbuch ",
         "left_bold_ranges": [
           [
-            391,
-            420
+            0,
+            29
           ]
         ],
         "right_bold_ranges": [
           [
-            14,
-            43
+            0,
+            29
           ]
         ],
-        "page": 128,
+        "page": 134,
         "table": 1,
-        "row": 3,
-        "right_diff_ranges": [
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": {
+        "left": "Erstes Buch Sozialgesetzbuch ",
+        "right": "Erstes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
           [
-            4,
-            12,
-            "green"
+            0,
+            29
           ]
-        ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            29
+          ]
+        ],
+        "page": 129,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
       },
       "is_section_header": false,
+      "starts_new_table": true,
       "merged_left": {
-        "text": "(3) Die Absätze 1 und 2 gelten \nentsprechend für volljährige \nLeistungsberechtigte, wenn diese \nLeistungen erhalten, denen \nVereinbarungen nach § 134 Absatz 4 \nzugrunde liegen. In diesem Fall ist den \nvolljährigen Leistungsberechtigten die \nAufbringung der Mittel für die Kosten des \nLebensunterhalts nur in Höhe der für ihren \nhäuslichen Lebensunterhalt ersparten \nAufwendungen zuzumuten.  Erstes Buch Sozialgesetzbuch ",
+        "text": "Erstes Buch Sozialgesetzbuch ",
         "bold_ranges": [
           [
-            391,
-            420
+            0,
+            29
           ]
         ]
       },
-      "row_index": 973
+      "row_index": 976
     },
     {
       "synopsis2024": {
@@ -31534,7 +31534,7 @@
           ]
         ]
       },
-      "row_index": 974
+      "row_index": 977
     },
     {
       "synopsis2024": {
@@ -31562,7 +31562,7 @@
         "text": "§ 27 ",
         "bold_ranges": []
       },
-      "row_index": 975
+      "row_index": 978
     },
     {
       "synopsis2024": {
@@ -31590,7 +31590,7 @@
         "text": "Leistungen der Kinder- und Jugendhilfe ",
         "bold_ranges": []
       },
-      "row_index": 976
+      "row_index": 979
     },
     {
       "synopsis2024": {
@@ -31628,7 +31628,7 @@
         "text": "(1) Nach dem Recht der Kinder- und \nJugendhilfe können in Anspruch \ngenommen werden: ",
         "bold_ranges": []
       },
-      "row_index": 977
+      "row_index": 980
     },
     {
       "synopsis2024": {
@@ -31656,7 +31656,7 @@
         "text": "1.  \nAngebote der Jugendarbeit, der \nJugendsozialarbeit und des erzieherischen \nJugendschutzes,  ",
         "bold_ranges": []
       },
-      "row_index": 978
+      "row_index": 981
     },
     {
       "synopsis2024": {
@@ -31684,7 +31684,7 @@
         "text": "2.  \nAngebote zur Förderung der Erziehung in \nder Familie,  ",
         "bold_ranges": []
       },
-      "row_index": 979
+      "row_index": 982
     },
     {
       "synopsis2024": {
@@ -31712,7 +31712,7 @@
         "text": "3. Angebote zur Förderung von Kindern in \nTageseinrichtungen und in Tagespflege,  ",
         "bold_ranges": []
       },
-      "row_index": 980
+      "row_index": 983
     },
     {
       "synopsis2024": {
@@ -31797,44 +31797,24 @@
         "text": "4. Hilfe zur Erziehung, Eingliederungshilfe \nfür seelisch behinderte Kinder und \nJugendliche sowie Hilfe für junge \nVolljährige.  ",
         "bold_ranges": []
       },
-      "row_index": 981
+      "row_index": 984
     },
     {
       "synopsis2024": {
-        "left": "(2) Zuständig sind die Kreise und die \nkreisfreien Städte, nach Maßgabe des \nLandesrechts auch kreisangehörige \nGemeinden; sie arbeiten mit der freien \nJugendhilfe zusammen.  Zweites Buch Sozialgesetzbuch  ",
-        "right": "(2) unverändert  Zweites Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            175,
-            206
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            47
-          ]
-        ],
+        "left": "(2) Zuständig sind die Kreise und die \nkreisfreien Städte, nach Maßgabe des \nLandesrechts auch kreisangehörige \nGemeinden; sie arbeiten mit der freien \nJugendhilfe zusammen. ",
+        "right": "(2) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 134,
         "table": 1,
         "row": 11,
         "right_diff_ranges": []
       },
       "synopsis2026": {
-        "left": "(2) Zuständig sind die Kreise und die \nkreisfreien Städte, nach Maßgabe des \nLandesrechts auch kreisangehörige \nGemeinden; sie arbeiten mit der freien \nJugendhilfe zusammen.  Zweites Buch Sozialgesetzbuch ",
-        "right": "(2) unverändert  Zweites Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            175,
-            205
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            47
-          ]
-        ],
+        "left": "(2) Zuständig sind die Kreise und die \nkreisfreien Städte, nach Maßgabe des \nLandesrechts auch kreisangehörige \nGemeinden; sie arbeiten mit der freien \nJugendhilfe zusammen. ",
+        "right": "(2) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 129,
         "table": 1,
         "row": 11,
@@ -31842,15 +31822,64 @@
       },
       "is_section_header": false,
       "merged_left": {
-        "text": "(2) Zuständig sind die Kreise und die \nkreisfreien Städte, nach Maßgabe des \nLandesrechts auch kreisangehörige \nGemeinden; sie arbeiten mit der freien \nJugendhilfe zusammen.  Zweites Buch Sozialgesetzbuch  ",
+        "text": "(2) Zuständig sind die Kreise und die \nkreisfreien Städte, nach Maßgabe des \nLandesrechts auch kreisangehörige \nGemeinden; sie arbeiten mit der freien \nJugendhilfe zusammen. ",
+        "bold_ranges": []
+      },
+      "row_index": 985
+    },
+    {
+      "synopsis2024": {
+        "left": "Zweites Buch Sozialgesetzbuch  ",
+        "right": "Zweites Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            31
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "page": 135,
+        "table": 1,
+        "row": 1,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": {
+        "left": "Zweites Buch Sozialgesetzbuch ",
+        "right": "Zweites Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "page": 130,
+        "table": 1,
+        "row": 1,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "starts_new_table": true,
+      "merged_left": {
+        "text": "Zweites Buch Sozialgesetzbuch  ",
         "bold_ranges": [
           [
-            175,
-            206
+            0,
+            31
           ]
         ]
       },
-      "row_index": 982
+      "row_index": 986
     },
     {
       "synopsis2024": {
@@ -31959,7 +31988,7 @@
           ]
         ]
       },
-      "row_index": 983
+      "row_index": 987
     },
     {
       "synopsis2024": {
@@ -31987,7 +32016,7 @@
         "text": "§ 11a ",
         "bold_ranges": []
       },
-      "row_index": 984
+      "row_index": 988
     },
     {
       "synopsis2024": {
@@ -32015,7 +32044,7 @@
         "text": "Nicht zu berücksichtigendes Einkommen ",
         "bold_ranges": []
       },
-      "row_index": 985
+      "row_index": 989
     },
     {
       "synopsis2024": {
@@ -32043,7 +32072,7 @@
         "text": "(1) Nicht als Einkommen zu \nberücksichtigen sind ",
         "bold_ranges": []
       },
-      "row_index": 986
+      "row_index": 990
     },
     {
       "synopsis2024": {
@@ -32071,7 +32100,7 @@
         "text": "1.  \nLeistungen nach diesem Buch, ",
         "bold_ranges": []
       },
-      "row_index": 987
+      "row_index": 991
     },
     {
       "synopsis2024": {
@@ -32099,7 +32128,7 @@
         "text": "2.  \n(weggefallen) ",
         "bold_ranges": []
       },
-      "row_index": 988
+      "row_index": 992
     },
     {
       "synopsis2024": {
@@ -32127,7 +32156,7 @@
         "text": "3.  \ndie Renten oder Beihilfen, die nach dem \nBundesentschädigungsgesetz für Schaden \nan Leben sowie an Körper oder \nGesundheit erbracht werden, bis zur Höhe \nder vergleichbaren \nEntschädigungszahlungen nach Kapitel 9 \ndes Vierzehnten Buches, ",
         "bold_ranges": []
       },
-      "row_index": 989
+      "row_index": 993
     },
     {
       "synopsis2024": {
@@ -32155,7 +32184,7 @@
         "text": "4.  \nAufwandspauschalen nach § 1878 des \nBürgerlichen Gesetzbuchs kalenderjährlich \nbis zu dem in § 3 Nummer 26 Satz 1 des \nEinkommensteuergesetzes genannten \nBetrag, ",
         "bold_ranges": []
       },
-      "row_index": 990
+      "row_index": 994
     },
     {
       "synopsis2024": {
@@ -32183,7 +32212,7 @@
         "text": "5. \nAufwandsentschädigungen oder \nEinnahmen aus nebenberuflichen \nTätigkeiten, die nach § 3 Nummer 12, \nNummer 26 oder Nummer 26a des \nEinkommensteuergesetzes steuerfrei sind, \nsoweit diese Einnahmen einen Betrag in \nHöhe von 3 000 Euro im Kalenderjahr nicht \nüberschreiten, ",
         "bold_ranges": []
       },
-      "row_index": 991
+      "row_index": 995
     },
     {
       "synopsis2024": {
@@ -32211,7 +32240,7 @@
         "text": "6.  \nMutterschaftsgeld nach § 19 des \nMutterschutzgesetzes ",
         "bold_ranges": []
       },
-      "row_index": 992
+      "row_index": 996
     },
     {
       "synopsis2024": {
@@ -32239,7 +32268,7 @@
         "text": "7.  \nEinmalige Einnahmen aus Erbschaften, \nVermächtnissen und \nPflichtteilszuwendungen. ",
         "bold_ranges": []
       },
-      "row_index": 993
+      "row_index": 997
     },
     {
       "synopsis2024": {
@@ -32267,7 +32296,7 @@
         "text": "(2) Entschädigungen, die wegen eines \nSchadens, der kein Vermögensschaden ist, \nnach § 253 Absatz 2 des Bürgerlichen \nGesetzbuchs geleistet werden, sind nicht \nals Einkommen zu berücksichtigen. ",
         "bold_ranges": []
       },
-      "row_index": 994
+      "row_index": 998
     },
     {
       "synopsis2024": {
@@ -32295,7 +32324,7 @@
         "text": "(3) Leistungen, die aufgrund öffentlich-\nrechtlicher Vorschriften zu einem \nausdrücklich genannten Zweck erbracht \nwerden, sind nur so weit als Einkommen zu \nberücksichtigen, als die Leistungen nach \ndiesem Buch im Einzelfall demselben \nZweck dienen. Abweichend von Satz 1 sind \nals Einkommen zu berücksichtigen ",
         "bold_ranges": []
       },
-      "row_index": 995
+      "row_index": 999
     },
     {
       "synopsis2024": {
@@ -32333,7 +32362,7 @@
         "text": "1.  \ndie Leistungen nach § 39 des Achten \nBuches, die für den erzieherischen Einsatz \nerbracht werden, ",
         "bold_ranges": []
       },
-      "row_index": 996
+      "row_index": 1000
     },
     {
       "synopsis2024": {
@@ -32361,7 +32390,7 @@
         "text": "a) \nfür das dritte Pflegekind zu 75 Prozent, ",
         "bold_ranges": []
       },
-      "row_index": 997
+      "row_index": 1001
     },
     {
       "synopsis2024": {
@@ -32389,7 +32418,7 @@
         "text": "b) \nfür das vierte und jedes weitere Pflegekind \nvollständig, ",
         "bold_ranges": []
       },
-      "row_index": 998
+      "row_index": 1002
     },
     {
       "synopsis2024": {
@@ -32417,7 +32446,7 @@
         "text": "2.  \ndie Leistungen nach § 23 des Achten \nBuches, ",
         "bold_ranges": []
       },
-      "row_index": 999
+      "row_index": 1003
     },
     {
       "synopsis2024": {
@@ -32445,7 +32474,7 @@
         "text": "3.  \ndie Leistungen der Ausbildungsförderung \nnach dem \nBundesausbildungsförderungsgesetz sowie \nvergleichbare Leistungen der \nBegabtenförderungswerke; § 14b Absatz 2 \nSatz 1 des \nBundesausbildungsförderungsgesetzes \nbleibt unberührt, ",
         "bold_ranges": []
       },
-      "row_index": 1000
+      "row_index": 1004
     },
     {
       "synopsis2024": {
@@ -32473,7 +32502,7 @@
         "text": "4.  \ndie Berufsausbildungsbeihilfe nach dem \nDritten Buch mit Ausnahme der Bedarfe \nnach § 64 Absatz 3 Satz 1 des Dritten \nBuches sowie ",
         "bold_ranges": []
       },
-      "row_index": 1001
+      "row_index": 1005
     },
     {
       "synopsis2024": {
@@ -32501,7 +32530,7 @@
         "text": "5.  \nReisekosten zur Teilhabe am Arbeitsleben \nnach § 127 Absatz 1 Satz 1 des Dritten \nBuches in Verbindung mit § 73 des \nNeunten Buches. ",
         "bold_ranges": []
       },
-      "row_index": 1002
+      "row_index": 1006
     },
     {
       "synopsis2024": {
@@ -32529,7 +32558,7 @@
         "text": "(4) Zuwendungen der freien \nWohlfahrtspflege sind nicht als Einkommen \nzu berücksichtigen, soweit sie die Lage der \nEmpfängerinnen und Empfänger nicht so \ngünstig beeinflussen, dass daneben \nLeistungen nach diesem Buch nicht \ngerechtfertigt wären. ",
         "bold_ranges": []
       },
-      "row_index": 1003
+      "row_index": 1007
     },
     {
       "synopsis2024": {
@@ -32557,7 +32586,7 @@
         "text": "(5) Zuwendungen, die ein anderer erbringt, \nohne hierzu eine rechtliche oder sittliche \nPflicht zu haben, sind nicht als Einkommen \nzu berücksichtigen, soweit ",
         "bold_ranges": []
       },
-      "row_index": 1004
+      "row_index": 1008
     },
     {
       "synopsis2024": {
@@ -32585,7 +32614,7 @@
         "text": "1.  \nihre Berücksichtigung für die \nLeistungsberechtigten grob unbillig wäre \noder ",
         "bold_ranges": []
       },
-      "row_index": 1005
+      "row_index": 1009
     },
     {
       "synopsis2024": {
@@ -32613,7 +32642,7 @@
         "text": "2.  \nsie die Lage der Leistungsberechtigten \nnicht so günstig beeinflussen, dass \ndaneben Leistungen nach diesem Buch \nnicht gerechtfertigt wären. ",
         "bold_ranges": []
       },
-      "row_index": 1006
+      "row_index": 1010
     },
     {
       "synopsis2024": {
@@ -32641,44 +32670,24 @@
         "text": "(6) Überbrückungsgeld nach § 51 des \nStrafvollzugsgesetzes oder vergleichbare \nLeistungen nach landesrechtlichen \nRegelungen sind nicht als Einkommen zu \nberücksichtigen. ",
         "bold_ranges": []
       },
-      "row_index": 1007
+      "row_index": 1011
     },
     {
       "synopsis2024": {
-        "left": "(7) Nicht als Einkommen zu \nberücksichtigen sind Einnahmen von \nSchülerinnen und Schülern allgemein- oder \nberufsbildender Schulen, die das 25. \nLebensjahr noch nicht vollendet haben, aus \nErwerbstätigkeiten, die in den Schulferien \nausgeübt werden. Satz 1 gilt nicht für eine \nAusbildungsvergütung, auf die eine \nSchülerin oder ein Schüler einen Anspruch \nhat.  Fünftes Buch Sozialgesetzbuch ",
-        "right": "(7) unverändert  Fünftes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            363,
-            393
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            47
-          ]
-        ],
+        "left": "(7) Nicht als Einkommen zu \nberücksichtigen sind Einnahmen von \nSchülerinnen und Schülern allgemein- oder \nberufsbildender Schulen, die das 25. \nLebensjahr noch nicht vollendet haben, aus \nErwerbstätigkeiten, die in den Schulferien \nausgeübt werden. Satz 1 gilt nicht für eine \nAusbildungsvergütung, auf die eine \nSchülerin oder ein Schüler einen Anspruch \nhat. ",
+        "right": "(7) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 137,
         "table": 1,
         "row": 8,
         "right_diff_ranges": []
       },
       "synopsis2026": {
-        "left": "(7) Nicht als Einkommen zu \nberücksichtigen sind Einnahmen von \nSchülerinnen und Schülern allgemein- oder \nberufsbildender Schulen, die das 25. \nLebensjahr noch nicht vollendet haben, aus \nErwerbstätigkeiten, die in den Schulferien \nausgeübt werden. Satz 1 gilt nicht für eine \nAusbildungsvergütung, auf die eine \nSchülerin oder ein Schüler einen Anspruch \nhat.  Fünftes Buch Sozialgesetzbuch ",
-        "right": "(7) unverändert  Fünftes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            363,
-            393
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            47
-          ]
-        ],
+        "left": "(7) Nicht als Einkommen zu \nberücksichtigen sind Einnahmen von \nSchülerinnen und Schülern allgemein- oder \nberufsbildender Schulen, die das 25. \nLebensjahr noch nicht vollendet haben, aus \nErwerbstätigkeiten, die in den Schulferien \nausgeübt werden. Satz 1 gilt nicht für eine \nAusbildungsvergütung, auf die eine \nSchülerin oder ein Schüler einen Anspruch \nhat. ",
+        "right": "(7) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 132,
         "table": 1,
         "row": 8,
@@ -32686,15 +32695,64 @@
       },
       "is_section_header": false,
       "merged_left": {
-        "text": "(7) Nicht als Einkommen zu \nberücksichtigen sind Einnahmen von \nSchülerinnen und Schülern allgemein- oder \nberufsbildender Schulen, die das 25. \nLebensjahr noch nicht vollendet haben, aus \nErwerbstätigkeiten, die in den Schulferien \nausgeübt werden. Satz 1 gilt nicht für eine \nAusbildungsvergütung, auf die eine \nSchülerin oder ein Schüler einen Anspruch \nhat.  Fünftes Buch Sozialgesetzbuch ",
+        "text": "(7) Nicht als Einkommen zu \nberücksichtigen sind Einnahmen von \nSchülerinnen und Schülern allgemein- oder \nberufsbildender Schulen, die das 25. \nLebensjahr noch nicht vollendet haben, aus \nErwerbstätigkeiten, die in den Schulferien \nausgeübt werden. Satz 1 gilt nicht für eine \nAusbildungsvergütung, auf die eine \nSchülerin oder ein Schüler einen Anspruch \nhat. ",
+        "bold_ranges": []
+      },
+      "row_index": 1012
+    },
+    {
+      "synopsis2024": {
+        "left": "Fünftes Buch Sozialgesetzbuch ",
+        "right": "Fünftes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "page": 138,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": {
+        "left": "Fünftes Buch Sozialgesetzbuch ",
+        "right": "Fünftes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            30
+          ]
+        ],
+        "page": 133,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "starts_new_table": true,
+      "merged_left": {
+        "text": "Fünftes Buch Sozialgesetzbuch ",
         "bold_ranges": [
           [
-            363,
-            393
+            0,
+            30
           ]
         ]
       },
-      "row_index": 1008
+      "row_index": 1013
     },
     {
       "synopsis2024": {
@@ -32793,7 +32851,7 @@
           ]
         ]
       },
-      "row_index": 1009
+      "row_index": 1014
     },
     {
       "synopsis2024": {
@@ -32821,7 +32879,7 @@
         "text": "§ 44b ",
         "bold_ranges": []
       },
-      "row_index": 1010
+      "row_index": 1015
     },
     {
       "synopsis2024": {
@@ -32849,7 +32907,7 @@
         "text": "Krankengeld für eine bei stationärer \nBehandlung mitaufgenommene \nBegleitperson aus dem engsten \npersönlichen Umfeld ",
         "bold_ranges": []
       },
-      "row_index": 1011
+      "row_index": 1016
     },
     {
       "synopsis2024": {
@@ -32877,7 +32935,7 @@
         "text": "(1) Ab dem 1. November 2022 haben \nVersicherte Anspruch auf Krankengeld, \nwenn sie ",
         "bold_ranges": []
       },
-      "row_index": 1012
+      "row_index": 1017
     },
     {
       "synopsis2024": {
@@ -32905,7 +32963,7 @@
         "text": "1.  \nzur Begleitung eines Versicherten bei einer \nstationären Krankenhausbehandlung nach \n§ 39 mitaufgenommen werden, ",
         "bold_ranges": []
       },
-      "row_index": 1013
+      "row_index": 1018
     },
     {
       "synopsis2024": {
@@ -32933,7 +32991,7 @@
         "text": "a)  \nder die Begleitung aus medizinischen \nGründen benötigt, ",
         "bold_ranges": []
       },
-      "row_index": 1014
+      "row_index": 1019
     },
     {
       "synopsis2024": {
@@ -32961,7 +33019,7 @@
         "text": "b) \nbei dem die Voraussetzungen des § 2 \nAbsatz 1 des Neunten Buches vorliegen, ",
         "bold_ranges": []
       },
-      "row_index": 1015
+      "row_index": 1020
     },
     {
       "synopsis2024": {
@@ -32999,7 +33057,7 @@
         "text": "c) \nder Leistungen nach Teil 2 des Neunten \nBuches, § 35a des Achten Buches oder \nLeistungen nach dem Sechsten Kapitel des \nVierzehnten Buches erhält und ",
         "bold_ranges": []
       },
-      "row_index": 1016
+      "row_index": 1021
     },
     {
       "synopsis2024": {
@@ -33027,7 +33085,7 @@
         "text": "d) \nder keine Leistungen nach § 113 Absatz 6 \ndes Neunten Buches in Anspruch nimmt, ",
         "bold_ranges": []
       },
-      "row_index": 1017
+      "row_index": 1022
     },
     {
       "synopsis2024": {
@@ -33055,7 +33113,7 @@
         "text": "2.  \nim Verhältnis zu dem begleiteten \nVersicherten ",
         "bold_ranges": []
       },
-      "row_index": 1018
+      "row_index": 1023
     },
     {
       "synopsis2024": {
@@ -33083,7 +33141,7 @@
         "text": "a) \nein naher Angehöriger im Sinne von § 7 \nAbsatz 3 des Pflegezeitgesetzes sind oder ",
         "bold_ranges": []
       },
-      "row_index": 1019
+      "row_index": 1024
     },
     {
       "synopsis2024": {
@@ -33111,7 +33169,7 @@
         "text": "b) \neine Person aus dem engsten persönlichen \nUmfeld sind, ",
         "bold_ranges": []
       },
-      "row_index": 1020
+      "row_index": 1025
     },
     {
       "synopsis2024": {
@@ -33139,7 +33197,7 @@
         "text": "3. gegenüber dem begleiteten Versicherten \nkeine Leistungen der Eingliederungshilfe \ngegen Entgelt nach Teil 2 des Neunten \nBuches oder § 35a des Achten Buches und \nkeine Leistungen nach dem Sechsten \nKapitel des Vierzehnten Buches erbringen \nund ",
         "bold_ranges": []
       },
-      "row_index": 1021
+      "row_index": 1026
     },
     {
       "synopsis2024": {
@@ -33167,7 +33225,7 @@
         "text": "4. ihnen durch die Begleitung ein \nVerdienstausfall entsteht. ",
         "bold_ranges": []
       },
-      "row_index": 1022
+      "row_index": 1027
     },
     {
       "synopsis2024": {
@@ -33195,7 +33253,7 @@
         "text": "Der Anspruch besteht für die Dauer der \nMitaufnahme. Der Mitaufnahme steht die \nganztägige Begleitung gleich. ",
         "bold_ranges": []
       },
-      "row_index": 1023
+      "row_index": 1028
     },
     {
       "synopsis2024": {
@@ -33223,7 +33281,7 @@
         "text": "(2) Der Gemeinsame Bundesausschuss \nbestimmt in einer Richtlinie nach § 92 bis \nzum 1. August 2022 Kriterien zur \nAbgrenzung des Personenkreises, der die \nBegleitung aus medizinischen Gründen \nbenötigt. Vor der Entscheidung ist den für \ndie Wahrnehmung der Interessen von \nMenschen mit Behinderungen \nmaßgeblichen Organisationen, der \nBundesarbeitsgemeinschaft der \nüberörtlichen Träger der Sozialhilfe und der \nEingliederungshilfe sowie der \nBundesarbeitsgemeinschaft der \nLandesjugendämter Gelegenheit zur \nStellungnahme zu geben. Die \nStellungnahmen sind in die Entscheidung \neinzubeziehen. ",
         "bold_ranges": []
       },
-      "row_index": 1024
+      "row_index": 1029
     },
     {
       "synopsis2024": {
@@ -33251,44 +33309,24 @@
         "text": "(3) Der Anspruch auf Krankengeld bei \nErkrankung des Kindes nach § 45 Absatz 1 \nbleibt unberührt. ",
         "bold_ranges": []
       },
-      "row_index": 1025
+      "row_index": 1030
     },
     {
       "synopsis2024": {
-        "left": "(4) § 45 Absatz 3 gilt entsprechend. Den \nAnspruch auf unbezahlte Freistellung von \nder Arbeitsleistung haben auch \nArbeitnehmer, die nicht Versicherte mit \nAnspruch auf Krankengeld nach Absatz 1 \nsind.  Vierzehntes Buch Sozialgesetzbuch  ",
-        "right": "(4) unverändert  Vierzehntes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            204,
-            239
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            51
-          ]
-        ],
+        "left": "(4) § 45 Absatz 3 gilt entsprechend. Den \nAnspruch auf unbezahlte Freistellung von \nder Arbeitsleistung haben auch \nArbeitnehmer, die nicht Versicherte mit \nAnspruch auf Krankengeld nach Absatz 1 \nsind. ",
+        "right": "(4) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 140,
         "table": 1,
         "row": 2,
         "right_diff_ranges": []
       },
       "synopsis2026": {
-        "left": "(4) § 45 Absatz 3 gilt entsprechend. Den \nAnspruch auf unbezahlte Freistellung von \nder Arbeitsleistung haben auch \nArbeitnehmer, die nicht Versicherte mit \nAnspruch auf Krankengeld nach Absatz 1 \nsind.  Vierzehntes Buch Sozialgesetzbuch  ",
-        "right": "(4) unverändert  Vierzehntes Buch Sozialgesetzbuch ",
-        "left_bold_ranges": [
-          [
-            204,
-            239
-          ]
-        ],
-        "right_bold_ranges": [
-          [
-            17,
-            51
-          ]
-        ],
+        "left": "(4) § 45 Absatz 3 gilt entsprechend. Den \nAnspruch auf unbezahlte Freistellung von \nder Arbeitsleistung haben auch \nArbeitnehmer, die nicht Versicherte mit \nAnspruch auf Krankengeld nach Absatz 1 \nsind. ",
+        "right": "(4) unverändert ",
+        "left_bold_ranges": [],
+        "right_bold_ranges": [],
         "page": 135,
         "table": 1,
         "row": 2,
@@ -33296,15 +33334,64 @@
       },
       "is_section_header": false,
       "merged_left": {
-        "text": "(4) § 45 Absatz 3 gilt entsprechend. Den \nAnspruch auf unbezahlte Freistellung von \nder Arbeitsleistung haben auch \nArbeitnehmer, die nicht Versicherte mit \nAnspruch auf Krankengeld nach Absatz 1 \nsind.  Vierzehntes Buch Sozialgesetzbuch  ",
+        "text": "(4) § 45 Absatz 3 gilt entsprechend. Den \nAnspruch auf unbezahlte Freistellung von \nder Arbeitsleistung haben auch \nArbeitnehmer, die nicht Versicherte mit \nAnspruch auf Krankengeld nach Absatz 1 \nsind. ",
+        "bold_ranges": []
+      },
+      "row_index": 1031
+    },
+    {
+      "synopsis2024": {
+        "left": "Vierzehntes Buch Sozialgesetzbuch  ",
+        "right": "Vierzehntes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            35
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            34
+          ]
+        ],
+        "page": 141,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "synopsis2026": {
+        "left": "Vierzehntes Buch Sozialgesetzbuch  ",
+        "right": "Vierzehntes Buch Sozialgesetzbuch ",
+        "left_bold_ranges": [
+          [
+            0,
+            35
+          ]
+        ],
+        "right_bold_ranges": [
+          [
+            0,
+            34
+          ]
+        ],
+        "page": 136,
+        "table": 1,
+        "row": 2,
+        "right_diff_ranges": []
+      },
+      "is_section_header": false,
+      "starts_new_table": true,
+      "merged_left": {
+        "text": "Vierzehntes Buch Sozialgesetzbuch  ",
         "bold_ranges": [
           [
-            204,
-            239
+            0,
+            35
           ]
         ]
       },
-      "row_index": 1026
+      "row_index": 1032
     },
     {
       "synopsis2024": {
@@ -33418,7 +33505,7 @@
           ]
         ]
       },
-      "row_index": 1027
+      "row_index": 1033
     },
     {
       "synopsis2024": null,
@@ -33437,7 +33524,7 @@
         "text": "§ 65 ",
         "bold_ranges": []
       },
-      "row_index": 1028
+      "row_index": 1034
     },
     {
       "synopsis2024": null,
@@ -33456,7 +33543,7 @@
         "text": "Leistungen zur Teilhabe an Bildung ",
         "bold_ranges": []
       },
-      "row_index": 1029
+      "row_index": 1035
     },
     {
       "synopsis2024": null,
@@ -33486,7 +33573,7 @@
         "text": "Geschädigte, die auf Grund der \nSchädigungsfolgen zum \nleistungsberechtigten Personenkreis im \nSinne von § 99 des Neunten Buches \ngehören, erhalten Leistungen zur Teilhabe \nan Bildung entsprechend Teil 2 Kapitel 5 \ndes Neunten Buches. ",
         "bold_ranges": []
       },
-      "row_index": 1030
+      "row_index": 1036
     },
     {
       "synopsis2024": null,
@@ -33505,7 +33592,7 @@
         "text": "§ 66 ",
         "bold_ranges": []
       },
-      "row_index": 1031
+      "row_index": 1037
     },
     {
       "synopsis2024": null,
@@ -33524,7 +33611,7 @@
         "text": "Leistungen zur Sozialen Teilhabe ",
         "bold_ranges": []
       },
-      "row_index": 1032
+      "row_index": 1038
     },
     {
       "synopsis2024": null,
@@ -33554,7 +33641,7 @@
         "text": "(1) Geschädigte, die auf Grund der \nSchädigungsfolgen zum \nleistungsberechtigten Personenkreis im \nSinne von § 99 des Neunten Buches \ngehören, erhalten Leistungen zur Sozialen \nTeilhabe entsprechend Teil 2 Kapitel 6 des \nNeunten Buches. ",
         "bold_ranges": []
       },
-      "row_index": 1033
+      "row_index": 1039
     },
     {
       "synopsis2024": null,
@@ -33573,7 +33660,7 @@
         "text": "(2) Abweichend von Absatz 1 werden \nLeistungen zur Mobilität nach § 83 des \nNeunten Buches erbracht. Sie umfassen \nzudem Leistungen zum Betrieb, Unterhalt, \nUnterstellen und Abstellen eines \nKraftfahrzeuges. ",
         "bold_ranges": []
       },
-      "row_index": 1034
+      "row_index": 1040
     },
     {
       "synopsis2024": {
@@ -33601,7 +33688,7 @@
         "text": "§ 93 ",
         "bold_ranges": []
       },
-      "row_index": 1035
+      "row_index": 1041
     },
     {
       "synopsis2024": {
@@ -33629,7 +33716,7 @@
         "text": "Leistungen zum Lebensunterhalt ",
         "bold_ranges": []
       },
-      "row_index": 1036
+      "row_index": 1042
     },
     {
       "synopsis2024": {
@@ -33657,7 +33744,7 @@
         "text": "(1) Geschädigte erhalten Leistungen zum \nLebensunterhalt. Hinterbliebene erhalten \nLeistungen nach Satz 1 für einen Zeitraum \nvon bis zu fünf Jahren nach dem Tod der \noder des Geschädigten. Die Vorschriften \ndes Dritten und Vierten Kapitels des \nZwölften Buches gelten entsprechend unter \nBerücksichtigung der besonderen Lage der \nGeschädigten und Hinterbliebenen. \nLeistungen zum Lebensunterhalt werden \nnur erbracht, soweit der Lebensunterhalt \nnicht aus den übrigen Leistungen nach \ndiesem Gesetz bestritten werden kann. ",
         "bold_ranges": []
       },
-      "row_index": 1037
+      "row_index": 1043
     },
     {
       "synopsis2024": {
@@ -33695,7 +33782,7 @@
         "text": "(2) Sind für Geschädigte und Waisen \nLeistungen zum Lebensunterhalt während \nder Erbringung von Leistungen nach dem \nAchten Buch erforderlich, erbringt diese der \nTräger der Sozialen Entschädigung nach \nMaßgabe des Absatzes 1, soweit nicht der \nTräger der öffentlichen Jugendhilfe \nLeistungen nach § 39 des Achten Buches \nerbringt. ",
         "bold_ranges": []
       },
-      "row_index": 1038
+      "row_index": 1044
     },
     {
       "synopsis2024": {
@@ -33723,7 +33810,7 @@
         "text": "(3) Ansprüche nach dem \nBundesausbildungsförderungsgesetz \ngehen Ansprüchen nach diesem Buch vor. \nSoweit für Geschädigte weitere Leistungen \nzum Lebensunterhalt während der \nErbringung von Leistungen zur \nAusbildungsförderung nach dem \nBundesausbildungsförderungsgesetz \nerforderlich sind, erbringt diese der Träger \nder Sozialen Entschädigung nach \nMaßgabe des Absatzes 1. ",
         "bold_ranges": []
       },
-      "row_index": 1039
+      "row_index": 1045
     },
     {
       "synopsis2024": {
@@ -33751,7 +33838,7 @@
         "text": "(4) Der Anspruch auf Leistungen zum \nLebensunterhalt kann nicht abgetreten, \nübertragen, verpfändet oder gepfändet \nwerden. ",
         "bold_ranges": []
       },
-      "row_index": 1040
+      "row_index": 1046
     },
     {
       "synopsis2024": null,
@@ -33776,6 +33863,7 @@
         "right_diff_ranges": []
       },
       "is_section_header": false,
+      "starts_new_table": true,
       "merged_left": {
         "text": "Jugendschutzgesetz ",
         "bold_ranges": [
@@ -33785,7 +33873,7 @@
           ]
         ]
       },
-      "row_index": 1041
+      "row_index": 1047
     },
     {
       "synopsis2024": null,
@@ -33819,7 +33907,7 @@
           ]
         ]
       },
-      "row_index": 1042
+      "row_index": 1048
     },
     {
       "synopsis2024": null,
@@ -33838,7 +33926,7 @@
         "text": "§ 9  ",
         "bold_ranges": []
       },
-      "row_index": 1043
+      "row_index": 1049
     },
     {
       "synopsis2024": null,
@@ -33857,7 +33945,7 @@
         "text": "Absatz 1 ",
         "bold_ranges": []
       },
-      "row_index": 1044
+      "row_index": 1050
     },
     {
       "synopsis2024": null,
@@ -33882,7 +33970,7 @@
         "text": "(2) Absatz 1 Nummer 1 gilt nicht, wenn \nJugendliche von einer \npersonensorgeberechtigten Person \nbegleitet werden. ",
         "bold_ranges": []
       },
-      "row_index": 1045
+      "row_index": 1051
     },
     {
       "synopsis2024": null,
@@ -33907,7 +33995,7 @@
         "text": "Absätze 3 bis 4 ",
         "bold_ranges": []
       },
-      "row_index": 1046
+      "row_index": 1052
     }
   ]
 }

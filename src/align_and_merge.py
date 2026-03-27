@@ -24,6 +24,7 @@ class SectionKey:
 
 SECTION_HEADER_PATTERN = re.compile(r"^\s*§\s*(\d+)\s*([a-z]*)\s*$")
 SECTION_SIGN_START_PATTERN = re.compile(r"^\s*§\s*\d+\s*[a-z]*\b", re.IGNORECASE)
+ARTIKEL_HEADING_PATTERN = re.compile(r"^\s*Artikel\s+\d+\s*$", re.IGNORECASE)
 
 
 def parse_section_key(text: str) -> SectionKey | None:
@@ -76,6 +77,11 @@ LAW_NAME_STANDALONE_PATTERN = re.compile(
     r"|Jugendschutzgesetz)\s*$"
 )
 
+NUMBERED_SGB_LAW_NAME_PATTERN = re.compile(
+    r"^\s*(?P<prefix>\w+)\s+Buch\s+Sozialgesetzbuch\s*$",
+    re.IGNORECASE,
+)
+
 STANDALONE_LAW_NAME_TO_IDENTIFIER = {
     "Sozialgerichtsgesetz": "SGG",
     "Jugendschutzgesetz": "JuSchG",
@@ -103,6 +109,36 @@ def is_law_name_row(row: dict[str, Any]) -> bool:
     """Detect law name rows that precede a citation (e.g. 'Bürgerliches Gesetzbuch')."""
     left = (row.get("left") or "").strip()
     return bool(LAW_NAME_STANDALONE_PATTERN.match(left))
+
+
+def _normalize_standalone_law_name_for_comparison(text: str) -> str:
+    """Normalize standalone law names for semantic equality checks."""
+    stripped = normalize_text_for_merge_comparison(text)
+    numbered_match = NUMBERED_SGB_LAW_NAME_PATTERN.match(stripped)
+    if numbered_match:
+        prefix = numbered_match.group("prefix").lower()
+        prefix = re.sub(r"(en|es|em|er)$", "", prefix)
+        return f"{prefix} buch sozialgesetzbuch"
+    return stripped.lower()
+
+
+def standalone_law_names_semantically_equal(text_a: str, text_b: str) -> bool:
+    """Return True for equivalent standalone law names despite minor inflection changes."""
+    if not LAW_NAME_STANDALONE_PATTERN.match(text_a.strip()):
+        return False
+    if not LAW_NAME_STANDALONE_PATTERN.match(text_b.strip()):
+        return False
+    return (
+        _normalize_standalone_law_name_for_comparison(text_a)
+        == _normalize_standalone_law_name_for_comparison(text_b)
+    )
+
+
+def is_artikel_heading_row(row: dict[str, Any]) -> bool:
+    """Detect standalone article heading rows like 'Artikel 3'."""
+    left = (row.get("left") or "").strip()
+    right = (row.get("right") or "").strip()
+    return bool(ARTIKEL_HEADING_PATTERN.match(left)) or bool(ARTIKEL_HEADING_PATTERN.match(right))
 
 
 def detect_leading_marker_type(text: str | None) -> str | None:
@@ -734,6 +770,12 @@ def build_merged_left_entry(
             "bold_ranges": sorted_bold_ranges(bold_ranges_2024),
         }
 
+    if standalone_law_names_semantically_equal(text_2024, text_2026):
+        return {
+            "text": text_2026,
+            "bold_ranges": sorted_bold_ranges(bold_ranges_2026),
+        }
+
     prefix_2024 = MERGED_LEFT_SOURCE_LABEL_2024 + "\n\n"
     separator = "\n\n"
     prefix_2026 = MERGED_LEFT_SOURCE_LABEL_2026 + "\n\n"
@@ -875,6 +917,14 @@ def merge_page_break_continuation_rows(
             starts_with_section_sign(left_text)
             or starts_with_section_sign(right_text)
         ):
+            result.append(dict(current_row))
+            continue
+
+        if is_law_name_row(current_row):
+            result.append(dict(current_row))
+            continue
+
+        if is_artikel_heading_row(current_row):
             result.append(dict(current_row))
             continue
 
@@ -1236,6 +1286,109 @@ def align_law_sections(
     return aligned_rows
 
 
+def _is_empty_text_value(text: Any) -> bool:
+    return not isinstance(text, str) or text.strip() == ""
+
+
+def _is_artikel_control_synopsis_row(row: dict[str, Any] | None) -> bool:
+    """Return True when a synopsis row is just a standalone 'Artikel <n>' marker."""
+    if not isinstance(row, dict):
+        return False
+    left_text = (row.get("left") or "").strip()
+    right_text = (row.get("right") or "").strip()
+
+    left_is_artikel = bool(ARTIKEL_HEADING_PATTERN.match(left_text))
+    right_is_artikel = bool(ARTIKEL_HEADING_PATTERN.match(right_text))
+
+    if left_is_artikel and _is_empty_text_value(right_text):
+        return True
+    if right_is_artikel and _is_empty_text_value(left_text):
+        return True
+    return left_is_artikel and right_is_artikel
+
+
+def _strip_artikel_control_from_synopsis_row(
+    row: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Return row copy with standalone Artikel marker cells removed.
+
+    If all non-empty content is Artikel marker text, returns None.
+    """
+    if not isinstance(row, dict):
+        return row
+
+    left_text = (row.get("left") or "").strip()
+    right_text = (row.get("right") or "").strip()
+    left_is_artikel = bool(ARTIKEL_HEADING_PATTERN.match(left_text))
+    right_is_artikel = bool(ARTIKEL_HEADING_PATTERN.match(right_text))
+
+    stripped_row = dict(row)
+    if left_is_artikel:
+        stripped_row["left"] = None
+        stripped_row["left_bold_ranges"] = []
+    if right_is_artikel:
+        stripped_row["right"] = None
+        stripped_row["right_bold_ranges"] = []
+
+    left_is_empty = _is_empty_text_value(stripped_row.get("left"))
+    right_is_empty = _is_empty_text_value(stripped_row.get("right"))
+    if left_is_empty and right_is_empty:
+        return None
+
+    return stripped_row
+
+
+def collapse_artikel_boundary_rows(
+    aligned_rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Remove standalone Artikel marker rows and transfer them as table-break flags.
+
+    Standalone rows like 'Artikel 3' are extracted from outside tables to preserve
+    section boundaries. They should trigger a new table/page in rendering but must
+    not appear as content rows in the merged output.
+    """
+    collapsed_rows: list[dict[str, Any]] = []
+    pending_table_break = False
+
+    for row in aligned_rows:
+        synopsis_2024 = row.get("synopsis2024")
+        synopsis_2026 = row.get("synopsis2026")
+
+        synopsis_2024_is_artikel_control = _is_artikel_control_synopsis_row(synopsis_2024)
+        synopsis_2026_is_artikel_control = _is_artikel_control_synopsis_row(synopsis_2026)
+        row_is_artikel_control = synopsis_2024_is_artikel_control or synopsis_2026_is_artikel_control
+
+        if row_is_artikel_control:
+            pending_table_break = True
+            stripped_synopsis_2024 = (
+                _strip_artikel_control_from_synopsis_row(synopsis_2024)
+                if synopsis_2024_is_artikel_control
+                else synopsis_2024
+            )
+            stripped_synopsis_2026 = (
+                _strip_artikel_control_from_synopsis_row(synopsis_2026)
+                if synopsis_2026_is_artikel_control
+                else synopsis_2026
+            )
+
+            if stripped_synopsis_2024 is None and stripped_synopsis_2026 is None:
+                continue
+
+            content_row = dict(row)
+            content_row["synopsis2024"] = stripped_synopsis_2024
+            content_row["synopsis2026"] = stripped_synopsis_2026
+            collapsed_rows.append(content_row)
+            continue
+
+        updated_row = dict(row)
+        if pending_table_break:
+            updated_row["starts_new_table"] = True
+            pending_table_break = False
+        collapsed_rows.append(updated_row)
+
+    return collapsed_rows
+
+
 KNOWN_OCR_FIXES = {
     "$ 37 b": "§ 37b",
 }
@@ -1294,6 +1447,7 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
 
     all_aligned_rows = collapse_orphan_insert_rows(all_aligned_rows)
     all_aligned_rows = cleanup_first_page_bgb_header_rows(all_aligned_rows)
+    all_aligned_rows = collapse_artikel_boundary_rows(all_aligned_rows)
 
     for row in all_aligned_rows:
         row["merged_left"] = build_merged_left_entry(

@@ -344,6 +344,49 @@ class TestMergePageBreakContinuationRows:
         assert result[1]["left"] == "Absatz 4"
         assert result[1]["right"] == "u n v e r ä n d e r t"
 
+    def test_standalone_law_name_at_page_boundary_not_merged_into_unveraendert(self):
+        rows = [
+            make_row(left="(5) unverändert", right="(5) unverändert", page=1),
+            make_row(left="Sozialgerichtsgesetz", right=None, page=2),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+
+        assert len(result) == 2
+        assert result[0]["left"] == "(5) unverändert"
+        assert result[0]["right"] == "(5) unverändert"
+        assert result[1]["left"] == "Sozialgerichtsgesetz"
+        assert result[1]["right"] is None
+
+    def test_standalone_law_name_stays_separate_for_grouping_after_page_merge(self):
+        rows = [
+            make_row(left="( - SGB VIII)", page=1),
+            make_row(left="(5) unverändert", right="(5) unverändert", page=1),
+            make_row(left="Sozialgerichtsgesetz", right=None, page=2),
+            make_row(left="§ 51 ", right="§ 51 ", page=2),
+        ]
+
+        merged_rows = merge_page_break_continuation_rows(rows)
+        laws = group_rows_into_law_sections(merged_rows)
+
+        assert len(laws) == 2
+        assert laws[0][0] == "SGB_VIII"
+        assert laws[1][0] == "SGG"
+
+    def test_standalone_artikel_heading_at_page_boundary_not_merged(self):
+        rows = [
+            make_row(left="(5) unverändert", right="(5) unverändert", page=1),
+            make_row(left="Artikel 3", right=None, page=2),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+
+        assert len(result) == 2
+        assert result[0]["left"] == "(5) unverändert"
+        assert result[0]["right"] == "(5) unverändert"
+        assert result[1]["left"] == "Artikel 3"
+        assert result[1]["right"] is None
+
     def test_bold_ranges_offset_on_merge(self):
         rows = [
             make_row(
@@ -1118,6 +1161,97 @@ class TestAlignAndMerge:
         assert "1. eingeschobener Punkt" in merged_right
         assert "2. Angebote A neu" in merged_right
 
+    def test_artikel_control_row_removed_and_marks_next_row_table_break(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="(5) unverändert", right="(5) unverändert", page=1),
+                make_row(left="Artikel 3", right=None, page=2),
+                make_row(left="Sozialgerichtsgesetz", right="Sozialgerichtsgesetz", page=2),
+                make_row(left="( - SGG)", right="( - SGG)", page=2),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 2 ", right="§ 2 "),
+                make_row(left="(5) unverändert", right="(5) unverändert", page=1),
+                make_row(left="Sozialgerichtsgesetz", right="Sozialgerichtsgesetz", page=2),
+                make_row(left="( - SGG)", right="( - SGG)", page=2),
+            ],
+        }
+
+        result = align_and_merge(data_2024, data_2026)
+        rows = result["rows"]
+
+        assert all(
+            (row.get("merged_left") or {}).get("text", "").strip() != "Artikel 3"
+            for row in rows
+        )
+
+        sozialgericht_rows = [
+            row for row in rows
+            if "Sozialgerichtsgesetz" in ((row.get("merged_left") or {}).get("text", ""))
+        ]
+        assert len(sozialgericht_rows) == 1
+        assert sozialgericht_rows[0].get("starts_new_table") is True
+
+    def test_artikel_control_row_does_not_render_when_misaligned_with_content_row(self):
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB IX)"),
+                make_row(left="§ 21 ", right="§ 21 "),
+                make_row(left="Artikel 2", right=None, page=2),
+                make_row(left="Sozialgerichtsgesetz", right="Sozialgerichtsgesetz", page=2),
+                make_row(left="( - SGG)", right="( - SGG)", page=2),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB IX)"),
+                make_row(left="§ 21 ", right="§ 21 "),
+                make_row(
+                    left="",
+                    right=(
+                        "(7) Für Leistungen auf der Grundlage von Bescheiden nach Satz 3 "
+                        "ist die örtliche Zuständigkeit nach §§ 86, 86c, 86d und 88 zu prüfen."
+                    ),
+                    page=1,
+                ),
+                make_row(left="Sozialgerichtsgesetz", right="Sozialgerichtsgesetz", page=2),
+                make_row(left="( - SGG)", right="( - SGG)", page=2),
+            ],
+        }
+
+        result = align_and_merge(data_2024, data_2026)
+        rows = result["rows"]
+
+        assert all(
+            "Artikel 2" not in ((row.get("merged_left") or {}).get("text", ""))
+            for row in rows
+        )
+
+        paragraph_rows = [
+            row
+            for row in rows
+            if row.get("synopsis2026")
+            and "(7) Für Leistungen" in ((row["synopsis2026"].get("right") or ""))
+        ]
+        assert len(paragraph_rows) == 1
+        assert paragraph_rows[0].get("starts_new_table") is not True
+
+        sozialgericht_rows = [
+            row for row in rows
+            if "Sozialgerichtsgesetz" in ((row.get("merged_left") or {}).get("text", ""))
+        ]
+        assert len(sozialgericht_rows) == 1
+        assert sozialgericht_rows[0].get("starts_new_table") is True
+
 
 class TestBuildMergedLeftEntry:
     def test_both_empty_results_in_empty_cell(self):
@@ -1174,6 +1308,15 @@ class TestBuildMergedLeftEntry:
             == "- Aus Synopsis 2024 -\n\nAlt\n\n- Aus Synopsis 2026 -\n\nNeu"
         )
         assert entry["bold_ranges"] == [[23, 26], [51, 54]]
+
+    def test_semantically_equal_numbered_sgb_law_names_collapse_without_source_labels(self):
+        entry = build_merged_left_entry(
+            {"left": "Neunten Buch Sozialgesetzbuch", "left_bold_ranges": [[0, 7]]},
+            {"left": "Neuntes Buch Sozialgesetzbuch", "left_bold_ranges": [[0, 7]]},
+        )
+
+        assert entry["text"] == "Neuntes Buch Sozialgesetzbuch"
+        assert entry["bold_ranges"] == [[0, 7]]
 
 
 class TestAlignAndMergeBgbCleanup:
