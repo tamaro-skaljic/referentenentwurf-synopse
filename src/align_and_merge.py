@@ -690,14 +690,114 @@ def merge_column_text_and_bold_ranges(
     continuation_bold_ranges: list[list[int]],
 ) -> tuple[str, list[list[int]]]:
     """Concatenate column text with a space separator, offsetting bold ranges."""
+    return _merge_column_text_and_ranges(
+        previous_text,
+        previous_bold_ranges,
+        continuation_text,
+        continuation_bold_ranges,
+    )
+
+
+def _merge_column_text_and_ranges(
+    previous_text: str,
+    previous_ranges: list[list[int]],
+    continuation_text: str,
+    continuation_ranges: list[list[int]],
+) -> tuple[str, list[list[int]]]:
+    """Concatenate column text with a space separator, offsetting generic ranges."""
     separator = " "
     offset = len(previous_text) + len(separator)
     merged_text = previous_text + separator + continuation_text
-    offset_continuation_bold_ranges = [
+    offset_continuation_ranges = [
         [start + offset, end + offset]
-        for start, end in continuation_bold_ranges
+        for start, end in continuation_ranges
     ]
-    return merged_text, previous_bold_ranges + offset_continuation_bold_ranges
+    return merged_text, previous_ranges + offset_continuation_ranges
+
+
+def _remove_ranges_from_text_and_rebase_ranges(
+    text: str,
+    kept_ranges: list[list[int]],
+    removed_ranges: list[list[int]],
+) -> tuple[str, list[list[int]]]:
+    if not removed_ranges:
+        return text, sorted_bold_ranges(kept_ranges)
+
+    clamped_removed_ranges = [
+        [max(0, start), min(len(text), end)]
+        for start, end in normalize_bold_ranges(removed_ranges)
+        if max(0, start) < min(len(text), end)
+    ]
+    if not clamped_removed_ranges:
+        return text, sorted_bold_ranges(kept_ranges)
+
+    removed_positions: set[int] = set()
+    for start, end in clamped_removed_ranges:
+        removed_positions.update(range(start, end))
+
+    old_to_new: dict[int, int] = {}
+    visible_characters: list[str] = []
+    for index, character in enumerate(text):
+        if index in removed_positions:
+            continue
+        old_to_new[index] = len(visible_characters)
+        visible_characters.append(character)
+
+    visible_ranges: list[list[int]] = []
+    for start, end in normalize_bold_ranges(kept_ranges):
+        kept_new_positions = [
+            old_to_new[index]
+            for index in range(max(0, start), min(len(text), end))
+            if index in old_to_new
+        ]
+        if not kept_new_positions:
+            continue
+
+        range_start = kept_new_positions[0]
+        previous_position = kept_new_positions[0]
+        for new_position in kept_new_positions[1:]:
+            if new_position == previous_position + 1:
+                previous_position = new_position
+                continue
+            visible_ranges.append([range_start, previous_position + 1])
+            range_start = new_position
+            previous_position = new_position
+        visible_ranges.append([range_start, previous_position + 1])
+
+    return "".join(visible_characters), sorted_bold_ranges(visible_ranges)
+
+
+def _strip_struck_text_from_row(row: dict[str, Any]) -> dict[str, Any]:
+    stripped_row = dict(row)
+
+    for side in ("left", "right"):
+        text = stripped_row.get(side)
+        if not isinstance(text, str):
+            stripped_row[f"{side}_strike_ranges"] = []
+            continue
+
+        visible_text, visible_bold_ranges = _remove_ranges_from_text_and_rebase_ranges(
+            text,
+            normalize_bold_ranges(stripped_row.get(f"{side}_bold_ranges", [])),
+            normalize_bold_ranges(stripped_row.get(f"{side}_strike_ranges", [])),
+        )
+        stripped_row[side] = visible_text if visible_text.strip() else None
+        stripped_row[f"{side}_bold_ranges"] = visible_bold_ranges
+        stripped_row[f"{side}_strike_ranges"] = []
+
+    return stripped_row
+
+
+def strip_struck_text_from_rows(
+    rows: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    stripped_rows: list[dict[str, Any]] = []
+    for row in rows:
+        stripped_row = _strip_struck_text_from_row(row)
+        if is_empty_text(stripped_row.get("left")) and is_empty_text(stripped_row.get("right")):
+            continue
+        stripped_rows.append(stripped_row)
+    return stripped_rows
 
 
 def normalize_text_for_merge_comparison(text: str) -> str:
@@ -993,8 +1093,15 @@ def merge_page_break_continuation_rows(
                 left_text or "",
                 current_row.get("left_bold_ranges", []),
             )
+            _, merged_strike = _merge_column_text_and_ranges(
+                previous_row.get("left") or "",
+                previous_row.get("left_strike_ranges", []),
+                left_text or "",
+                current_row.get("left_strike_ranges", []),
+            )
             previous_row["left"] = merged_text
             previous_row["left_bold_ranges"] = merged_bold
+            previous_row["left_strike_ranges"] = merged_strike
 
         if right_merges and not right_is_empty:
             merged_text, merged_bold = merge_column_text_and_bold_ranges(
@@ -1003,8 +1110,15 @@ def merge_page_break_continuation_rows(
                 right_text or "",
                 current_row.get("right_bold_ranges", []),
             )
+            _, merged_strike = _merge_column_text_and_ranges(
+                previous_row.get("right") or "",
+                previous_row.get("right_strike_ranges", []),
+                right_text or "",
+                current_row.get("right_strike_ranges", []),
+            )
             previous_row["right"] = merged_text
             previous_row["right_bold_ranges"] = merged_bold
+            previous_row["right_strike_ranges"] = merged_strike
 
         remainder_left = None if (left_merges or left_is_empty) else left_text
         remainder_right = None if (right_merges or right_is_empty) else right_text
@@ -1020,6 +1134,14 @@ def merge_page_break_continuation_rows(
             remainder_row["right_bold_ranges"] = (
                 [] if remainder_right is None
                 else current_row.get("right_bold_ranges", [])
+            )
+            remainder_row["left_strike_ranges"] = (
+                [] if remainder_left is None
+                else current_row.get("left_strike_ranges", [])
+            )
+            remainder_row["right_strike_ranges"] = (
+                [] if remainder_right is None
+                else current_row.get("right_strike_ranges", [])
             )
             result.append(remainder_row)
 
@@ -1113,6 +1235,7 @@ def remove_suspected_struck_duplicate_number_cells(
             ):
                 previous_row[column_name] = f"{current_number}. entfällt"
                 previous_row[f"{column_name}_bold_ranges"] = []
+                previous_row[f"{column_name}_strike_ranges"] = []
 
                 current_text = current_row.get(column_name)
                 if not isinstance(current_text, str):
@@ -1461,6 +1584,9 @@ def align_and_merge(data_2024: dict[str, Any], data_2026: dict[str, Any]) -> dic
 
     rows_2024 = remove_suspected_struck_duplicate_number_cells(rows_2024)
     rows_2026 = remove_suspected_struck_duplicate_number_cells(rows_2026)
+
+    rows_2024 = strip_struck_text_from_rows(rows_2024)
+    rows_2026 = strip_struck_text_from_rows(rows_2026)
 
     laws_2024 = group_rows_into_law_sections(rows_2024)
     laws_2026 = group_rows_into_law_sections(rows_2026)

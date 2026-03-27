@@ -390,6 +390,68 @@ class TestIsHeadingRow:
         }
         assert is_heading_row(title_row, previous_row=paragraph_row) is True
 
+    def test_long_numbered_paragraph_after_section_header_is_not_heading(self):
+        long_text = (
+            "(1) Kosten, die ein örtlicher Träger\n"
+            "aufwendet, sind vom Land zu erstatten,\n"
+            "wenn\n1. innerhalb eines Monats ...\n"
+            "2. sich die örtliche Zuständigkeit ..."
+        )
+        paragraph_row = {
+            "is_section_header": True,
+            "merged_left": {"text": "§ 89d ", "bold_ranges": []},
+        }
+        content_row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": long_text,
+                "bold_ranges": [],
+            },
+            "synopsis2024": {"right": long_text, "right_bold_ranges": [], "right_diff_ranges": []},
+            "synopsis2026": {"right": long_text, "right_bold_ranges": [], "right_diff_ranges": []},
+        }
+
+        assert is_heading_row(content_row, previous_row=paragraph_row) is False
+
+    def test_post_section_row_with_under_four_newlines_is_heading(self):
+        paragraph_row = {
+            "is_section_header": True,
+            "merged_left": {"text": "§ 80a ", "bold_ranges": []},
+        }
+        title_row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": "Planung infrastruktureller\nBildungsassistenz",
+                "bold_ranges": [],
+            },
+            "synopsis2024": {"right": "", "right_bold_ranges": [], "right_diff_ranges": []},
+            "synopsis2026": {
+                "right": "Planung infrastruktureller\nBildungsassistenz",
+                "right_bold_ranges": [],
+                "right_diff_ranges": [],
+            },
+        }
+
+        assert is_heading_row(title_row, previous_row=paragraph_row) is True
+
+    def test_post_section_row_with_four_newlines_is_not_heading(self):
+        long_text = "Zeile 1\nZeile 2\nZeile 3\nZeile 4\nZeile 5"
+        paragraph_row = {
+            "is_section_header": True,
+            "merged_left": {"text": "§ 89d ", "bold_ranges": []},
+        }
+        content_row = {
+            "is_section_header": False,
+            "merged_left": {
+                "text": long_text,
+                "bold_ranges": [],
+            },
+            "synopsis2024": {"right": long_text, "right_bold_ranges": [], "right_diff_ranges": []},
+            "synopsis2026": {"right": long_text, "right_bold_ranges": [], "right_diff_ranges": []},
+        }
+
+        assert is_heading_row(content_row, previous_row=paragraph_row) is False
+
     def test_normal_row_is_not_heading(self):
         """A regular content row should not be a heading."""
         previous = {

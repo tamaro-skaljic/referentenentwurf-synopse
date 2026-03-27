@@ -1218,6 +1218,41 @@ class TestAlignAndMerge:
         assert "1. eingeschobener Punkt" in merged_right
         assert "2. Angebote A neu" in merged_right
 
+    def test_struck_text_is_removed_from_amendment_column_before_output(self):
+        struck_text = "gestrichener Satz."
+        data_2024 = {
+            "source_file": "2024.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 89d ", right="§ 89d "),
+                make_row(left="(1) Ausgangstext", right="(1) Ausgangstext"),
+            ],
+        }
+        data_2026 = {
+            "source_file": "2026.pdf",
+            "rows": [
+                make_row(left="( - SGB VIII)"),
+                make_row(left="§ 89d ", right="§ 89d "),
+                make_row(
+                    left="(1) Ausgangstext",
+                    right=f"sichtbarer Teil {struck_text}",
+                ),
+            ],
+        }
+        data_2026["rows"][2]["right_strike_ranges"] = [[16, 34]]
+
+        result = align_and_merge(data_2024, data_2026)
+
+        matching_rows = [
+            row
+            for row in result["rows"]
+            if row.get("synopsis2026")
+            and (row["synopsis2026"].get("left") or "") == "(1) Ausgangstext"
+        ]
+
+        assert len(matching_rows) == 1
+        assert matching_rows[0]["synopsis2026"]["right"] == "sichtbarer Teil "
+
     def test_artikel_control_row_removed_and_marks_next_row_table_break(self):
         data_2024 = {
             "source_file": "2024.pdf",

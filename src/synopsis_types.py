@@ -13,6 +13,8 @@ class RawRow:
     page: int
     table: int
     row: int
+    left_strike_ranges: list[list[int]] = field(default_factory=list)
+    right_strike_ranges: list[list[int]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -23,6 +25,8 @@ class RawRow:
             "page": self.page,
             "table": self.table,
             "row": self.row,
+            "left_strike_ranges": self.left_strike_ranges,
+            "right_strike_ranges": self.right_strike_ranges,
         }
 
     @classmethod
@@ -35,6 +39,8 @@ class RawRow:
             page=data.get("page", 0),
             table=data.get("table", 0),
             row=data.get("row", 0),
+            left_strike_ranges=data.get("left_strike_ranges", []),
+            right_strike_ranges=data.get("right_strike_ranges", []),
         )
 
 
@@ -44,6 +50,8 @@ class SynopsisCell:
     right: str | None
     left_bold_ranges: list[list[int]]
     right_bold_ranges: list[list[int]]
+    left_strike_ranges: list[list[int]] = field(default_factory=list)
+    right_strike_ranges: list[list[int]] = field(default_factory=list)
     right_diff_ranges: list[list[int | str]] = field(default_factory=list)
     page: int = 0
     table: int = 0
@@ -55,6 +63,8 @@ class SynopsisCell:
             "right": self.right,
             "left_bold_ranges": self.left_bold_ranges,
             "right_bold_ranges": self.right_bold_ranges,
+            "left_strike_ranges": self.left_strike_ranges,
+            "right_strike_ranges": self.right_strike_ranges,
             "right_diff_ranges": self.right_diff_ranges,
             "page": self.page,
             "table": self.table,
@@ -68,6 +78,8 @@ class SynopsisCell:
             right=data.get("right"),
             left_bold_ranges=data.get("left_bold_ranges", []),
             right_bold_ranges=data.get("right_bold_ranges", []),
+            left_strike_ranges=data.get("left_strike_ranges", []),
+            right_strike_ranges=data.get("right_strike_ranges", []),
             right_diff_ranges=data.get("right_diff_ranges", []),
             page=data.get("page", 0),
             table=data.get("table", 0),

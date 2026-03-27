@@ -1,4 +1,7 @@
-from src.extract_synopsis import detect_standalone_artikel_headings_from_words
+from src.extract_synopsis import (
+    _assemble_text_with_formatting,
+    detect_standalone_artikel_headings_from_words,
+)
 
 
 class TestDetectStandaloneArtikelHeadingsFromWords:
@@ -48,3 +51,21 @@ class TestDetectStandaloneArtikelHeadingsFromWords:
         headings = detect_standalone_artikel_headings_from_words(words, table_bboxes=[])
 
         assert [heading["text"] for heading in headings] == ["Artikel 1", "Artikel 2"]
+
+
+class TestAssembleTextWithFormatting:
+    def test_detects_struck_character_ranges_without_removing_text(self):
+        character_lines = [[
+            {"text": "A", "x0": 10.0, "x1": 16.0, "top": 10.0, "bottom": 20.0, "fontname": "Regular"},
+            {"text": "B", "x0": 18.0, "x1": 24.0, "top": 10.0, "bottom": 20.0, "fontname": "Regular"},
+            {"text": "C", "x0": 26.0, "x1": 32.0, "top": 10.0, "bottom": 20.0, "fontname": "Regular"},
+        ]]
+        strike_rects = [
+            {"x0": 17.0, "x1": 33.0, "top": 14.5, "bottom": 15.0},
+        ]
+
+        text, bold_ranges, strike_ranges = _assemble_text_with_formatting(character_lines, strike_rects)
+
+        assert text == "ABC"
+        assert bold_ranges == []
+        assert strike_ranges == [[1, 3]]

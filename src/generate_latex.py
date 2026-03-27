@@ -419,6 +419,16 @@ def _is_standalone_law_name_text(text: str | None) -> bool:
     return bool(LAW_NAME_STANDALONE_PATTERN.match(text.strip()))
 
 
+def _has_fewer_than_four_newlines(text: str | None) -> bool:
+    if not isinstance(text, str):
+        return False
+
+    stripped = text.strip()
+    if not stripped:
+        return False
+    return stripped.count("\n") < 4
+
+
 def is_merged_artikel_heading_row(row: dict[str, object]) -> bool:
     if row.get("is_section_header"):
         return False
@@ -468,7 +478,10 @@ def is_heading_row(row: dict[str, object], previous_row: dict[str, object] | Non
         return True
 
     if previous_row is not None and previous_row.get("is_section_header"):
-        return True
+        right_2024 = _as_text(_as_dict(row.get("synopsis2024")).get("right"))
+        right_2026 = _as_text(_as_dict(row.get("synopsis2026")).get("right"))
+        candidate_texts = [merged_left_text, left_2024, left_2026, right_2024, right_2026]
+        return any(_has_fewer_than_four_newlines(text) for text in candidate_texts)
     return False
 
 

@@ -26,6 +26,39 @@ GroupedLine = dict[str, Any]
 HeadingEntry = dict[str, float | str]
 
 
+def _is_thin_horizontal_rect(rect: dict[str, Any]) -> bool:
+    rect_width = float(rect["x1"]) - float(rect["x0"])
+    rect_height = float(rect["bottom"]) - float(rect["top"])
+    return rect_width >= 20.0 and rect_height <= 1.0
+
+
+def _character_is_struck(
+    character: PdfCharacter,
+    strike_rects: list[dict[str, Any]],
+) -> bool:
+    char_x0 = float(character["x0"])
+    char_x1 = float(character["x1"])
+    char_top = float(character["top"])
+    char_bottom = float(character["bottom"])
+    char_height = max(char_bottom - char_top, 1.0)
+    char_mid_band_top = char_top + char_height * 0.30
+    char_mid_band_bottom = char_top + char_height * 0.75
+
+    for rect in strike_rects:
+        rect_x0 = float(rect["x0"])
+        rect_x1 = float(rect["x1"])
+        rect_mid_y = (float(rect["top"]) + float(rect["bottom"])) / 2.0
+
+        horizontal_overlap = min(char_x1, rect_x1) - max(char_x0, rect_x0)
+        char_width = max(char_x1 - char_x0, 0.1)
+        if horizontal_overlap < char_width * 0.5:
+            continue
+        if char_mid_band_top <= rect_mid_y <= char_mid_band_bottom:
+            return True
+
+    return False
+
+
 def _group_characters_into_lines(
     characters: list[PdfCharacter],
     y_tolerance: float = LINE_Y_TOLERANCE,
@@ -51,14 +84,16 @@ def _group_characters_into_lines(
     return lines
 
 
-def _assemble_bold_text(
+def _assemble_text_with_formatting(
     character_lines: list[list[PdfCharacter]],
-) -> tuple[str, list[list[int]]]:
-    """Assemble text and bold ranges from grouped character lines."""
+    strike_rects: list[dict[str, Any]],
+) -> tuple[str, list[list[int]], list[list[int]]]:
+    """Assemble text plus bold/strike ranges from grouped character lines."""
     full_text = ""
     bold_ranges: list[list[int]] = []
+    strike_ranges: list[list[int]] = []
     bold_start: int | None = None
-
+    strike_start: int | None = None
     for line_index, line_chars in enumerate(character_lines):
         if line_index > 0:
             full_text += "\n"
@@ -68,6 +103,8 @@ def _assemble_bold_text(
         for character in line_chars:
             char = str(character["text"])
             is_bold = "Bold" in character.get("fontname", "")
+            is_struck = _character_is_struck(character, strike_rects)
+
             pos = len(full_text)
             full_text += char
 
@@ -77,17 +114,48 @@ def _assemble_bold_text(
                 bold_ranges.append([bold_start, pos])
                 bold_start = None
 
+            if is_struck and strike_start is None:
+                strike_start = pos
+            elif not is_struck and strike_start is not None:
+                strike_ranges.append([strike_start, pos])
+                strike_start = None
+
     if bold_start is not None:
         bold_ranges.append([bold_start, len(full_text)])
 
-    return full_text, bold_ranges
+    if strike_start is not None:
+        strike_ranges.append([strike_start, len(full_text)])
+
+    strike_ranges = _merge_strike_ranges_over_whitespace(full_text, strike_ranges)
+
+    return full_text, bold_ranges, strike_ranges
+
+
+def _merge_strike_ranges_over_whitespace(
+    text: str,
+    strike_ranges: list[list[int]],
+) -> list[list[int]]:
+    """Merge consecutive strike ranges when only whitespace separates them."""
+    if len(strike_ranges) <= 1:
+        return strike_ranges
+
+    merged: list[list[int]] = [list(strike_ranges[0])]
+    for start, end in strike_ranges[1:]:
+        prev_end = merged[-1][1]
+        gap = text[prev_end:start]
+        if gap and all(c in " \n" for c in gap):
+            merged[-1][1] = end
+        else:
+            merged.append([start, end])
+
+    return merged
 
 
 def extract_cell_with_bold(
     page: Any,
     cell_bbox: CellBoundingBox,
-) -> tuple[str, list[list[int]]]:
-    """Extract text from a cell and identify bold character ranges."""
+) -> tuple[str, list[list[int]], list[list[int]]]:
+    """Extract text from a cell and identify bold and strike character ranges."""
     x0, top, x1, bottom = cell_bbox
     padded: CellBoundingBox = (x0 - 0.5, top - 0.5, x1 + 0.5, bottom + 0.5)
     padded = (
@@ -99,15 +167,16 @@ def extract_cell_with_bold(
         cropped = page.within_bbox(padded)
     except Exception as error:
         print(f"Warning: failed to crop bbox {padded}: {error}", file=sys.stderr)
-        return "", []
+        return "", [], []
 
     chars: list[PdfCharacter] = cropped.chars
     if not chars:
-        return "", []
+        return "", [], []
 
     chars = sorted(chars, key=lambda character: (round(character["top"], 1), character["x0"]))
     character_lines = _group_characters_into_lines(chars)
-    return _assemble_bold_text(character_lines)
+    strike_rects = [rect for rect in cropped.rects if _is_thin_horizontal_rect(rect)]
+    return _assemble_text_with_formatting(character_lines, strike_rects)
 
 
 def _group_words_into_lines(words: list[PdfWord]) -> list[GroupedLine]:
@@ -250,8 +319,8 @@ def _extract_pages_from_pdf(pdf: Any) -> list[RawRow]:
                 left_cell = row_cells[0]
                 right_cell = row_cells[1]
 
-                left_text, left_bold = extract_cell_with_bold(page, left_cell)
-                right_text, right_bold = extract_cell_with_bold(page, right_cell)
+                left_text, left_bold, left_strike = extract_cell_with_bold(page, left_cell)
+                right_text, right_bold, right_strike = extract_cell_with_bold(page, right_cell)
 
                 row = RawRow(
                     left=left_text if left_text.strip() else None,
@@ -261,6 +330,8 @@ def _extract_pages_from_pdf(pdf: Any) -> list[RawRow]:
                     page=page_idx + 1,
                     table=table_idx + 1,
                     row=row_idx + 1,
+                    left_strike_ranges=left_strike,
+                    right_strike_ranges=right_strike,
                 )
                 page_rows_with_position.append((float(y), sequence_number, row))
                 sequence_number += 1
