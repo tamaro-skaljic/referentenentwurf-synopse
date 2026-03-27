@@ -471,6 +471,26 @@ class TestMergePageBreakContinuationRows:
         assert result[1]["left"].startswith("Die nach Satz 2 Nummer 1")
         assert result[1]["right"] == "unverändert"
 
+    def test_section_title_before_page_break_not_merged_with_next_page_paragraph(self):
+        rows = [
+            make_row(left=None, right="§ 80a", page=89),
+            make_row(left=None, right="Planung infrastruktureller Bildungsassistenz", page=89),
+            make_row(
+                left=None,
+                right=(
+                    "Infrastrukturelle Angebote zu einer wegen erzieherischen Bedarfs "
+                    "oder wegen einer Behinderung erforderlichen Anleitung"
+                ),
+                page=90,
+            ),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+
+        assert len(result) == 3
+        assert result[1]["right"] == "Planung infrastruktureller Bildungsassistenz"
+        assert result[2]["right"].startswith("Infrastrukturelle Angebote")
+
     def test_gold_standard_2026_page_break(self):
         rows = [
             make_row(

@@ -28,21 +28,6 @@ from src.patterns import (
     PARENTHESIZED_NUMBER_MARKER_PATTERN,
     SECTION_HEADER_PATTERN,
     SECTION_SIGN_START_PATTERN,
-    STRUCTURAL_MARKER_PATTERN,
-)
-from src.patterns import (
-    ARTIKEL_HEADING_PATTERN,
-    LEADING_LIST_NUMBER_PATTERN,
-    LEADING_LIST_NUMBER_REWRITE_PATTERN,
-    LAW_IDENTIFIER_CITATION_PATTERN,
-    LAW_NAME_STANDALONE_PATTERN,
-    LETTER_BRACKET_MARKER_PATTERN,
-    NUMBER_DOT_MARKER_PATTERN,
-    NUMBERED_SGB_LAW_NAME_PATTERN,
-    PAGE_HEADER_RIGHT_PATTERN,
-    PARENTHESIZED_NUMBER_MARKER_PATTERN,
-    SECTION_HEADER_PATTERN,
-    SECTION_SIGN_START_PATTERN,
     STANDALONE_STRUCTURAL_HEADING_PATTERN,
     STRUCTURAL_MARKER_PATTERN,
 )
@@ -378,28 +363,6 @@ def text_indicates_row_continuation(text: str | None) -> bool:
     is a mid-sentence article reference, not a new list item).
     Returns False if text starts with a list/structure marker (N., (N), a), §…),
     a number followed by ')' (e.g. "33) Buchstabe"), or is a single character.
-    """
-    if text is None or text.strip() == "":
-        return True
-    stripped = text.strip()
-    if len(stripped) < 2:
-        return False
-    if detect_leading_marker_type(stripped) is not None:
-        return False
-    if stripped[0].isdigit():
-        if re.match(r"^\d+\s*\)", stripped):
-            return False
-        return True
-    return stripped[0].isalpha() and stripped[1].isalpha()
-def text_indicates_row_continuation(text: str | None) -> bool:
-    """Determine if a continuation column should merge into the previous row.
-
-    Returns True if text is None/empty/whitespace (null column = no-op merge),
-    if the first two characters are both letters, or if the text starts with a
-    bare number not immediately followed by '.' or ')' (e.g. "33 zu übermitteln"
-    is a mid-sentence article reference, not a new list item).
-    Returns False if text starts with a list/structure marker (N., (N), a), §…),
-    a number followed by ')' (e.g. "33) Buchstabe"), or is a single character.
     A structural keyword at the start (e.g. "Absatz") only blocks merging when
     the full text is a standalone heading reference (e.g. "Absatz 4",
     "Absatz 2 Satz 1"); if it continues into sentence text it still merges.
@@ -419,6 +382,33 @@ def text_indicates_row_continuation(text: str | None) -> bool:
             return False
         return True
     return stripped[0].isalpha() and stripped[1].isalpha()
+
+
+def _is_short_heading_like_text(text: str | None) -> bool:
+    """Return True for short, heading-like text fragments (not sentence chunks)."""
+    if not isinstance(text, str):
+        return False
+
+    stripped = text.strip()
+    if stripped == "":
+        return False
+    if stripped[-1] in ".;:!?":
+        return False
+    if starts_with_section_sign(stripped):
+        return False
+    if detect_leading_marker_type(stripped) is not None:
+        return False
+
+    words = stripped.split()
+    return len(words) <= 6 and len(stripped) <= 80
+
+
+def _row_has_only_column_text(row: dict[str, Any], column_name: str) -> bool:
+    other_column_name = "right" if column_name == "left" else "left"
+    return (
+        not is_empty_text(row.get(column_name))
+        and is_empty_text(row.get(other_column_name))
+    )
 
 
 def build_normalized_text_with_position_map(
@@ -902,6 +892,7 @@ def cleanup_first_page_bgb_header_rows(
 def _should_skip_merge(
     current_row: dict[str, Any],
     previous_row: dict[str, Any],
+    previous_previous_row: dict[str, Any] | None = None,
 ) -> bool:
     """Return True if current_row should NOT be merged into previous_row."""
     if (
@@ -932,6 +923,16 @@ def _should_skip_merge(
         and is_unveraendert_text(current_row.get("right"))
     ):
         return True
+    if previous_previous_row is not None:
+        for column_name in ("left", "right"):
+            if not starts_with_section_sign(previous_previous_row.get(column_name)):
+                continue
+            if not _row_has_only_column_text(previous_row, column_name):
+                continue
+            if not _row_has_only_column_text(current_row, column_name):
+                continue
+            if _is_short_heading_like_text(previous_row.get(column_name)):
+                return True
     return False
 
 
@@ -968,7 +969,9 @@ def merge_page_break_continuation_rows(
 
         previous_row = result[-1]
 
-        if _should_skip_merge(current_row, previous_row):
+        previous_previous_row = result[-2] if len(result) >= 2 else None
+
+        if _should_skip_merge(current_row, previous_row, previous_previous_row):
             result.append(dict(current_row))
             continue
 
