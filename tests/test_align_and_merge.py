@@ -1415,12 +1415,26 @@ class TestComputeCharacterDiffRanges:
         assert ranges_a == [[6, 9]]
         assert ranges_b == [[6, 9]]
 
-    def test_partial_word_change_highlights_changed_characters(self):
+    def test_partial_word_change_highlights_full_replaced_word(self):
         ranges_a, ranges_b = compute_character_diff_ranges(
             "Jugendarbeit", "Jugendsozialarbeit"
         )
-        assert ranges_a == []
-        assert ranges_b == [[6, 12]]
+        assert ranges_a == [[0, 12]]
+        assert ranges_b == [[0, 18]]
+
+    def test_intra_word_hyphen_removed_highlights_full_replaced_word_on_both_sides(self):
+        ranges_a, ranges_b = compute_character_diff_ranges(
+            "not-wendiger", "notwendiger"
+        )
+        assert ranges_a == [[0, 12]]
+        assert ranges_b == [[0, 11]]
+
+    def test_intra_word_hyphen_added_highlights_full_replaced_word_on_both_sides(self):
+        ranges_a, ranges_b = compute_character_diff_ranges(
+            "notwendiger", "not-wendiger"
+        )
+        assert ranges_a == [[0, 11]]
+        assert ranges_b == [[0, 12]]
 
     def test_multi_word_replace_highlights_whole_ranges(self):
         ranges_a, ranges_b = compute_character_diff_ranges(

@@ -426,15 +426,15 @@ def compute_character_diff_ranges(
     text_a: str,
     text_b: str,
 ) -> tuple[list[list[int]], list[list[int]]]:
-    """Two-level diff: word-level first, then character-level within replaced words.
+    """Compute diff ranges at word granularity.
 
     Returns ``(ranges_only_in_a, ranges_only_in_b)`` where each range is
     ``[start, end]`` referencing positions in the *original* (un-normalized)
     texts.
 
-    For single-word replacements, character-level diffing highlights which
-    characters changed within the word.  For multi-word replacements, entire
-    word groups are highlighted to avoid noisy fragmentation.
+    Any replaced word is highlighted as a full word (not partial characters).
+    This keeps diffs readable in legal text, e.g. ``wird`` → ``werden`` marks
+    the whole source and target word.
     """
     normalized_a, position_map_a = build_normalized_text_with_position_map(text_a)
     normalized_b, position_map_b = build_normalized_text_with_position_map(text_b)
@@ -470,56 +470,18 @@ def compute_character_diff_ranges(
             )
 
         elif tag == "replace":
-            words_count_a = i2 - i1
-            words_count_b = j2 - j1
-
-            if words_count_a == 1 and words_count_b == 1:
-                _character_diff_within_word(
-                    words_a[i1], word_spans_a[i1][0], position_map_a, ranges_only_in_a,
-                    words_b[j1], word_spans_b[j1][0], position_map_b, ranges_only_in_b,
-                )
-            else:
-                normalized_start_a = word_spans_a[i1][0]
-                normalized_end_a = word_spans_a[i2 - 1][1]
-                ranges_only_in_a.append(
-                    _map_normalized_range_to_original(normalized_start_a, normalized_end_a, position_map_a)
-                )
-                normalized_start_b = word_spans_b[j1][0]
-                normalized_end_b = word_spans_b[j2 - 1][1]
-                ranges_only_in_b.append(
-                    _map_normalized_range_to_original(normalized_start_b, normalized_end_b, position_map_b)
-                )
+            normalized_start_a = word_spans_a[i1][0]
+            normalized_end_a = word_spans_a[i2 - 1][1]
+            ranges_only_in_a.append(
+                _map_normalized_range_to_original(normalized_start_a, normalized_end_a, position_map_a)
+            )
+            normalized_start_b = word_spans_b[j1][0]
+            normalized_end_b = word_spans_b[j2 - 1][1]
+            ranges_only_in_b.append(
+                _map_normalized_range_to_original(normalized_start_b, normalized_end_b, position_map_b)
+            )
 
     return (ranges_only_in_a, ranges_only_in_b)
-
-
-def _character_diff_within_word(
-    word_a: str,
-    word_a_normalized_offset: int,
-    position_map_a: list[int],
-    ranges_a: list[list[int]],
-    word_b: str,
-    word_b_normalized_offset: int,
-    position_map_b: list[int],
-    ranges_b: list[list[int]],
-) -> None:
-    """Run character-level diff within a single replaced word pair."""
-    character_matcher = difflib.SequenceMatcher(None, word_a, word_b, autojunk=False)
-    for character_tag, ci1, ci2, cj1, cj2 in character_matcher.get_opcodes():
-        if character_tag == "equal":
-            continue
-        if character_tag in ("delete", "replace") and ci1 < ci2:
-            normalized_start = word_a_normalized_offset + ci1
-            normalized_end = word_a_normalized_offset + ci2
-            ranges_a.append(
-                _map_normalized_range_to_original(normalized_start, normalized_end, position_map_a)
-            )
-        if character_tag in ("insert", "replace") and cj1 < cj2:
-            normalized_start = word_b_normalized_offset + cj1
-            normalized_end = word_b_normalized_offset + cj2
-            ranges_b.append(
-                _map_normalized_range_to_original(normalized_start, normalized_end, position_map_b)
-            )
 
 
 def compute_diff_ranges_for_row(

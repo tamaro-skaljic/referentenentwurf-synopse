@@ -41,21 +41,11 @@
           ],
           [
             67,
-            68,
-            "red"
-          ],
-          [
-            69,
-            70,
-            "red"
-          ],
-          [
-            74,
             75,
             "red"
           ],
           [
-            83,
+            82,
             85,
             "red"
           ]
@@ -87,21 +77,11 @@
           ],
           [
             67,
-            68,
-            "green"
-          ],
-          [
-            69,
-            70,
-            "green"
-          ],
-          [
-            74,
             75,
             "green"
           ],
           [
-            83,
+            82,
             85,
             "green"
           ]
@@ -524,7 +504,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -545,7 +525,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "green"
           ]
         ]
@@ -557,7 +537,7 @@
         "diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -576,7 +556,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -597,7 +577,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "green"
           ]
         ]
@@ -609,7 +589,7 @@
         "diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -845,7 +825,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -866,7 +846,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "green"
           ]
         ]
@@ -1920,7 +1900,7 @@
             "red"
           ],
           [
-            234,
+            230,
             235,
             "red"
           ]
@@ -1954,6 +1934,11 @@
             382,
             435,
             "green"
+          ],
+          [
+            491,
+            495,
+            "green"
           ]
         ]
       },
@@ -1964,11 +1949,6 @@
         "diff_ranges": [
           [
             4,
-            7,
-            "red"
-          ],
-          [
-            8,
             10,
             "red"
           ],
@@ -2668,16 +2648,6 @@
         "right_diff_ranges": [
           [
             15,
-            17,
-            "green"
-          ],
-          [
-            18,
-            23,
-            "green"
-          ],
-          [
-            24,
             25,
             "green"
           ],
@@ -2700,12 +2670,7 @@
         "diff_ranges": [
           [
             15,
-            16,
-            "red"
-          ],
-          [
-            17,
-            19,
+            20,
             "red"
           ],
           [
@@ -2860,7 +2825,7 @@
           ],
           [
             372,
-            374,
+            375,
             "red"
           ]
         ]
@@ -2891,11 +2856,6 @@
           ],
           [
             475,
-            476,
-            "green"
-          ],
-          [
-            477,
             479,
             "green"
           ]
@@ -2961,7 +2921,7 @@
         "row": 4,
         "right_diff_ranges": [
           [
-            201,
+            199,
             202,
             "red"
           ],
@@ -2991,7 +2951,7 @@
         "row": 9,
         "right_diff_ranges": [
           [
-            201,
+            199,
             202,
             "green"
           ]
@@ -3247,21 +3207,6 @@
           ],
           [
             108,
-            113,
-            "red"
-          ],
-          [
-            114,
-            115,
-            "red"
-          ],
-          [
-            116,
-            118,
-            "red"
-          ],
-          [
-            119,
             123,
             "red"
           ],
@@ -3298,12 +3243,7 @@
           ],
           [
             294,
-            295,
-            "green"
-          ],
-          [
-            297,
-            301,
+            302,
             "green"
           ],
           [
@@ -3587,7 +3527,7 @@
             "red"
           ],
           [
-            476,
+            475,
             477,
             "red"
           ]
@@ -3617,7 +3557,7 @@
             "green"
           ],
           [
-            476,
+            475,
             477,
             "green"
           ]
@@ -4901,7 +4841,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -4922,7 +4862,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "green"
           ]
         ]
@@ -4952,7 +4892,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "red"
           ]
         ]
@@ -4973,7 +4913,7 @@
         "right_diff_ranges": [
           [
             0,
-            1,
+            2,
             "green"
           ]
         ]
@@ -5529,17 +5469,12 @@
         "row": 4,
         "right_diff_ranges": [
           [
-            86,
+            75,
             88,
             "red"
           ],
           [
             362,
-            363,
-            "red"
-          ],
-          [
-            364,
             366,
             "red"
           ],
@@ -5565,8 +5500,13 @@
         "row": 6,
         "right_diff_ranges": [
           [
+            75,
+            86,
+            "green"
+          ],
+          [
             360,
-            362,
+            363,
             "green"
           ],
           [
@@ -5662,7 +5602,7 @@
         "right_diff_ranges": [
           [
             93,
-            95,
+            96,
             "red"
           ]
         ]
@@ -5687,7 +5627,7 @@
         "right_diff_ranges": [
           [
             93,
-            95,
+            96,
             "green"
           ],
           [
@@ -6144,7 +6084,7 @@
         "right_diff_ranges": [
           [
             101,
-            105,
+            107,
             "red"
           ],
           [
@@ -6200,7 +6140,7 @@
         "right_diff_ranges": [
           [
             101,
-            105,
+            107,
             "green"
           ],
           [
@@ -6415,7 +6355,7 @@
         "row": 5,
         "right_diff_ranges": [
           [
-            59,
+            58,
             60,
             "red"
           ]
@@ -6436,7 +6376,7 @@
         "row": 9,
         "right_diff_ranges": [
           [
-            59,
+            58,
             60,
             "green"
           ]
@@ -7188,16 +7128,6 @@
           ],
           [
             92,
-            93,
-            "red"
-          ],
-          [
-            95,
-            97,
-            "red"
-          ],
-          [
-            98,
             101,
             "red"
           ],
@@ -7243,21 +7173,6 @@
           ],
           [
             478,
-            481,
-            "green"
-          ],
-          [
-            482,
-            486,
-            "green"
-          ],
-          [
-            487,
-            490,
-            "green"
-          ],
-          [
-            491,
             494,
             "green"
           ],
@@ -8586,7 +8501,7 @@
         "row": 2,
         "right_diff_ranges": [
           [
-            132,
+            125,
             133,
             "red"
           ]
@@ -8607,7 +8522,7 @@
         "row": 5,
         "right_diff_ranges": [
           [
-            132,
+            125,
             133,
             "green"
           ]
@@ -8878,8 +8793,8 @@
         "row": 1,
         "right_diff_ranges": [
           [
-            408,
-            409,
+            405,
+            411,
             "red"
           ]
         ]
@@ -8897,7 +8812,13 @@
         "page": 31,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": []
+        "right_diff_ranges": [
+          [
+            405,
+            410,
+            "green"
+          ]
+        ]
       },
       "is_section_header": false,
       "merged_left": {
@@ -8975,7 +8896,7 @@
         "right_diff_ranges": [
           [
             4,
-            6,
+            7,
             "red"
           ]
         ]
@@ -8996,11 +8917,6 @@
         "right_diff_ranges": [
           [
             4,
-            8,
-            "green"
-          ],
-          [
-            9,
             12,
             "green"
           ],
@@ -9028,16 +8944,6 @@
           ],
           [
             64,
-            66,
-            "red"
-          ],
-          [
-            67,
-            69,
-            "red"
-          ],
-          [
-            70,
             75,
             "red"
           ],
@@ -9674,8 +9580,8 @@
         "row": 2,
         "right_diff_ranges": [
           [
-            165,
-            166,
+            156,
+            171,
             "red"
           ]
         ]
@@ -9693,7 +9599,13 @@
         "page": 33,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": []
+        "right_diff_ranges": [
+          [
+            156,
+            170,
+            "green"
+          ]
+        ]
       },
       "is_section_header": false,
       "merged_left": {
@@ -9712,16 +9624,6 @@
           ],
           [
             112,
-            113,
-            "red"
-          ],
-          [
-            114,
-            115,
-            "red"
-          ],
-          [
-            116,
             118,
             "red"
           ],
@@ -10020,7 +9922,7 @@
         "right_diff_ranges": [
           [
             45,
-            51,
+            57,
             "red"
           ]
         ]
@@ -10041,7 +9943,7 @@
         "right_diff_ranges": [
           [
             45,
-            48,
+            54,
             "green"
           ]
         ]
@@ -11110,7 +11012,7 @@
             "red"
           ],
           [
-            139,
+            137,
             140,
             "red"
           ],
@@ -11202,21 +11104,11 @@
         "diff_ranges": [
           [
             4,
-            7,
-            "red"
-          ],
-          [
-            8,
             10,
             "red"
           ],
           [
             15,
-            17,
-            "red"
-          ],
-          [
-            18,
             22,
             "red"
           ],
@@ -12754,13 +12646,28 @@
         "row": 1,
         "right_diff_ranges": [
           [
-            44,
+            22,
             45,
+            "red"
+          ],
+          [
+            72,
+            81,
             "red"
           ],
           [
             245,
             252,
+            "red"
+          ],
+          [
+            297,
+            310,
+            "red"
+          ],
+          [
+            456,
+            457,
             "red"
           ],
           [
@@ -12789,6 +12696,11 @@
             "red"
           ],
           [
+            923,
+            926,
+            "red"
+          ],
+          [
             935,
             988,
             "red"
@@ -12814,17 +12726,22 @@
         "row": 6,
         "right_diff_ranges": [
           [
-            80,
+            22,
+            44,
+            "green"
+          ],
+          [
+            71,
             81,
             "green"
           ],
           [
-            302,
+            289,
             303,
             "green"
           ],
           [
-            450,
+            449,
             451,
             "green"
           ],
@@ -12869,7 +12786,7 @@
             "green"
           ],
           [
-            1091,
+            1088,
             1093,
             "green"
           ],
@@ -13928,8 +13845,8 @@
             "red"
           ],
           [
-            249,
-            250,
+            247,
+            254,
             "red"
           ]
         ]
@@ -13955,6 +13872,11 @@
           [
             164,
             176,
+            "green"
+          ],
+          [
+            245,
+            251,
             "green"
           ]
         ]
@@ -14022,8 +13944,8 @@
         "row": 1,
         "right_diff_ranges": [
           [
-            418,
-            419,
+            415,
+            427,
             "red"
           ]
         ]
@@ -14041,7 +13963,13 @@
         "page": 52,
         "table": 1,
         "row": 4,
-        "right_diff_ranges": []
+        "right_diff_ranges": [
+          [
+            415,
+            426,
+            "green"
+          ]
+        ]
       },
       "is_section_header": false,
       "merged_left": {
@@ -14067,13 +13995,13 @@
         "row": 2,
         "right_diff_ranges": [
           [
-            333,
-            334,
+            332,
+            335,
             "red"
           ],
           [
-            439,
-            440,
+            438,
+            441,
             "red"
           ],
           [
@@ -14113,22 +14041,12 @@
           ],
           [
             424,
-            425,
-            "green"
-          ],
-          [
-            426,
-            429,
+            430,
             "green"
           ],
           [
             533,
-            534,
-            "green"
-          ],
-          [
-            535,
-            536,
+            537,
             "green"
           ],
           [
@@ -14202,7 +14120,7 @@
         "right_diff_ranges": [
           [
             0,
-            6,
+            10,
             "red"
           ]
         ]
@@ -14223,16 +14141,6 @@
         "right_diff_ranges": [
           [
             0,
-            1,
-            "green"
-          ],
-          [
-            2,
-            4,
-            "green"
-          ],
-          [
-            7,
             9,
             "green"
           ]
@@ -14302,7 +14210,7 @@
         "right_diff_ranges": [
           [
             47,
-            51,
+            53,
             "red"
           ]
         ]
@@ -14323,7 +14231,7 @@
         "right_diff_ranges": [
           [
             47,
-            51,
+            53,
             "green"
           ]
         ]
@@ -14350,7 +14258,13 @@
         "page": 53,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": []
+        "right_diff_ranges": [
+          [
+            330,
+            336,
+            "red"
+          ]
+        ]
       },
       "synopsis2026": {
         "left": "",
@@ -14367,7 +14281,7 @@
         "row": 7,
         "right_diff_ranges": [
           [
-            336,
+            330,
             337,
             "green"
           ]
@@ -14904,8 +14818,8 @@
         "row": 5,
         "right_diff_ranges": [
           [
-            299,
-            300,
+            298,
+            303,
             "red"
           ]
         ]
@@ -14934,13 +14848,8 @@
             "green"
           ],
           [
-            315,
-            316,
-            "green"
-          ],
-          [
-            318,
-            320,
+            314,
+            321,
             "green"
           ]
         ]
@@ -16033,8 +15942,8 @@
         "row": 2,
         "right_diff_ranges": [
           [
-            122,
-            123,
+            121,
+            126,
             "red"
           ]
         ]
@@ -16059,13 +15968,8 @@
             "green"
           ],
           [
-            164,
-            165,
-            "green"
-          ],
-          [
-            167,
-            169,
+            163,
+            170,
             "green"
           ]
         ]
@@ -16302,6 +16206,11 @@
             40,
             50,
             "red"
+          ],
+          [
+            78,
+            80,
+            "red"
           ]
         ]
       },
@@ -16325,7 +16234,7 @@
             "green"
           ],
           [
-            95,
+            93,
             96,
             "green"
           ]
@@ -16818,6 +16727,11 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
+            46,
+            48,
+            "red"
+          ],
+          [
             96,
             102,
             "red"
@@ -16881,7 +16795,7 @@
             "red"
           ],
           [
-            336,
+            334,
             337,
             "red"
           ]
@@ -17279,7 +17193,13 @@
       "merged_left": {
         "text": "(2) Das Jugendamt hat während der \nInobhutnahme unverzüglich das Kind oder \nden Jugendlichen umfassend und in einer \nverständlichen, nachvollziehbaren und \nwahrnehmbaren Form über diese \nMaßnahme aufzuklären, die Situation, die \nzur Inobhutnahme geführt hat, zusammen \nmit dem Kind oder dem Jugendlichen zu \nklären und Möglichkeiten der Hilfe und \nUnterstützung aufzuzeigen. Dem Kind oder \ndem Jugendlichen ist unverzüglich \nGelegenheit zu geben, eine Person seines \nVertrauens zu benachrichtigen. Das \nJugendamt hat während der Inobhutnahme \nfür das Wohl des Kindes oder des \nJugendlichen zu sorgen und dabei den \nnotwendigen Unterhalt und die \nKrankenhilfe sicherzustellen; § 39 Absatz 4 \nSatz 2 gilt entsprechend. Das Jugendamt \nist während der Inobhutnahme berechtigt, \nalle Rechtshandlungen vorzunehmen, die \nzum Wohl des Kindes oder Jugendlichen \nnotwendig sind; der mutmaßliche Wille der \nPersonensorge- oder der \nErziehungsberechtigten ist dabei \nangemessen zu berücksichtigen. Im Fall \ndes Absatzes 1 Satz 1 Nummer 3 gehört \nzu den Rechtshandlungen nach Satz 4, zu \ndenen das Jugendamt verpflichtet ist, \ninsbesondere die unverzügliche Stellung \neines Asylantrags für das Kind oder den \nJugendlichen in Fällen, in denen Tatsachen \ndie Annahme rechtfertigen, dass das Kind \noder der Jugendliche internationalen \nSchutz im Sinne des § 1 Absatz 1 Nummer \n2 des Asylgesetzes benötigt; dabei ist das \nKind oder der Jugendliche zu beteiligen. ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            678,
+            680,
+            "red"
+          ]
+        ]
       },
       "row_index": 405
     },
@@ -17552,7 +17472,7 @@
         "row": 10,
         "right_diff_ranges": [
           [
-            680,
+            678,
             681,
             "green"
           ]
@@ -17562,7 +17482,13 @@
       "merged_left": {
         "text": "(2) Das Jugendamt hat während der \nInobhutnahme unverzüglich das Kind oder \nden Jugendlichen umfassend und in einer \nverständlichen, nachvollziehbaren und \nwahrnehmbaren Form über diese \nMaßnahme aufzuklären, die Situation, die \nzur Inobhutnahme geführt hat, zusammen \nmit dem Kind oder dem Jugendlichen zu \nklären und Möglichkeiten der Hilfe und \nUnterstützung aufzuzeigen. Dem Kind oder \ndem Jugendlichen ist unverzüglich \nGelegenheit zu geben, eine Person seines \nVertrauens zu benachrichtigen. Das \nJugendamt hat während der Inobhutnahme  für das Wohl des Kindes oder des \nJugendlichen zu sorgen und dabei den \nnotwendigen Unterhalt und die \nKrankenhilfe sicherzustellen; § 39 Absatz 4 \nSatz 2 gilt entsprechend. Das Jugendamt \nist während der Inobhutnahme berechtigt, \nalle Rechtshandlungen vorzunehmen, die \nzum Wohl des Kindes oder Jugendlichen \nnotwendig sind; der mutmaßliche Wille der \nPersonensorge- oder der \nErziehungsberechtigten ist dabei \nangemessen zu berücksichtigen. Im Fall \ndes Absatzes 1 Satz 1 Nummer 3 gehört \nzu den Rechtshandlungen nach Satz 4, zu \ndenen das Jugendamt verpflichtet ist, \ninsbesondere die unverzügliche Stellung \neines Asylantrags für das Kind oder den \nJugendlichen in Fällen, in denen Tatsachen \ndie Annahme rechtfertigen, dass das Kind \noder der Jugendliche internationalen \nSchutz im Sinne des § 1 Absatz 1 Nummer \n2 des Asylgesetzes benötigt; dabei ist das \nKind oder der Jugendliche zu beteiligen. ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            678,
+            680,
+            "red"
+          ]
+        ]
       },
       "row_index": 415
     },
@@ -17823,17 +17749,7 @@
         "right_diff_ranges": [
           [
             0,
-            3,
-            "green"
-          ],
-          [
-            4,
-            6,
-            "green"
-          ],
-          [
-            7,
-            9,
+            10,
             "green"
           ]
         ]
@@ -17845,16 +17761,6 @@
         "diff_ranges": [
           [
             0,
-            1,
-            "red"
-          ],
-          [
-            2,
-            5,
-            "red"
-          ],
-          [
-            7,
             15,
             "red"
           ]
@@ -18023,8 +17929,8 @@
             "green"
           ],
           [
-            45,
-            47,
+            44,
+            49,
             "green"
           ],
           [
@@ -18061,12 +17967,7 @@
           ],
           [
             36,
-            38,
-            "red"
-          ],
-          [
-            39,
-            40,
+            42,
             "red"
           ],
           [
@@ -18119,7 +18020,7 @@
             "green"
           ],
           [
-            241,
+            239,
             242,
             "green"
           ],
@@ -18146,7 +18047,7 @@
             "red"
           ],
           [
-            252,
+            250,
             255,
             "red"
           ],
@@ -18617,7 +18518,13 @@
       "merged_left": {
         "text": "Erlaubnis für den Betrieb einer \nEinrichtung ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            33,
+            44,
+            "red"
+          ]
+        ]
       },
       "row_index": 448
     },
@@ -18792,8 +18699,8 @@
         "row": 4,
         "right_diff_ranges": [
           [
-            6,
-            7,
+            5,
+            8,
             "green"
           ],
           [
@@ -18809,7 +18716,7 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
-            6,
+            4,
             7,
             "red"
           ],
@@ -19479,6 +19386,11 @@
           [
             529,
             538,
+            "red"
+          ],
+          [
+            546,
+            548,
             "red"
           ],
           [
@@ -20522,12 +20434,7 @@
           ],
           [
             506,
-            509,
-            "green"
-          ],
-          [
-            511,
-            512,
+            513,
             "green"
           ]
         ]
@@ -20539,11 +20446,6 @@
         "diff_ranges": [
           [
             390,
-            392,
-            "red"
-          ],
-          [
-            395,
             401,
             "red"
           ]
@@ -20596,13 +20498,13 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
-            31,
+            30,
             32,
             "red"
           ],
           [
-            51,
-            52,
+            50,
+            53,
             "red"
           ]
         ]
@@ -20985,8 +20887,8 @@
         "row": 13,
         "right_diff_ranges": [
           [
-            61,
-            62,
+            59,
+            64,
             "green"
           ]
         ]
@@ -20995,7 +20897,13 @@
       "merged_left": {
         "text": "d) \nin sonstiger teilstationärer oder stationärer \nForm (§ 27), ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            59,
+            63,
+            "red"
+          ]
+        ]
       },
       "row_index": 520
     },
@@ -21131,7 +21039,7 @@
             "red"
           ],
           [
-            91,
+            89,
             92,
             "red"
           ]
@@ -21211,7 +21119,18 @@
       "merged_left": {
         "text": "7. \nLeistungen zum Unterhalt (§ 39), sofern \ndiese im Zusammenhang mit Leistungen \nnach den Nummern 4 bis 6 gewährt \nwerden; § 39 Absatz 2 Satz 3 bleibt \nunberührt. ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            32,
+            36,
+            "red"
+          ],
+          [
+            127,
+            129,
+            "red"
+          ]
+        ]
       },
       "row_index": 525
     },
@@ -21791,7 +21710,7 @@
         "right_diff_ranges": [
           [
             355,
-            359,
+            370,
             "green"
           ]
         ]
@@ -21803,12 +21722,7 @@
         "diff_ranges": [
           [
             355,
-            359,
-            "red"
-          ],
-          [
-            361,
-            366,
+            375,
             "red"
           ]
         ]
@@ -22392,7 +22306,7 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
-            117,
+            115,
             118,
             "red"
           ]
@@ -22905,8 +22819,8 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
-            89,
-            90,
+            87,
+            91,
             "red"
           ]
         ]
@@ -23495,7 +23409,7 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
-            262,
+            260,
             263,
             "red"
           ]
@@ -23656,7 +23570,7 @@
         "bold_ranges": [],
         "diff_ranges": [
           [
-            50,
+            48,
             51,
             "red"
           ]
@@ -24975,7 +24889,7 @@
             "red"
           ],
           [
-            224,
+            220,
             225,
             "red"
           ]
@@ -25001,12 +24915,7 @@
             "green"
           ],
           [
-            234,
-            235,
-            "green"
-          ],
-          [
-            236,
+            231,
             237,
             "green"
           ]
@@ -25048,26 +24957,16 @@
         "right_diff_ranges": [
           [
             4,
-            5,
-            "red"
-          ],
-          [
-            6,
             9,
             "red"
           ],
           [
             14,
-            15,
+            22,
             "red"
           ],
           [
-            18,
-            19,
-            "red"
-          ],
-          [
-            137,
+            131,
             138,
             "red"
           ]
@@ -25089,22 +24988,22 @@
         "right_diff_ranges": [
           [
             4,
-            8,
+            9,
             "green"
           ],
           [
             14,
-            21,
-            "green"
-          ],
-          [
-            25,
-            37,
+            39,
             "green"
           ],
           [
             52,
             71,
+            "green"
+          ],
+          [
+            169,
+            175,
             "green"
           ]
         ]
@@ -26307,6 +26206,11 @@
         "row": 2,
         "right_diff_ranges": [
           [
+            134,
+            140,
+            "red"
+          ],
+          [
             148,
             175,
             "red"
@@ -26343,7 +26247,7 @@
         "row": 5,
         "right_diff_ranges": [
           [
-            140,
+            134,
             142,
             "green"
           ],
@@ -26739,7 +26643,7 @@
           ],
           [
             918,
-            925,
+            935,
             "red"
           ]
         ]
@@ -26809,7 +26713,7 @@
           ],
           [
             1297,
-            1298,
+            1308,
             "green"
           ],
           [
@@ -31105,16 +31009,6 @@
         "diff_ranges": [
           [
             0,
-            5,
-            "red"
-          ],
-          [
-            6,
-            13,
-            "red"
-          ],
-          [
-            16,
             17,
             "red"
           ]
@@ -31617,6 +31511,11 @@
             234,
             242,
             "red"
+          ],
+          [
+            435,
+            439,
+            "red"
           ]
         ]
       },
@@ -31645,7 +31544,7 @@
             "green"
           ],
           [
-            488,
+            484,
             490,
             "green"
           ]
@@ -31759,13 +31658,13 @@
         "row": 7,
         "right_diff_ranges": [
           [
-            77,
-            78,
+            75,
+            82,
             "red"
           ],
           [
-            163,
-            164,
+            159,
+            173,
             "red"
           ]
         ]
@@ -31788,6 +31687,16 @@
         "table": 1,
         "row": 8,
         "right_diff_ranges": [
+          [
+            75,
+            81,
+            "green"
+          ],
+          [
+            158,
+            171,
+            "green"
+          ],
           [
             284,
             394,
@@ -31834,7 +31743,7 @@
             "red"
           ],
           [
-            617,
+            616,
             620,
             "red"
           ],
@@ -31845,7 +31754,7 @@
           ],
           [
             698,
-            701,
+            707,
             "red"
           ]
         ]
@@ -31885,17 +31794,12 @@
           ],
           [
             625,
-            627,
-            "green"
-          ],
-          [
-            628,
             629,
             "green"
           ],
           [
             703,
-            705,
+            711,
             "green"
           ]
         ]
@@ -31963,8 +31867,8 @@
         "row": 3,
         "right_diff_ranges": [
           [
-            364,
-            365,
+            362,
+            369,
             "red"
           ],
           [
@@ -31992,6 +31896,11 @@
         "table": 1,
         "row": 4,
         "right_diff_ranges": [
+          [
+            362,
+            368,
+            "green"
+          ],
           [
             408,
             411,
@@ -32028,8 +31937,8 @@
         "row": 1,
         "right_diff_ranges": [
           [
-            163,
-            164,
+            152,
+            169,
             "red"
           ]
         ]
@@ -32047,7 +31956,13 @@
         "page": 115,
         "table": 1,
         "row": 3,
-        "right_diff_ranges": []
+        "right_diff_ranges": [
+          [
+            152,
+            168,
+            "green"
+          ]
+        ]
       },
       "is_section_header": false,
       "merged_left": {
@@ -32170,21 +32085,11 @@
           ],
           [
             65,
-            67,
-            "red"
-          ],
-          [
-            69,
-            70,
-            "red"
-          ],
-          [
-            74,
             75,
             "red"
           ],
           [
-            83,
+            82,
             85,
             "red"
           ]
@@ -32216,17 +32121,12 @@
           ],
           [
             65,
-            67,
-            "green"
-          ],
-          [
-            73,
             74,
             "green"
           ],
           [
             81,
-            82,
+            83,
             "green"
           ]
         ]
@@ -32348,8 +32248,8 @@
             "red"
           ],
           [
-            485,
-            486,
+            484,
+            487,
             "red"
           ]
         ]
@@ -33540,7 +33440,7 @@
         "right_diff_ranges": [
           [
             955,
-            956,
+            957,
             "green"
           ]
         ]
@@ -33552,7 +33452,7 @@
         "diff_ranges": [
           [
             955,
-            956,
+            957,
             "red"
           ]
         ]
@@ -33636,8 +33536,8 @@
         "row": 5,
         "right_diff_ranges": [
           [
-            14,
-            15,
+            8,
+            24,
             "green"
           ],
           [
@@ -33652,6 +33552,11 @@
         "text": "(1) Die antragstellende Person sowie bei \nminderjährigen Personen die im Haushalt \nlebenden Eltern oder ein Elternteil haben \nvor der Inanspruchnahme von Leistungen \nnach diesem Teil die erforderlichen Mittel \naus ihrem Vermögen aufzubringen. ",
         "bold_ranges": [],
         "diff_ranges": [
+          [
+            8,
+            23,
+            "red"
+          ],
           [
             31,
             124,
@@ -34370,16 +34275,6 @@
           ],
           [
             65,
-            67,
-            "red"
-          ],
-          [
-            68,
-            69,
-            "red"
-          ],
-          [
-            74,
             75,
             "red"
           ],
@@ -34416,11 +34311,6 @@
           ],
           [
             74,
-            75,
-            "green"
-          ],
-          [
-            81,
             82,
             "green"
           ],
@@ -34649,12 +34539,7 @@
         "right_diff_ranges": [
           [
             3,
-            4,
-            "red"
-          ],
-          [
-            5,
-            7,
+            8,
             "red"
           ],
           [
@@ -34685,16 +34570,6 @@
         "right_diff_ranges": [
           [
             3,
-            5,
-            "green"
-          ],
-          [
-            6,
-            11,
-            "green"
-          ],
-          [
-            12,
             13,
             "green"
           ],
@@ -34717,12 +34592,7 @@
         "diff_ranges": [
           [
             3,
-            4,
-            "red"
-          ],
-          [
-            5,
-            7,
+            8,
             "red"
           ],
           [
@@ -34849,17 +34719,7 @@
             "red"
           ],
           [
-            66,
-            67,
-            "red"
-          ],
-          [
-            68,
-            70,
-            "red"
-          ],
-          [
-            74,
+            65,
             75,
             "red"
           ],
@@ -34895,17 +34755,7 @@
             "green"
           ],
           [
-            66,
-            67,
-            "green"
-          ],
-          [
-            68,
-            70,
-            "green"
-          ],
-          [
-            74,
+            65,
             75,
             "green"
           ],
@@ -35316,7 +35166,13 @@
       "merged_left": {
         "text": "1.  \ndie Leistungen nach § 39 des Achten \nBuches, die für den erzieherischen Einsatz \nerbracht werden, ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            27,
+            29,
+            "red"
+          ]
+        ]
       },
       "row_index": 1000
     },
@@ -35749,18 +35605,13 @@
             "red"
           ],
           [
-            82,
-            86,
-            "red"
-          ],
-          [
-            90,
+            81,
             91,
             "red"
           ],
           [
             99,
-            101,
+            102,
             "red"
           ]
         ]
@@ -35791,17 +35642,12 @@
           ],
           [
             64,
-            66,
-            "green"
-          ],
-          [
-            71,
             72,
             "green"
           ],
           [
             79,
-            80,
+            81,
             "green"
           ]
         ]
@@ -36414,21 +36260,11 @@
           ],
           [
             67,
-            69,
-            "red"
-          ],
-          [
-            70,
-            72,
-            "red"
-          ],
-          [
-            76,
             77,
             "red"
           ],
           [
-            85,
+            84,
             87,
             "red"
           ]
@@ -36460,26 +36296,11 @@
           ],
           [
             81,
-            83,
-            "green"
-          ],
-          [
-            84,
-            85,
-            "green"
-          ],
-          [
-            89,
             90,
             "green"
           ],
           [
             98,
-            99,
-            "green"
-          ],
-          [
-            100,
             101,
             "green"
           ]
@@ -36786,7 +36607,13 @@
       "merged_left": {
         "text": "(2) Sind für Geschädigte und Waisen \nLeistungen zum Lebensunterhalt während \nder Erbringung von Leistungen nach dem \nAchten Buch erforderlich, erbringt diese der \nTräger der Sozialen Entschädigung nach \nMaßgabe des Absatzes 1, soweit nicht der \nTräger der öffentlichen Jugendhilfe \nLeistungen nach § 39 des Achten Buches \nerbringt. ",
         "bold_ranges": [],
-        "diff_ranges": []
+        "diff_ranges": [
+          [
+            300,
+            302,
+            "red"
+          ]
+        ]
       },
       "row_index": 1044
     },
