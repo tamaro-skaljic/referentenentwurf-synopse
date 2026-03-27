@@ -600,7 +600,7 @@ def generate_latex(data: dict[str, object]) -> str:
     lines.append(r"\hline")
     lines.append(
         r"\textbf{Markierungsfarbe} & "
-        r"\textbf{Änderungen RefE 2024} & "
+        r"\textbf{Geltendes Recht / Änderungen RefE 2024} & "
         r"\textbf{Änderungen RefE 2026} \\"
     )
     lines.append(r"\hline")
