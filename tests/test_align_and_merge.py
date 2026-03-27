@@ -447,6 +447,30 @@ class TestMergePageBreakContinuationRows:
         assert result[1]["left"] is None
         assert result[1]["right"] == "(2) second"
 
+    def test_duplicate_unveraendert_at_page_boundary_does_not_merge_rows(self):
+        rows = [
+            make_row(
+                left=(
+                    "4. zur Sicherung der Rechte und des Wohls von Kindern und Jugendlichen"
+                ),
+                right="4. unverändert",
+                page=71,
+            ),
+            make_row(
+                left="Die nach Satz 2 Nummer 1 erforderliche Zuverlässigkeit ...",
+                right="unverändert",
+                page=72,
+            ),
+        ]
+
+        result = merge_page_break_continuation_rows(rows)
+
+        assert len(result) == 2
+        assert result[0]["left"].startswith("4. zur Sicherung")
+        assert result[0]["right"] == "4. unverändert"
+        assert result[1]["left"].startswith("Die nach Satz 2 Nummer 1")
+        assert result[1]["right"] == "unverändert"
+
     def test_gold_standard_2026_page_break(self):
         rows = [
             make_row(

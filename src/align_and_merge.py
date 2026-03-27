@@ -922,6 +922,16 @@ def _should_skip_merge(
         return True
     if is_structural_marker_with_unveraendert_row(current_row):
         return True
+    if (
+        is_unveraendert_text(previous_row.get("left"))
+        and is_unveraendert_text(current_row.get("left"))
+    ):
+        return True
+    if (
+        is_unveraendert_text(previous_row.get("right"))
+        and is_unveraendert_text(current_row.get("right"))
+    ):
+        return True
     return False
 
 
